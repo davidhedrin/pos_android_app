@@ -1,0 +1,7 @@
+{
+  "name": "pos_android_app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}

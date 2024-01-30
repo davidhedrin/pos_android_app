@@ -1,0 +1,16 @@
+
+.dp__main {
+    /* padding: 0.4em 1em; */
+    /* overflow: hidden; */
+    border: 1px solid #bcb4b1;
+    /* border: 1px solid var(--vt-color-step-900); */
+    border-radius: 0.3em;
+    outline: none;
+    background: transparent;
+    color: var(--vt-color-step-300);
+}
+.dp__main input {
+    border: none !important;
+    background: transparent;
+    padding: 4px 35px;
+}
