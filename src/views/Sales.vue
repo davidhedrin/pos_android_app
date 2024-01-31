@@ -1618,15 +1618,13 @@
                                 </div>
                               </div>
                               <div class="p-2 text-center">
-                                <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
-                                  <h5 class="fs-0 mb-0">
-                                    <div class="text-1100">
-                                      <span class="d-inline-block text-truncate max-width-text-truncate">
-                                        {{ product.promo_product_id && product.for_product.itemName }}
-                                      </span>
-                                    </div>
-                                  </h5>
-                                </button>
+                                <h5 class="fs-0 mb-0">
+                                  <div class="text-1100">
+                                    <span class="d-inline-block text-truncate max-width-text-truncate">
+                                      {{ product.promo_product_id && product.for_product.itemName }}
+                                    </span>
+                                  </div>
+                                </h5>
                                 <div v-if="product.promo_product_id">
                                   <strong class="fs-md-0 text-warning mb-0 text-center">
                                     Rp {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
@@ -4889,7 +4887,7 @@ export default {
           
           if(this.switchBoxSendEamil == true && this.memberOverview != null){
             try{
-              await this.$root.sendEmailInvoice(dataStoreTr.ducNum, this.memberOverview.email);
+              this.$root.sendEmailInvoice(dataStoreTr.ducNum, this.memberOverview.email, true);
             }catch(e){
               console.log(e);
             }

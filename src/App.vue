@@ -293,7 +293,7 @@ export default {
       return parseInt(doubleValue, 10);
     },
     
-    sendEmailInvoice: async function(docNum, email = null){
+    sendEmailInvoice: async function(docNum, email = null, isNotif = false){
       try{
         const request = await axios({
           method: 'post',
@@ -305,8 +305,10 @@ export default {
           }
         });
 
+        if(isNotif) this.showAlertFunction('success', 'Email Notif!', 'Success! Invoice email berhasil dikirim.');
         return request;
       }catch(e){
+        if(isNotif) this.showAlertFunction('warning', 'Email Notif!', 'Terjadi kesalahan!! Invoice email gagal dikirim.');
         console.log(e);
         return null;
       }
