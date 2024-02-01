@@ -44,9 +44,9 @@ export default {
   data() {
     const route = useRoute();
     const router = useRouter();
-    const API_ERP = 'https://ipos-tpsmtg.com:8087/';
+    // const API_ERP = 'https://ipos-tpsmtg.com:8087/';
     // const API_ERP = 'http://178.1.7.230:8062/';
-    // const API_ERP = 'http://178.1.51.124:8085';
+    const API_ERP = 'http://localhost:8085/';
     
     return {
       API_ERP: API_ERP,
