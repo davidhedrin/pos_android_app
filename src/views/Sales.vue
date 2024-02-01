@@ -1,12 +1,12 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding">
-      <div class="row">
-        <div class="col-md-9">
-          <div class="card mb-3">
+      <div class="row g-3">
+        <div class="col-xl-9">
+          <div class="card mb-2 py-1">
             <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: cover;"></div>
-            <div class="row card-header position-relative align-items-center py-2">
-              <div class="col-md-3 mb-2">
+            <div class="row g-2 card-header position-relative align-items-center py-2">
+              <div class="col-md-2">
                 <div class="dropdown font-sans-serif">
                   <button class="btn card-link dropdown-toggle dropdown-caret-none" type="button" id="filter_product_view" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
                     <span class="fas fa-filter fs--1"></span>
@@ -58,7 +58,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3 mb-2">
+              <div class="col-md-3">
                 <v-select 
                   v-model="selectedFilterBrand" 
                   :options="filteredOptionsInfoProduct(this.master_code.productOptInfo.brand_code)"
@@ -71,7 +71,7 @@
                   <option v-for="brand in dataMasterOptionInfo" :id="brand.optDtlCode" :value="brand.optDtlCode">{{ brand.optDtlName }}</option>
                 </select> -->
               </div>
-              <div class="col-md-3 mb-2">
+              <div class="col-md-3">
                 <form @submit.prevent="btnSearchSubmitProduct()">
                   <div class="input-group">
                     <input v-model="inputSearchProduct" class="form-control search-input fuzzy-search" type="search" placeholder="Search...">
@@ -79,96 +79,80 @@
                   </div>
                 </form>
               </div>
-              <div class="col-md-3 d-flex justify-content-end mb-2">
-                <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalFindProductFree">
+              <div class="col-md-4 d-flex justify-content-end">
+                <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalFindProductFree">
                   Free
-                  <!-- <span class="fas fa-search-dollar"></span> -->
                 </button>
-                
-                <div v-if="dataAllProducts.length > 0" class="ms-2">
-                  <button class="btn btn-outline-warning" type="button" @click="fatchAllDataProduct()">
-                    Semua <span class="fas fa-cloud-download-alt"></span>
-                  </button>
-                </div>
+                <button class="btn btn-info btn-sm ms-2" type="button" data-bs-toggle="modal" data-bs-target="#modalSelectProductForTicket">
+                  <span class="fas fa-ticket-alt"></span>
+                  <span class="ms-2 me-1">Ticket</span>
+                  <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
+                </button>
+                <button class="btn btn-outline-warning btn-sm ms-2" type="button" @click="fatchAllDataProduct()">
+                  Semua <span class="fas fa-cloud-download-alt"></span>
+                </button>
               </div>
             </div>
           </div>
-          <div class="scrollable-customize mb-3 border rounded-3" style="min-height: 70vh; max-height: 70vh;">
-            <div v-if="$root.selectedStoreAccess === null || filteredProducts.length < 1" class="text-center py-5">
-              <div class="mt-5">
-                <img src="@/assets/img/mtsiconland.png" width="200" alt="" />
-              </div>
-              <h5 class="fs-0 mt-3">
-                Product Tidak Ditemukan!
-              </h5>
-              Hubungi TPS jika tidak ditemukan tapi stok tersedia!
-            </div>
-            <div class="row mx-0">
-              <div v-if="$root.selectedStoreAccess" class="mb-1 col-6 col-md-2 col-sm-6 p-1" v-for="product in filteredProducts" :key="product.itemCode">
-                <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
-                  <div class="overflow-hidden">
-                    <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
-                      <div class="d-block text-center">
+          
+          <div class="row mx-0">
+            <div v-if="$root.selectedStoreAccess" class="mb-1 col-6 col-md-2 col-sm-6 p-1" v-for="product in filteredProducts" :key="product.itemCode">
+              <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
+                <div class="overflow-hidden">
+                  <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
+                    <div class="d-block text-center">
+                      <div v-if="product.promo_product_id">
+                        <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 130px;" alt="">
+                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 130px;" alt="">
+                      </div>
+                      <div v-else>
+                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 130px;" alt="">
+                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 130px;" alt="">
+                      </div>
+                      <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
                         <div v-if="product.promo_product_id">
-                          <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 110px;" alt="">
-                          <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 110px;" alt="">
+                          <span class="badge rounded-pill p-1 fs--3 me-1" :class="'bg-' + product.master_promo_product.master_kode_promo_product.badge">
+                            {{ product.master_promo_product.master_kode_promo_product.nama_promo }}
+                          </span>
+                          <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge bg-warning rounded-pill p-1 fs--3">
+                            {{ product.master_promo_product.buy_item }} Get {{ product.master_promo_product.get_item }}
+                          </span>
+                          <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ product.master_promo_product.percent }}% </span>
                         </div>
                         <div v-else>
-                          <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 110px;" alt="">
-                          <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 110px;" alt="">
+                          <span v-if="$root.filterDiskonProduct(product).discCode != master_code.diskon.tanpa_diskon_code" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ $root.filterDiskonProduct(product).discount }}% </span>
                         </div>
-                        <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
-                          <div v-if="product.promo_product_id">
-                            <span class="badge rounded-pill p-1 fs--3 me-1" :class="'bg-' + product.master_promo_product.master_kode_promo_product.badge">
-                              {{ product.master_promo_product.master_kode_promo_product.nama_promo }}
-                            </span>
-                            <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge bg-warning rounded-pill p-1 fs--3">
-                              {{ product.master_promo_product.buy_item }} Get {{ product.master_promo_product.get_item }}
-                            </span>
-                            <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge bg-danger rounded-pill p-1 fs--3">
-                              -{{ product.master_promo_product.percent }}%
-                            </span>
-                          </div>
-                          <div v-else>
-                            <span v-if="$root.filterDiskonProduct(product).discCode != master_code.diskon.tanpa_diskon_code" class="badge bg-danger rounded-pill p-1 fs--3">
-                              -{{ $root.filterDiskonProduct(product).discount }}%
-                            </span>
-                          </div>
-                        </div>
-                        <span class="badge badge-subtle-secondary position-absolute mb-1 ms-2 z-2 px-1 bottom-0 start-0 fs--2 fw-bold" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.itemCode : product.itemCode }}</span>
-                        <span class="badge badge-subtle-success position-absolute mb-1 me-2 z-2 px-1 bottom-0 end-0 fs--2" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : $root.filterStokProduct(product).onHand }}</span>
                       </div>
+                      <span class="badge badge-subtle-secondary position-absolute mb-1 ms-2 z-2 px-1 bottom-0 start-0 fs--2 fw-bold" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.itemCode : product.itemCode }}</span>
+                      <span class="badge badge-subtle-success position-absolute mb-1 me-2 z-2 px-1 bottom-0 end-0 fs--2" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : $root.filterStokProduct(product).onHand }}</span>
                     </div>
-                    <div class="p-2 pb-1 text-center">
-                      <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
-                        <h5 class="fs-0 mb-0">
-                          <div class="text-1100">
-                            <span class="d-inline-block text-truncate max-width-text-truncate">
-                              {{ product.promo_product_id ? product.for_product.itemName : product.itemName }}
-                            </span>
-                          </div>
-                        </h5>
-                      </button>
-                      <div v-if="product.promo_product_id">
-                        <strong class="fs-0 text-warning mb-0 text-center">
-                          Rp {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
-                          <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
-                            {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
-                          </del>
+                  </div>
+                  <div class="p-2 pb-1 text-center">
+                    <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
+                      <h5 class="fs-0 mb-0">
+                        <div class="text-1100">
+                          <span class="d-inline-block text-truncate max-width-text-truncate">
+                            {{ product.promo_product_id ? product.for_product.itemName : product.itemName }}
+                          </span>
+                        </div>
+                      </h5>
+                    </button>
+                    <div v-if="product.promo_product_id">
+                      <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
+                        <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
+                          {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
+                        </del>
+                      </strong>
+                    </div>
+                    <div v-else>
+                      <div v-if="$root.filterDiskonProduct(product).discCode == master_code.diskon.tanpa_diskon_code">
+                        <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price) }}
                         </strong>
                       </div>
                       <div v-else>
-                        <div v-if="$root.filterDiskonProduct(product).discCode == master_code.diskon.tanpa_diskon_code">
-                          <strong class="fs-0 text-warning mb-0 text-center">
-                            Rp {{ $root.formatPrice($root.filterPriceProduct(product).price) }}
-                          </strong>
-                        </div>
-                        <div v-else>
-                          <strong class="fs-0 text-warning mb-0 text-center">
-                            Rp {{ $root.formatPrice($root.filterPriceProduct(product).price - ($root.filterPriceProduct(product).price * ($root.filterDiskonProduct(product).discount/100))) }}
-                            <del class="text-secondary fs-0">{{ $root.formatPrice($root.filterPriceProduct(product).price) }}</del>
-                          </strong>
-                        </div>
+                        <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price - ($root.filterPriceProduct(product).price * ($root.filterDiskonProduct(product).discount/100))) }}
+                          <del class="text-secondary fs-0">{{ $root.formatPrice($root.filterPriceProduct(product).price) }}</del>
+                        </strong>
                       </div>
                     </div>
                   </div>
@@ -177,142 +161,162 @@
             </div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="card" id="checkoutDetailPanelSales">
-            <div class="card-body p-3">
-              <h5 class="card-title text-center mb-1 fs-0">Member Overview</h5>
-              
-              <div class="text-center mb-2">
-                <button @click="openModalFindOrRegis()" class="btn btn-outline-primary btn-sm me-1" type="button">
-                  Find Member
-                  <span class="fas fa-search"></span>
-                </button>
-                <button @click="memberOverview = null; switchBoxSendEamil = false" class="btn btn-outline-secondary btn-sm me-1" type="button">
-                  <span class="fas fa-redo-alt"></span>
-                </button>
-              </div>
 
-              <div class="card mb-3" :class="{'border-red' : invalidMemberSelect}">
-                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: cover;"></div>
-                <div class="card-body position-relative p-2">
-                  <div class="d-flex justify-content-between mb-0">
-                    <p class="mb-0 fs--1">No.Member</p>
-                    <span class="text-dark">{{ memberOverview ? memberOverview.member_id : "-" }}</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-0">
-                    <p class="mb-0 fs--1">Nama</p>
-                    <span class="text-dark">{{ memberOverview ? memberOverview.nama : "-" }}</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-0">
-                    <p class="mb-0 fs--1">No Hp</p>
-                    <span class="text-dark">
-                      {{ memberOverview ? $root.formatPhoneNumber(memberOverview.no_hp) : "-" }}
-                      <button v-if="memberOverview" v-on:click="$root.copyTextClipboard(memberOverview.no_hp, 'Nomor handphone')" class="btn btn-sm p-0 ps-1" style="border: none;">
-                        <span class="fas fa-copy"></span>
-                      </button>
-                    </span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-0">
-                    <p class="mb-0 fs--1">Point</p>
-                    <span class="text-dark">{{ memberOverview ? $root.formatPrice(memberOverview.point) : "-" }}</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-0">
-                    <p class="mb-0 fs--1">Tipe Member</p>
-                    <span v-if="memberOverview" class="badge rounded-pill" :class="memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.member ? 'badge-subtle-success' : memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.reseller ? 'badge-subtle-primary' : memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan ? 'badge-subtle-warning' : ''">
-                      {{ memberOverview.tipe_konsumen.nama_tipe }}
-                    </span>
-                    <span class="text-dark" v-else>-</span>
-                  </div>
-                </div>
+        <!-- data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas" aria-controls="filterOffcanvas" -->
+        <div class="col-xl-3">
+          <aside class="scrollbar-overlay font-sans-serif p-4 p-xl-3 ps-xl-0 offcanvas offcanvas-start offcanvas-filter-sidebar top-0" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel" data-simplebar="init">
+            <div class="simplebar-wrapper" style="margin: -16px -16px -16px 0px;">
+              <div class="simplebar-height-auto-observer-wrapper">
+                <div class="simplebar-height-auto-observer"></div>
               </div>
-              
-              <h5 class="card-title text-center mb-1 fs-0">Billing Detail</h5>
-              <div class="input-group mb-3">
-                <input class="form-control" type="text" placeholder="Voucher code">
-                <button class="btn btn-primary card-link">Rp</button>
-              </div>
-              <hr class="m-0">
-              <table class="table fs-0 mb-1">
-                <tbody>
-                  <tr class="border-bottom">
-                    <th class="ps-0 py-1" style="font-weight: normal;">Subtotal</th>
-                    <th class="pe-0 py-1 text-end text-dark">Rp {{ $root.formatPrice(subTotalPrice) }}</th>
-                  </tr>
-                  <tr class="border-bottom">
-                    <th class="ps-0 py-1" style="font-weight: normal;">Diskon Voucher </th>
-                    <th class="pe-0 py-1 text-end text-dark">
-                      <span v-if="diskonPrice > 0">-Rp {{ $root.formatPrice(diskonPrice) }}</span>
-                      <span v-else>-</span>
-                    </th>
-                  </tr>
-                  <tr class="border-bottom">
-                    <th class="ps-0 py-1" style="font-weight: normal;">Total </th>
-                    <th class="pe-0 py-1 text-end text-warning">Rp {{ $root.formatPrice(totalBayarPrice) }}</th>
-                  </tr>
-                </tbody>
-              </table>
-              
-              <div class="mb-3">
-                <div>
-                  <label class="form-label mb-0 fs--1" for="selectSalesBy">Sales By:</label>
-                  <select v-model="selectSalesBy" @change="selectMethodPayment = ''" class="form-select mb-0" id="selectSalesBy">
-                    <option v-for="sales in dataAllMasterSalesBy" :value="sales.slug">{{ sales.nama_sales }}</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="form-label mb-0 fs--1" for="selectMethodPayment">Metode Pembayaran:</label>
-                  <select v-model="selectMethodPayment" class="form-select mb-0" :class="{'border-red' : invalidMetodePembayaran}" v-on:change="onChangeSelectedMetodeBayar" id="selectMethodPayment">
-                    <option value="">Pilih Metode Bayar</option>
-                    <option v-if="selectSalesBy == master_code.salesBy.wi" :value="metodeBayarCash.id">{{ metodeBayarCash.nama }}</option>
-                    <option v-if="memberOverview != null && memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan" :value="metodeBayarKaryawan.id">
-                      {{ metodeBayarKaryawan.nama }}
-                    </option>
-                    <option v-if="memberOverview != null" :value="metodeBayarRedeemPoint.id">{{ metodeBayarRedeemPoint.nama }}</option>
-                    <optgroup label="Transfer Bank">
-                      <option v-for="metode in dataMetodeBayarTF" :value="metode.id">{{ metode.nama }}</option>
-                    </optgroup>
-                    <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="E-Wallet">
-                      <option v-for="metode in dataMetodeBayarEWal" :value="metode.id">{{ metode.nama }}</option>
-                    </optgroup>
-                    <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="Kartu Kredit">
-                      <option v-for="metode in dataMetodeBayarCC" :value="metode.id">{{ metode.nama }}</option>
-                    </optgroup>
-                  </select>
-                </div>
-                <div>
-                  <label class="form-label mb-0 fs--1" for="keterangan_detail">Keterangan:</label>
-                  <input v-model="keteranganTransaksi" class="form-control" id="keterangan_detail" placeholder="Keterangan jika ada" />
-                </div>
-              </div>
+              <div class="simplebar-mask">
+                <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                  <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
+                    <div class="simplebar-content p-3 p-xl-0">
+                      <h5 class="card-title text-center mb-1 fs-0">Member Overview</h5>
+                      
+                      <div class="text-center mb-2">
+                        <button @click="openModalFindOrRegis()" class="btn btn-outline-primary btn-sm me-1" type="button">
+                          Find Member
+                          <span class="fas fa-search"></span>
+                        </button>
+                        <button @click="memberOverview = null; switchBoxSendEamil = false" class="btn btn-outline-secondary btn-sm me-1" type="button">
+                          <span class="fas fa-redo-alt"></span>
+                        </button>
+                      </div>
 
-              <div v-if="$root.deviceInfoAccess != null && $root.deviceInfoAccess.isActive == true">
-                <div class="d-grid gap-2">
-                  <button class="btn btn-success" type="submit" @click="checkConfirmationPayment()">Confirm &amp; Pay</button>
+                      <div class="card mb-3" :class="{'border-red' : invalidMemberSelect}">
+                        <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: cover;"></div>
+                        <div class="card-body position-relative p-2">
+                          <div class="d-flex justify-content-between mb-0">
+                            <p class="mb-0 fs--1">No.Member</p>
+                            <span class="text-dark">{{ memberOverview ? memberOverview.member_id : "-" }}</span>
+                          </div>
+                          <div class="d-flex justify-content-between mb-0">
+                            <p class="mb-0 fs--1">Nama</p>
+                            <span class="text-dark">{{ memberOverview ? memberOverview.nama : "-" }}</span>
+                          </div>
+                          <div class="d-flex justify-content-between mb-0">
+                            <p class="mb-0 fs--1">No Hp</p>
+                            <span class="text-dark">
+                              {{ memberOverview ? $root.formatPhoneNumber(memberOverview.no_hp) : "-" }}
+                              <button v-if="memberOverview" v-on:click="$root.copyTextClipboard(memberOverview.no_hp, 'Nomor handphone')" class="btn btn-sm p-0 ps-1" style="border: none;">
+                                <span class="fas fa-copy"></span>
+                              </button>
+                            </span>
+                          </div>
+                          <div class="d-flex justify-content-between mb-0">
+                            <p class="mb-0 fs--1">Point</p>
+                            <span class="text-dark">{{ memberOverview ? $root.formatPrice(memberOverview.point) : "-" }}</span>
+                          </div>
+                          <div class="d-flex justify-content-between mb-0">
+                            <p class="mb-0 fs--1">Tipe Member</p>
+                            <span v-if="memberOverview" class="badge rounded-pill" :class="memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.member ? 'badge-subtle-success' : memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.reseller ? 'badge-subtle-primary' : memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan ? 'badge-subtle-warning' : ''">
+                              {{ memberOverview.tipe_konsumen.nama_tipe }}
+                            </span>
+                            <span class="text-dark" v-else>-</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <h5 class="card-title text-center mb-1 fs-0">Billing Detail</h5>
+                      <div class="input-group mb-3">
+                        <input class="form-control" type="text" placeholder="Voucher code">
+                        <button class="btn btn-primary card-link">Rp</button>
+                      </div>
+                      <hr class="m-0">
+                      <table class="table fs-0 mb-1">
+                        <tbody>
+                          <tr class="border-bottom">
+                            <th class="ps-0 py-1" style="font-weight: normal;">Subtotal</th>
+                            <th class="pe-0 py-1 text-end text-dark">Rp {{ $root.formatPrice(subTotalPrice) }}</th>
+                          </tr>
+                          <tr class="border-bottom">
+                            <th class="ps-0 py-1" style="font-weight: normal;">Diskon Voucher </th>
+                            <th class="pe-0 py-1 text-end text-dark">
+                              <span v-if="diskonPrice > 0">-Rp {{ $root.formatPrice(diskonPrice) }}</span>
+                              <span v-else>-</span>
+                            </th>
+                          </tr>
+                          <tr class="border-bottom">
+                            <th class="ps-0 py-1" style="font-weight: normal;">Total </th>
+                            <th class="pe-0 py-1 text-end text-warning">Rp {{ $root.formatPrice(totalBayarPrice) }}</th>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                      <div class="mb-3">
+                        <div>
+                          <label class="form-label mb-0 fs--1" for="selectSalesBy">Sales By:</label>
+                          <select v-model="selectSalesBy" @change="selectMethodPayment = ''" class="form-select mb-0" id="selectSalesBy">
+                            <option v-for="sales in dataAllMasterSalesBy" :value="sales.slug">{{ sales.nama_sales }}</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label class="form-label mb-0 fs--1" for="selectMethodPayment">Metode Pembayaran:</label>
+                          <select v-model="selectMethodPayment" class="form-select mb-0" :class="{'border-red' : invalidMetodePembayaran}" v-on:change="onChangeSelectedMetodeBayar" id="selectMethodPayment">
+                            <option value="">Pilih Metode Bayar</option>
+                            <option v-if="selectSalesBy == master_code.salesBy.wi" :value="metodeBayarCash.id">{{ metodeBayarCash.nama }}</option>
+                            <option v-if="memberOverview != null && memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan" :value="metodeBayarKaryawan.id">
+                              {{ metodeBayarKaryawan.nama }}
+                            </option>
+                            <option v-if="memberOverview != null" :value="metodeBayarRedeemPoint.id">{{ metodeBayarRedeemPoint.nama }}</option>
+                            <optgroup label="Transfer Bank">
+                              <option v-for="metode in dataMetodeBayarTF" :value="metode.id">{{ metode.nama }}</option>
+                            </optgroup>
+                            <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="E-Wallet">
+                              <option v-for="metode in dataMetodeBayarEWal" :value="metode.id">{{ metode.nama }}</option>
+                            </optgroup>
+                            <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="Kartu Kredit">
+                              <option v-for="metode in dataMetodeBayarCC" :value="metode.id">{{ metode.nama }}</option>
+                            </optgroup>
+                          </select>
+                        </div>
+                        <div>
+                          <label class="form-label mb-0 fs--1" for="keterangan_detail">Keterangan:</label>
+                          <input v-model="keteranganTransaksi" class="form-control" id="keterangan_detail" placeholder="Keterangan jika ada" />
+                        </div>
+                      </div>
+
+                      <div v-if="$root.deviceInfoAccess != null && $root.deviceInfoAccess.isActive == true">
+                        <div class="d-grid gap-2">
+                          <button class="btn btn-success" type="submit" @click="checkConfirmationPayment()">Confirm &amp; Pay</button>
+                        </div>
+                        <hr class="mb-2 mt-2">
+                      </div>
+                      <div class="d-grid gap-2">
+                        <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#modalSelectProductForTicket">
+                          <span class="fas fa-ticket-alt"></span>
+                          <span class="ms-2 me-1">Buatkan Tiket</span>
+                          <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <hr class="mb-2 mt-2">
               </div>
-              <div class="d-grid gap-2">
-                <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#modalSelectProductForTicket">
-                  <span class="fas fa-ticket-alt"></span>
-                  <span class="ms-2 me-1">Buatkan Tiket</span>
-                  <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
-                </button>
-              </div>
+              <div class="simplebar-placeholder" style="width: auto; height: 1045px;"></div>
             </div>
-          </div>
+            <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+              <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+            </div>
+            <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+              <div class="simplebar-scrollbar" style="height: 525px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+            </div>
+          </aside>
         </div>
       </div>
 
       <ion-fab slot="fixed" vertical="bottom" horizontal="end">
         <ion-fab-button v-if="$root.deviceInfoAccess != null && $root.deviceInfoAccess.isActive == true" class="mb-2" color="secondary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasListOrderProduct" aria-controls="offcanvasListOrderProduct">
           <span class="fas fa-shopping-cart"></span>
-          <span class="text-danger fs-0 fw-bold">
+          <span class="badge rounded-pill bg-danger px-1 fs--1">
             {{ dataProductInList.length > 0 ? dataProductInList.length : '0' }}
           </span>
         </ion-fab-button>
-        <ion-fab-button @click="clickScrollToChecout()">
+        <!-- <ion-fab-button @click="clickScrollToChecout()">
           <span class="fas fa-donate fs-1"></span>
-        </ion-fab-button>
+        </ion-fab-button> -->
       </ion-fab>
 
       
@@ -1510,7 +1514,7 @@
                       </div>
                     </div>
                     
-                    <div class="scrollable-customize" style="min-height: 1vh; max-height: 65vh;">
+                    <div class="scrollable-customize" style="min-height: 1vh; max-height: 50vh;">
                       <div class="row m-0">
                         <div class="col-6 col-sm-6 col-md-3 px-2 pb-3" v-for="product in dataAllProductOrderTicket">
                           <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
@@ -1575,7 +1579,7 @@
 
                   <!-- Pill Tab Content Promo -->
                   <div class="tab-pane fade" :class="tabActivePillTicketOrder == listPillTicketOrder.promo && 'active show'" id="pillTabPromoProduct" role="tabpanel" aria-labelledby="profile-tab">
-                    <div class="scrollable-customize" style="min-height: 1vh; max-height: 65vh;">
+                    <div class="scrollable-customize" style="min-height: 1vh; max-height: 50vh;">
                       <div class="row m-0">
                         <div class="col-6 col-sm-6 col-md-3 px-2 pb-3" v-for="product in dataAllPromoProductOrderTicket">
                           <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
@@ -1649,7 +1653,7 @@
                         <p class="m-0 fs--1">No product added to Ticket</p>
                       </div>
 
-                      <div v-else class="scrollable-customize" style="min-height: 1vh; max-height: 55vh;">
+                      <div v-else class="scrollable-customize" style="min-height: 1vh; max-height: 50vh;">
                         <div v-for="(data, index) in listDataProductForCreateTicket" class="card mb-3">
                           <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: cover;"></div>
                           <div class="card-header position-relative p-2">
@@ -2351,104 +2355,328 @@
             <p><i>Tidak ada product dalam list</i></p>
           </div>
 
-          <div v-for="(data, index) in dataProductInList" :key="index" class="row border-bottom border-top border-400 py-2">
-            <div class="col-3 pe-0">
-              <div v-if="data.is_promo_product">
-                <img v-if="data.is_promo_product.for_product.imageUrl != null && data.is_promo_product.for_product.imageUrl.trim() != ''" class="img-fluid rounded" :src="data.is_promo_product.for_product.imageUrl" style="width: 100%; height: 70px; object-fit: cover" alt="" />
-                <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 70px; object-fit: cover" alt="" />
-              </div>
-              <div v-else>
-                <img v-if="data.product.imageUrl != null && data.product.imageUrl.trim() != ''" class="img-fluid rounded" :src="data.product.imageUrl" style="width: 100%; height: 70px; object-fit: cover" alt="" />
-                <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 70px; object-fit: cover" alt="" />
-              </div>
-            </div>
-            <div class="col-9">
-              <h5 class="text-900 fs-0 mb-0"> 
-                {{ data.product.itemName }}
-                <span v-if="data.is_promo_product" class="badge rounded-pill p-1 px-2 fs--3 ms-1" :class="'bg-' + data.is_promo_product.master_promo_product.master_kode_promo_product.badge">
-                  {{ data.is_promo_product.master_promo_product.master_kode_promo_product.nama_promo }}
-                </span>
-              </h5>
-              <div class="d-flex justify-content-between">
-                <div>
-                  <span class="badge badge-subtle-secondary fw-bold py-1">
-                    {{ data.product.itemCode }}
-                  </span>
+          <div class="d-none d-md-block">
+            <div v-for="(data, index) in dataProductInList" :key="index" class="row border-bottom border-top border-400 py-2">
+              <div class="col-3">
+                <div v-if="data.is_promo_product">
+                  <img v-if="data.is_promo_product.for_product.imageUrl != null && data.is_promo_product.for_product.imageUrl.trim() != ''" class="img-fluid rounded" :src="data.is_promo_product.for_product.imageUrl" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                  <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 70px; object-fit: cover" alt="" />
                 </div>
-                <span class="text-warning">
-                  Rp 
-                  <span v-if="data.is_promo_product">
-                    <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle">
-                      {{ $root.formatPrice(data.is_promo_product.for_product.all_product_price[0].price) }}
-                    </span>
-                    <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent">
-                      {{ $root.formatPrice(data.is_promo_product.for_product.all_product_price[0].price - (data.is_promo_product.for_product.all_product_price[0].price * (data.is_promo_product.master_promo_product.percent/100))) }}
-                    </span>
+                <div v-else>
+                  <img v-if="data.product.imageUrl != null && data.product.imageUrl.trim() != ''" class="img-fluid rounded" :src="data.product.imageUrl" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                  <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                </div>
+              </div>
+              <div class="col-9">
+                <h5 class="text-900 fs-0 mb-0"> 
+                  {{ data.product.itemName }}
+                  <span v-if="data.is_promo_product" class="badge rounded-pill p-1 px-2 fs--3 ms-1" :class="'bg-' + data.is_promo_product.master_promo_product.master_kode_promo_product.badge">
+                    {{ data.is_promo_product.master_promo_product.master_kode_promo_product.nama_promo }}
                   </span>
-                  <span v-else>
-                    <span v-if="$root.filterDiskonProduct(data.product).discCode == master_code.diskon.tanpa_diskon_code">
-                      {{ $root.formatPrice($root.filterPriceProduct(data.product).price) }}
+                </h5>
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span class="badge badge-subtle-secondary fw-bold py-1">
+                      {{ data.product.itemCode }}
+                    </span>
+                  </div>
+                  <span class="text-warning">
+                    Rp 
+                    <span v-if="data.is_promo_product">
+                      <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle">
+                        {{ $root.formatPrice(data.is_promo_product.for_product.all_product_price[0].price) }}
+                      </span>
+                      <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent">
+                        {{ $root.formatPrice(data.is_promo_product.for_product.all_product_price[0].price - (data.is_promo_product.for_product.all_product_price[0].price * (data.is_promo_product.master_promo_product.percent/100))) }}
+                      </span>
                     </span>
                     <span v-else>
-                      {{ $root.formatPrice($root.filterPriceProduct(data.product).price - ($root.filterPriceProduct(data.product).price * ($root.filterDiskonProduct(data.product).discount/100))) }}
+                      <span v-if="$root.filterDiskonProduct(data.product).discCode == master_code.diskon.tanpa_diskon_code">
+                        {{ $root.formatPrice($root.filterPriceProduct(data.product).price) }}
+                      </span>
+                      <span v-else>
+                        {{ $root.formatPrice($root.filterPriceProduct(data.product).price - ($root.filterPriceProduct(data.product).price * ($root.filterDiskonProduct(data.product).discount/100))) }}
+                      </span>
                     </span>
                   </span>
-                </span>
+                </div>
+              </div>
+  
+              <div class="col-12 mt-2">
+                <p class="d-flex justify-content-between align-items-center my-0">
+                  <div class="fs--1">Info Tambahan</div>
+                  <div class="fs--1">
+                    <span v-if="data.is_free_product" class="badge bg-danger rounded-pill p-1">
+                      FREE
+                    </span>
+                    <span v-if="data.is_promo_product">
+                      <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
+                        -{{ data.is_promo_product.master_promo_product.percent }}%
+                      </span>
+                      <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge badge-subtle-warning rounded-pill p-1 fs--2">
+                        Buy {{ data.is_promo_product.master_promo_product.buy_item }} Get {{ data.is_promo_product.master_promo_product.get_item }}
+                      </span>
+                    </span>
+                    <span v-else>
+                      <span v-if="$root.filterDiskonProduct(data.product).discCode != master_code.diskon.tanpa_diskon_code" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
+                        -{{ $root.filterDiskonProduct(data.product).discount }}%
+                      </span>
+                      <strong v-else>-</strong>
+                    </span>
+                  </div>
+                </p>
+                <p class="d-flex justify-content-between align-items-center my-0">
+                  <span class="fs--1">Batch Number</span>
+                  <span class="fs--1">
+                    <strong>{{ data.batch.batchNo }}</strong>
+                  </span>
+                </p>
+                <p class="d-flex justify-content-between align-items-center my-0">
+                  <span class="fs--1">Exp Date</span>
+                  <span class="fs--1">
+                    <strong>{{ $root.formatDate(data.batch.expiredDate) }}</strong>
+                  </span>
+                </p>
+                <p class="d-flex justify-content-between align-items-center my-0">
+                  <div>
+                    <a v-if="data.is_ticket" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
+                      Remove
+                    </a>
+                    <a v-else href="javascript:void(0)" @click="deleteProductById(data, data.batch, index)" class="p-0 fs--1 text-danger">
+                      Remove
+                    </a>
+                  </div>
+                  <div>
+                    <input class="form-control p-0 ps-2 set-text-bold" type="number" min="1" :value="data.qty" style="width: 60px;" 
+                    @input="incDecQtyInput($event, data, data.batch)"
+                    @change="incDecQtyChange($event, data, data.batch)"
+                    :disabled="data.is_ticket">
+                  </div>
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-xl-none">
+            <div class="scrollable-customize" style="min-height: 1vh; max-height: 50vh;">
+              <div v-for="(data, index) in dataProductInList" :key="index" class="row gx-1 mx-0 border-bottom border-top border-400 py-2">
+                <div class="col-3">
+                  <div v-if="data.is_promo_product">
+                    <img v-if="data.is_promo_product.for_product.imageUrl != null && data.is_promo_product.for_product.imageUrl.trim() != ''" class="img-fluid rounded" :src="data.is_promo_product.for_product.imageUrl" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                    <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                  </div>
+                  <div v-else>
+                    <img v-if="data.product.imageUrl != null && data.product.imageUrl.trim() != ''" class="img-fluid rounded" :src="data.product.imageUrl" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                    <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 70px; object-fit: cover" alt="" />
+                  </div>
+                </div>
+                <div class="col-9">
+                  <h5 class="text-900 fs-0 mb-0"> 
+                    {{ data.product.itemName }}
+                    <span v-if="data.is_promo_product" class="badge rounded-pill p-1 px-2 fs--3 ms-1" :class="'bg-' + data.is_promo_product.master_promo_product.master_kode_promo_product.badge">
+                      {{ data.is_promo_product.master_promo_product.master_kode_promo_product.nama_promo }}
+                    </span>
+                  </h5>
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <span class="badge badge-subtle-secondary fw-bold py-1">
+                        {{ data.product.itemCode }}
+                      </span>
+                    </div>
+                    <span class="text-warning">
+                      Rp 
+                      <span v-if="data.is_promo_product">
+                        <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle">
+                          {{ $root.formatPrice(data.is_promo_product.for_product.all_product_price[0].price) }}
+                        </span>
+                        <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent">
+                          {{ $root.formatPrice(data.is_promo_product.for_product.all_product_price[0].price - (data.is_promo_product.for_product.all_product_price[0].price * (data.is_promo_product.master_promo_product.percent/100))) }}
+                        </span>
+                      </span>
+                      <span v-else>
+                        <span v-if="$root.filterDiskonProduct(data.product).discCode == master_code.diskon.tanpa_diskon_code">
+                          {{ $root.formatPrice($root.filterPriceProduct(data.product).price) }}
+                        </span>
+                        <span v-else>
+                          {{ $root.formatPrice($root.filterPriceProduct(data.product).price - ($root.filterPriceProduct(data.product).price * ($root.filterDiskonProduct(data.product).discount/100))) }}
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+    
+                <div class="col-12 mt-2">
+                  <p class="d-flex justify-content-between align-items-center my-0">
+                    <div class="fs--1">Info Tambahan</div>
+                    <div class="fs--1">
+                      <span v-if="data.is_free_product" class="badge bg-danger rounded-pill p-1">
+                        FREE
+                      </span>
+                      <span v-if="data.is_promo_product">
+                        <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
+                          -{{ data.is_promo_product.master_promo_product.percent }}%
+                        </span>
+                        <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge badge-subtle-warning rounded-pill p-1 fs--2">
+                          Buy {{ data.is_promo_product.master_promo_product.buy_item }} Get {{ data.is_promo_product.master_promo_product.get_item }}
+                        </span>
+                      </span>
+                      <span v-else>
+                        <span v-if="$root.filterDiskonProduct(data.product).discCode != master_code.diskon.tanpa_diskon_code" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
+                          -{{ $root.filterDiskonProduct(data.product).discount }}%
+                        </span>
+                        <strong v-else>-</strong>
+                      </span>
+                    </div>
+                  </p>
+                  <p class="d-flex justify-content-between align-items-center my-0">
+                    <span class="fs--1">Batch Number</span>
+                    <span class="fs--1">
+                      <strong>{{ data.batch.batchNo }}</strong>
+                    </span>
+                  </p>
+                  <p class="d-flex justify-content-between align-items-center my-0">
+                    <span class="fs--1">Exp Date</span>
+                    <span class="fs--1">
+                      <strong>{{ $root.formatDate(data.batch.expiredDate) }}</strong>
+                    </span>
+                  </p>
+                  <p class="d-flex justify-content-between align-items-center my-0">
+                    <div>
+                      <a v-if="data.is_ticket" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
+                        Remove
+                      </a>
+                      <a v-else href="javascript:void(0)" @click="deleteProductById(data, data.batch, index)" class="p-0 fs--1 text-danger">
+                        Remove
+                      </a>
+                    </div>
+                    <div>
+                      <input class="form-control p-0 ps-2 set-text-bold" type="number" min="1" :value="data.qty" style="width: 60px;" 
+                      @input="incDecQtyInput($event, data, data.batch)"
+                      @change="incDecQtyChange($event, data, data.batch)"
+                      :disabled="data.is_ticket">
+                    </div>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <hr />
+            <h5 class="card-title text-center mb-1 fs-0">Member Overview</h5>
+            <div class="text-center mb-2">
+              <button @click="openModalFindOrRegis()" class="btn btn-outline-primary btn-sm me-1" type="button">
+                Find Member
+                <span class="fas fa-search"></span>
+              </button>
+              <button @click="memberOverview = null; switchBoxSendEamil = false" class="btn btn-outline-secondary btn-sm me-1" type="button">
+                <span class="fas fa-redo-alt"></span>
+              </button>
+            </div>
+
+            <div class="card mb-3" :class="{'border-red' : invalidMemberSelect}">
+              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: cover;"></div>
+              <div class="card-body position-relative p-2">
+                <div class="d-flex justify-content-between mb-0">
+                  <p class="mb-0 fs--1">No.Member</p>
+                  <span class="text-dark">{{ memberOverview ? memberOverview.member_id : "-" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-0">
+                  <p class="mb-0 fs--1">Nama</p>
+                  <span class="text-dark">{{ memberOverview ? memberOverview.nama : "-" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-0">
+                  <p class="mb-0 fs--1">No Hp</p>
+                  <span class="text-dark">
+                    {{ memberOverview ? $root.formatPhoneNumber(memberOverview.no_hp) : "-" }}
+                    <button v-if="memberOverview" v-on:click="$root.copyTextClipboard(memberOverview.no_hp, 'Nomor handphone')" class="btn btn-sm p-0 ps-1" style="border: none;">
+                      <span class="fas fa-copy"></span>
+                    </button>
+                  </span>
+                </div>
+                <div class="d-flex justify-content-between mb-0">
+                  <p class="mb-0 fs--1">Point</p>
+                  <span class="text-dark">{{ memberOverview ? $root.formatPrice(memberOverview.point) : "-" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-0">
+                  <p class="mb-0 fs--1">Tipe Member</p>
+                  <span v-if="memberOverview" class="badge rounded-pill" :class="memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.member ? 'badge-subtle-success' : memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.reseller ? 'badge-subtle-primary' : memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan ? 'badge-subtle-warning' : ''">
+                    {{ memberOverview.tipe_konsumen.nama_tipe }}
+                  </span>
+                  <span class="text-dark" v-else>-</span>
+                </div>
+              </div>
+            </div>
+            
+            <h5 class="card-title text-center mb-1 fs-0">Billing Detail</h5>
+            <div class="input-group mb-3">
+              <input class="form-control" type="text" placeholder="Voucher code">
+              <button class="btn btn-primary card-link">Rp</button>
+            </div>
+            <hr class="m-0">
+            <table class="table fs-0 mb-1">
+              <tbody>
+                <tr class="border-bottom">
+                  <th class="ps-0 py-1" style="font-weight: normal;">Subtotal</th>
+                  <th class="pe-0 py-1 text-end text-dark">Rp {{ $root.formatPrice(subTotalPrice) }}</th>
+                </tr>
+                <tr class="border-bottom">
+                  <th class="ps-0 py-1" style="font-weight: normal;">Diskon Voucher </th>
+                  <th class="pe-0 py-1 text-end text-dark">
+                    <span v-if="diskonPrice > 0">-Rp {{ $root.formatPrice(diskonPrice) }}</span>
+                    <span v-else>-</span>
+                  </th>
+                </tr>
+                <tr class="border-bottom">
+                  <th class="ps-0 py-1" style="font-weight: normal;">Total </th>
+                  <th class="pe-0 py-1 text-end text-warning">Rp {{ $root.formatPrice(totalBayarPrice) }}</th>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="mb-3">
+              <div>
+                <label class="form-label mb-0 fs--1" for="selectSalesBy">Sales By:</label>
+                <select v-model="selectSalesBy" @change="selectMethodPayment = ''" class="form-select mb-0" id="selectSalesBy">
+                  <option v-for="sales in dataAllMasterSalesBy" :value="sales.slug">{{ sales.nama_sales }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label mb-0 fs--1" for="selectMethodPayment">Metode Pembayaran:</label>
+                <select v-model="selectMethodPayment" class="form-select mb-0" :class="{'border-red' : invalidMetodePembayaran}" v-on:change="onChangeSelectedMetodeBayar" id="selectMethodPayment">
+                  <option value="">Pilih Metode Bayar</option>
+                  <option v-if="selectSalesBy == master_code.salesBy.wi" :value="metodeBayarCash.id">{{ metodeBayarCash.nama }}</option>
+                  <option v-if="memberOverview != null && memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan" :value="metodeBayarKaryawan.id">
+                    {{ metodeBayarKaryawan.nama }}
+                  </option>
+                  <option v-if="memberOverview != null" :value="metodeBayarRedeemPoint.id">{{ metodeBayarRedeemPoint.nama }}</option>
+                  <optgroup label="Transfer Bank">
+                    <option v-for="metode in dataMetodeBayarTF" :value="metode.id">{{ metode.nama }}</option>
+                  </optgroup>
+                  <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="E-Wallet">
+                    <option v-for="metode in dataMetodeBayarEWal" :value="metode.id">{{ metode.nama }}</option>
+                  </optgroup>
+                  <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="Kartu Kredit">
+                    <option v-for="metode in dataMetodeBayarCC" :value="metode.id">{{ metode.nama }}</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div>
+                <label class="form-label mb-0 fs--1" for="keterangan_detail">Keterangan:</label>
+                <input v-model="keteranganTransaksi" class="form-control" id="keterangan_detail" placeholder="Keterangan jika ada" />
               </div>
             </div>
 
-            <div class="col-12 mt-2">
-              <p class="d-flex justify-content-between align-items-center my-0">
-                <div class="fs--1">Info Tambahan</div>
-                <div class="fs--1">
-                  <span v-if="data.is_free_product" class="badge bg-danger rounded-pill p-1">
-                    FREE
-                  </span>
-                  <span v-if="data.is_promo_product">
-                    <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
-                      -{{ data.is_promo_product.master_promo_product.percent }}%
-                    </span>
-                    <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge badge-subtle-warning rounded-pill p-1 fs--2">
-                      Buy {{ data.is_promo_product.master_promo_product.buy_item }} Get {{ data.is_promo_product.master_promo_product.get_item }}
-                    </span>
-                  </span>
-                  <span v-else>
-                    <span v-if="$root.filterDiskonProduct(data.product).discCode != master_code.diskon.tanpa_diskon_code" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
-                      -{{ $root.filterDiskonProduct(data.product).discount }}%
-                    </span>
-                    <strong v-else>-</strong>
-                  </span>
-                </div>
-              </p>
-              <p class="d-flex justify-content-between align-items-center my-0">
-                <span class="fs--1">Batch Number</span>
-                <span class="fs--1">
-                  <strong>{{ data.batch.batchNo }}</strong>
-                </span>
-              </p>
-              <p class="d-flex justify-content-between align-items-center my-0">
-                <span class="fs--1">Exp Date</span>
-                <span class="fs--1">
-                  <strong>{{ $root.formatDate(data.batch.expiredDate) }}</strong>
-                </span>
-              </p>
-              <p class="d-flex justify-content-between align-items-center my-0">
-                <div>
-                  <a v-if="data.is_ticket" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
-                    Remove
-                  </a>
-                  <a v-else href="javascript:void(0)" @click="deleteProductById(data, data.batch, index)" class="p-0 fs--1 text-danger">
-                    Remove
-                  </a>
-                </div>
-                <div>
-                  <input class="form-control p-0 ps-2 set-text-bold" type="number" min="1" :value="data.qty" style="width: 60px;" 
-                  @input="incDecQtyInput($event, data, data.batch)"
-                  @change="incDecQtyChange($event, data, data.batch)"
-                  :disabled="data.is_ticket">
-                </div>
-              </p>
+            <div v-if="$root.deviceInfoAccess != null && $root.deviceInfoAccess.isActive == true">
+              <div class="d-grid gap-2">
+                <button class="btn btn-success" type="submit" @click="checkConfirmationPayment()">Confirm &amp; Pay</button>
+              </div>
+              <hr class="mb-2 mt-2">
             </div>
+            <!-- <div class="d-grid gap-2">
+              <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#modalSelectProductForTicket">
+                <span class="fas fa-ticket-alt"></span>
+                <span class="ms-2 me-1">Buatkan Tiket</span>
+                <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
+              </button>
+            </div> -->
           </div>
         </div>
       </div>
@@ -2817,7 +3045,6 @@ export default {
         this.dataMasterOptionInfo = dataMasterOptInfo.getAllMasterOptionInfo; //All Option Info
         
         await this.fatchAllDataPromoProduct();
-        await this.fatchDataMember(this.currentPageMember);
       } catch (error) {
         console.log(error);
       }
