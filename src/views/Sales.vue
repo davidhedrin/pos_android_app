@@ -102,12 +102,12 @@
                   <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
                     <div class="d-block text-center">
                       <div v-if="product.promo_product_id">
-                        <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 130px;" alt="">
-                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 130px;" alt="">
+                        <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 140px;" alt="">
+                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
                       </div>
                       <div v-else>
-                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 130px;" alt="">
-                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 130px;" alt="">
+                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 140px;" alt="">
+                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
                       </div>
                       <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
                         <div v-if="product.promo_product_id">
