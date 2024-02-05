@@ -126,6 +126,12 @@ export default {
   },
 
   methods: {
+    checkOrienDevice: function(for_format){
+      const format = for_format == 'p' ? 'portrait' : 'landscape';
+      const orientation = window.matchMedia(`(orientation: ${format})`).matches;
+      return orientation;
+    },
+
     setupAppConfig: async function() {
       onSnapshot(
         doc(firebaseConfig, this.firebase_conf.collection.device_sales, this.firebase_conf.doc_id.update_status), async (snap) => {

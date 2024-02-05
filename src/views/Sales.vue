@@ -72,9 +72,9 @@
                 </select> -->
               </div>
               <div class="col-md-3">
-                <form @submit.prevent="btnSearchSubmitProduct()">
+                <form @submit.prevent="inputSearchProduct.trim() != '' && fatchSearchDataProduct(true, true)">
                   <div class="input-group">
-                    <input v-model="inputSearchProduct" class="form-control search-input fuzzy-search" type="search" placeholder="Search...">
+                    <input v-model="inputSearchProduct" @input="inputSearchProduct.trim() == '' && refreshFatchDataProducts()" class="form-control search-input fuzzy-search" type="search" placeholder="Search...">
                     <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
                   </div>
                 </form>
@@ -88,78 +88,84 @@
                   <span class="ms-2 me-1">Ticket</span>
                   <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
                 </button>
-                <button class="btn btn-outline-warning btn-sm ms-2" type="button" @click="fatchAllDataProduct()">
+                <!-- <button class="btn btn-outline-warning btn-sm ms-2" type="button" @click="fatchAllDataProduct()">
                   Semua <span class="fas fa-cloud-download-alt"></span>
-                </button>
+                </button> -->
               </div>
             </div>
           </div>
           
-          <div class="row mx-0">
-            <div v-if="$root.selectedStoreAccess" class="mb-1 col-6 col-md-2 col-sm-6 p-1" v-for="product in filteredProducts" :key="product.itemCode">
-              <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
-                <div class="overflow-hidden">
-                  <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
-                    <div class="d-block text-center">
-                      <div v-if="product.promo_product_id">
-                        <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 140px;" alt="">
-                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
+          <ion-infinite-scroll @ionInfinite="infiniteLoopingDataProduct">
+            <ion-infinite-scroll-content loading-text="Loading Product..." loading-spinner="bubbles">
+              <div class="row mx-0">
+                <div v-if="$root.selectedStoreAccess" class="mb-1 col-6 col-md-2 col-sm-6 p-1" v-for="product in filteredProducts" :key="product.itemCode">
+                  <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
+                    <div class="overflow-hidden">
+                      <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
+                        <div class="d-block text-center">
+                          <div v-if="product.promo_product_id">
+                            <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 140px;" alt="">
+                            <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
+                          </div>
+                          <div v-else>
+                            <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 140px;" alt="">
+                            <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
+                          </div>
+                          <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
+                            <div v-if="product.promo_product_id">
+                              <span class="badge rounded-pill p-1 fs--3 me-1" :class="'bg-' + product.master_promo_product.master_kode_promo_product.badge">
+                                {{ product.master_promo_product.master_kode_promo_product.nama_promo }}
+                              </span>
+                              <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge bg-warning rounded-pill p-1 fs--3">
+                                {{ product.master_promo_product.buy_item }} Get {{ product.master_promo_product.get_item }}
+                              </span>
+                              <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ product.master_promo_product.percent }}% </span>
+                            </div>
+                            <div v-else>
+                              <span v-if="$root.filterDiskonProduct(product).discCode != master_code.diskon.tanpa_diskon_code" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ $root.filterDiskonProduct(product).discount }}% </span>
+                            </div>
+                          </div>
+                          <span class="badge badge-subtle-secondary position-absolute mb-1 ms-2 z-2 px-1 bottom-0 start-0 fs--2 fw-bold" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.itemCode : product.itemCode }}</span>
+                          <span class="badge badge-subtle-success position-absolute mb-1 me-2 z-2 px-1 bottom-0 end-0 fs--2" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : $root.filterStokProduct(product).onHand }}</span>
+                        </div>
                       </div>
-                      <div v-else>
-                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 140px;" alt="">
-                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
-                      </div>
-                      <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
+                      <div class="p-2 pb-1 text-center">
+                        <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
+                          <h5 class="fs-0 mb-0">
+                            <div class="text-1100">
+                              <span class="d-inline-block text-truncate max-width-text-truncate">
+                                {{ product.promo_product_id ? product.for_product.itemName : product.itemName }}
+                              </span>
+                            </div>
+                          </h5>
+                        </button>
                         <div v-if="product.promo_product_id">
-                          <span class="badge rounded-pill p-1 fs--3 me-1" :class="'bg-' + product.master_promo_product.master_kode_promo_product.badge">
-                            {{ product.master_promo_product.master_kode_promo_product.nama_promo }}
-                          </span>
-                          <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge bg-warning rounded-pill p-1 fs--3">
-                            {{ product.master_promo_product.buy_item }} Get {{ product.master_promo_product.get_item }}
-                          </span>
-                          <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ product.master_promo_product.percent }}% </span>
+                          <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
+                            <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
+                              {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
+                            </del>
+                          </strong>
                         </div>
                         <div v-else>
-                          <span v-if="$root.filterDiskonProduct(product).discCode != master_code.diskon.tanpa_diskon_code" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ $root.filterDiskonProduct(product).discount }}% </span>
+                          <div v-if="$root.filterDiskonProduct(product).discCode == master_code.diskon.tanpa_diskon_code">
+                            <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price) }}
+                            </strong>
+                          </div>
+                          <div v-else>
+                            <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price - ($root.filterPriceProduct(product).price * ($root.filterDiskonProduct(product).discount/100))) }}
+                              <del class="text-secondary fs-0">{{ $root.formatPrice($root.filterPriceProduct(product).price) }}</del>
+                            </strong>
+                          </div>
                         </div>
-                      </div>
-                      <span class="badge badge-subtle-secondary position-absolute mb-1 ms-2 z-2 px-1 bottom-0 start-0 fs--2 fw-bold" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.itemCode : product.itemCode }}</span>
-                      <span class="badge badge-subtle-success position-absolute mb-1 me-2 z-2 px-1 bottom-0 end-0 fs--2" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : $root.filterStokProduct(product).onHand }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 pb-1 text-center">
-                    <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
-                      <h5 class="fs-0 mb-0">
-                        <div class="text-1100">
-                          <span class="d-inline-block text-truncate max-width-text-truncate">
-                            {{ product.promo_product_id ? product.for_product.itemName : product.itemName }}
-                          </span>
-                        </div>
-                      </h5>
-                    </button>
-                    <div v-if="product.promo_product_id">
-                      <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
-                        <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
-                          {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
-                        </del>
-                      </strong>
-                    </div>
-                    <div v-else>
-                      <div v-if="$root.filterDiskonProduct(product).discCode == master_code.diskon.tanpa_diskon_code">
-                        <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price) }}
-                        </strong>
-                      </div>
-                      <div v-else>
-                        <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price - ($root.filterPriceProduct(product).price * ($root.filterDiskonProduct(product).discount/100))) }}
-                          <del class="text-secondary fs-0">{{ $root.formatPrice($root.filterPriceProduct(product).price) }}</del>
-                        </strong>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+              <!-- <div style="min-height: 90vh;">
+              </div> -->
+            </ion-infinite-scroll-content>
+          </ion-infinite-scroll>
         </div>
 
         <!-- data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas" aria-controls="filterOffcanvas" -->
@@ -2687,7 +2693,7 @@
 <script>
 import axios from "axios";
 import { markRaw } from 'vue';
-import { IonPage } from '@ionic/vue';
+import { IonPage, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/vue';
 
 import LoadingBlack from '@/views/components/LoadingBlack.vue';
 
@@ -2696,7 +2702,7 @@ import autoTable from 'jspdf-autotable';
 import imageMts from '@/assets/img/mtsiconland.png';
 
 export default {
-  components: { IonPage },
+  components: { IonPage, IonInfiniteScroll, IonInfiniteScrollContent },
   name: 'Sales',
   data() {
     return {
@@ -2707,6 +2713,18 @@ export default {
       loadingBlack: markRaw(LoadingBlack),
       currentTime: new Date(),
 
+      dataProductTempt1: [],
+      dataProductTempt2: [],
+
+      pagePromoProductScroll: 1,
+      pageProductScroll: 1,
+      pageSearchPromoProductScroll: 1,
+      pageSearchProductScroll: 1,
+
+      isPromoPagingFinish: false,
+      isSearchPromoPagingFinish: false,
+      isSearchFormProduct: false,
+
       memberFindOrRegis: true,
       dataAllProducts: [],
       currentPageProduct: 1,
@@ -2716,7 +2734,7 @@ export default {
       allMasterPromoProduct: [],
       dataAllPromoProduct: [],
       currentPagePromoProduct: 1,
-      perPagePromoProduct: 10,
+      perPagePromoProduct: 12,
       totalPagePromoProduct: 0,
       
       dataFindSubmitDataProduct: [],
@@ -2897,19 +2915,21 @@ export default {
     filteredProducts() {
       // console.log(this.dataAllProducts);
       const queryInput = this.inputSearchProduct.toLowerCase().trim();
-      const valueSeletedBrand = this.selectedFilterBrand ? this.selectedFilterBrand.optDtlCode.toLowerCase().trim() : null;
+      const valueSeletedBrand = this.selectedFilterBrand ? this.selectedFilterBrand.optDtlCode.toLowerCase().trim() : '';
       const hasTruecheckboxProducts = Object.values(this.checkboxProducts).some(value => value);
 
       return this.dataAllProducts.filter(product => {
         const checkProduct = product.promo_product_id ? product.for_product : product;
-        // const brandProduct = checkProduct.all_product_detail.find((detail) => detail.optionalCode == this.master_code.productOptInfo.brand_code);
+        const brandProduct = checkProduct.all_product_detail.find((detail) => detail.optionalCode == this.master_code.productOptInfo.brand_code);
 
-        let filterExpression = checkProduct.itemName.toLowerCase().includes(queryInput) || 
-        checkProduct.itemCode.toLowerCase().includes(queryInput) ||
-        checkProduct.barCode.toLowerCase().includes(queryInput);
-        if(valueSeletedBrand){
-          filterExpression = filterExpression && brandProduct.optDtlCode.toLowerCase().includes(valueSeletedBrand);
-        }
+        // let filterExpression = checkProduct.itemName.toLowerCase().includes(queryInput) || 
+        // checkProduct.itemCode.toLowerCase().includes(queryInput) ||
+        // checkProduct.barCode.toLowerCase().includes(queryInput);
+        // if(valueSeletedBrand){
+        //   filterExpression = filterExpression && brandProduct.optDtlCode.toLowerCase().includes(valueSeletedBrand);
+        // }
+        
+        let filterExpression = brandProduct.optDtlCode.toLowerCase().includes(valueSeletedBrand);
 
         if(hasTruecheckboxProducts){ // Filter jika ada checkbox promo yang true
           if(product.promo_product_id){
@@ -2998,6 +3018,191 @@ export default {
       }
     },
 
+    infiniteLoopingDataProduct: async function(event){
+      try{
+        if(this.isSearchFormProduct){
+          await this.fatchSearchDataProduct();
+        }else{
+          await this.fatchDynamicDataProduct();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      event.target.complete();
+    },
+    // End Logic Mobile
+    
+    fatchDynamicDataProduct: async function(isLoading = false){
+      if(isLoading) this.$root.showLoading();
+      var getData = [];
+
+      if(this.isPromoPagingFinish){
+        getData = await this.fatchDataProductScroll(this.pageProductScroll);
+        if(getData.length > 0) this.pageProductScroll++;
+      }else{
+        getData = await this.fatchDataPromoProductScroll(this.pagePromoProductScroll);
+        
+        if(getData.length == 0){
+          this.isPromoPagingFinish = true;
+          getData = await this.fatchDataProductScroll(this.pageProductScroll);
+          if(getData.length > 0) this.pageProductScroll++;
+        }else{
+          if(getData.length < this.perPagePromoProduct){
+            const getTheData = await this.fatchDataProductScroll(this.pageProductScroll);
+            getData = getData.concat(getTheData);
+            this.isPromoPagingFinish = true;
+            if(getData.length > 0) this.pageProductScroll++;
+          }
+          this.pagePromoProductScroll++;
+        }
+      }
+
+      this.dataProductTempt1 = this.dataProductTempt1.concat(getData);
+      this.dataAllProducts = this.dataAllProducts.concat(getData);
+      if(isLoading) this.$root.hideLoading();
+    },
+
+    fatchDataPromoProductScroll: async function(page = 1){
+      try{
+        const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+
+        var responseAllDataPromoDetail = [];
+        const getAllProductPromo = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/getAllMasterPromoProductDetail',
+          params: {
+            page: page,
+            per_page: this.perPagePromoProduct,
+            store_outlet: cacheStoreAccess.store_outlet,
+            search: this.inputSearchProduct.trim(),
+          },
+        });
+        if(getAllProductPromo.status == 200){
+          const resDataAllProductPromo = getAllProductPromo.data;
+          resDataAllProductPromo.forEach(resDataProductPromo => {
+            const masterPromoProduct = resDataProductPromo.master_promo_product;
+            const masterPromo = resDataProductPromo.master_promo_product.master_promo;
+
+            const setObj = {
+              id: resDataProductPromo.id,
+              promo_product_id: resDataProductPromo.promo_product_id,
+              for_product_code: resDataProductPromo.for_product_code,
+              get_product_code: resDataProductPromo.get_product_code,
+              for_product_whs: resDataProductPromo.for_product_whs,
+              get_product_whs: resDataProductPromo.get_product_whs,
+              // for_product_price: resDataProductPromo.for_product_price,
+              // get_product_price: resDataProductPromo.get_product_price,
+              isActive: resDataProductPromo.isActive,
+              master_promo_product: resDataProductPromo.master_promo_product,
+              for_product: resDataProductPromo.for_product,
+              get_product: resDataProductPromo.get_product ?? null,
+            };
+            setObj.for_product.all_product_price = resDataProductPromo.for_product_price;
+            setObj.for_product.all_inventory_stok = resDataProductPromo.for_inventory_stok;
+            // setObj.for_product.all_inventory_batch = resDataProductPromo.for_inventory_batch;
+            setObj.for_product.all_product_diskon = resDataProductPromo.for_product_diskon;
+            setObj.for_product.all_product_detail = resDataProductPromo.for_product_detail;
+            
+            if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
+              setObj.get_product.all_product_price = resDataProductPromo.get_product_price;
+              setObj.get_product.all_inventory_stok = resDataProductPromo.get_inventory_stok;
+              // setObj.get_product.all_inventory_batch = resDataProductPromo.get_inventory_batch;
+              setObj.get_product.all_product_diskon = resDataProductPromo.get_product_diskon;
+              // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
+            }
+
+            responseAllDataPromoDetail.push(setObj);
+            // const startDate = new Date(masterPromo.start_date);
+            // const endDate = new Date(masterPromo.end_date);
+            // if(today >= startDate && today <= endDate){
+            // }
+          });
+        }
+
+        return responseAllDataPromoDetail;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    fatchDataProductScroll: async function(page = 1){
+      try{
+        const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+
+        const getAllProduct = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/getAllProduct',
+          params: {
+            page: page,
+            per_page: this.perPageProduct,
+            store_outlet: cacheStoreAccess.store_outlet,
+            search: this.inputSearchProduct.trim(),
+          },
+        });
+        const response = getAllProduct.data;
+        var getDataProduct = response.data;
+
+        return getDataProduct;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    
+    fatchSearchDataProduct: async function(isClearList = false, isLoading = false){
+      if(isLoading) this.$root.showLoading();
+      try{
+        if(isClearList) {
+          this.dataProductTempt2 = [];
+          this.pageSearchPromoProductScroll = 1;
+          this.pageSearchProductScroll = 1;
+          this.isSearchPromoPagingFinish = false;
+        }
+
+        this.isSearchFormProduct = true;
+        var getData = [];
+
+        if(this.isSearchPromoPagingFinish){
+          getData = await this.fatchDataProductScroll(this.pageSearchProductScroll);
+          if(getData.length > 0) this.pageSearchProductScroll++;
+        }else{
+          getData = await this.fatchDataPromoProductScroll(this.pageSearchPromoProductScroll);
+
+          if(getData.length == 0){
+            getData = await this.fatchDataProductScroll(this.pageSearchProductScroll);
+            this.isSearchPromoPagingFinish = true;
+            if(getData.length > 0) this.pageSearchProductScroll++;
+          }else{
+            if(getData.length < this.perPagePromoProduct){
+              const getTheData = await this.fatchDataProductScroll(this.pageSearchProductScroll);
+              getData = getData.concat(getTheData);
+              this.isSearchPromoPagingFinish = true;
+              if(getData.length > 0) this.pageSearchProductScroll++;
+            }
+            this.pageSearchPromoProductScroll++;
+          }
+        }
+
+        this.dataProductTempt2 = this.dataProductTempt2.concat(getData);
+        this.dataAllProducts = this.dataProductTempt2;
+      } catch (error) {
+        console.log(error);
+      }
+      if(isLoading) this.$root.hideLoading();
+    },
+
+    refreshFatchDataProducts: function(){
+      this.$root.showLoading();
+      this.dataAllProducts = this.dataProductTempt1;
+
+      this.dataProductTempt2 = [];
+      this.pageSearchPromoProductScroll = 1;
+      this.pageSearchProductScroll = 1;
+      this.isSearchPromoPagingFinish = false;
+      this.isSearchFormProduct = false;
+      this.$root.hideLoading();
+    },
+
     loadAlldatas: async function(){
       this.$root.showLoading();
       const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
@@ -3044,7 +3249,10 @@ export default {
         this.dataMasterOptionInfoCode = dataMasterOptInfo.getAllMasterOptionInfoCode; //All Option Info Code
         this.dataMasterOptionInfo = dataMasterOptInfo.getAllMasterOptionInfo; //All Option Info
         
-        await this.fatchAllDataPromoProduct();
+        for(let i = 0; i < 4; i++){
+          await this.fatchDynamicDataProduct();
+        }
+        // await this.fatchAllDataPromoProduct();
       } catch (error) {
         console.log(error);
       }
