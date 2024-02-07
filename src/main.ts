@@ -31,6 +31,8 @@ import {
   // IonModal,
   IonFab,
   IonFabButton,
+  IonList,
+  IonItem,
 } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
@@ -110,6 +112,8 @@ app.component('ion-segment-button', IonSegmentButton);
 // app.component('ion-modal', IonModal);
 app.component('ion-fab', IonFab);
 app.component('ion-fab-button', IonFabButton);
+app.component('ion-list', IonList);
+app.component('ion-item', IonItem);
 
 app.component("VueDatePicker", VueDatePicker);
 app.component("v-select", vSelect);

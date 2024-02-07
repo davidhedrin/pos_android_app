@@ -83,7 +83,7 @@
                 <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalFindProductFree">
                   Free
                 </button>
-                <button class="btn btn-info btn-sm ms-2" type="button" data-bs-toggle="modal" data-bs-target="#modalSelectProductForTicket">
+                <button class="btn btn-info btn-sm ms-2" type="button" @click="openModalCreateTicketOrder()">
                   <span class="fas fa-ticket-alt"></span>
                   <span class="ms-2 me-1">Ticket</span>
                   <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
@@ -291,7 +291,7 @@
                         <hr class="mb-2 mt-2">
                       </div>
                       <div class="d-grid gap-2">
-                        <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#modalSelectProductForTicket">
+                        <button class="btn btn-info" type="button" @click="openModalCreateTicketOrder()">
                           <span class="fas fa-ticket-alt"></span>
                           <span class="ms-2 me-1">Buatkan Tiket</span>
                           <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
@@ -324,215 +324,6 @@
           <span class="fas fa-donate fs-1"></span>
         </ion-fab-button> -->
       </ion-fab>
-
-      
-      <div class="modal fade" id="modalFindMember" tabindex="-1" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document" :style="!memberFindOrRegis ? 'max-width: 450px' : 'max-width: 850px'">
-          <div class="modal-content position-relative border-0">
-            <div class="modal-body p-0">
-              <div class="card">
-                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-5i.png'); background-position: left; background-size: cover;"></div>
-                <div class="card-body position-relative p-0">
-                  <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
-                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="card-header rounded-top-3 py-3 ps-3 pe-6">
-                    <h5 class="mb-0" id="modalFindMemberLabel">{{ memberFindOrRegis ? "Temukan" : "Daftarkan" }} Member</h5>
-                    <button v-on:click="this.memberFindOrRegis = !this.memberFindOrRegis" class="btn btn-outline-primary btn-sm me-1 mb-1" type="button">
-                      <p class="fs--2 mb-0">{{ memberFindOrRegis ? "Daftarkan member" : "Temukan member" }}</p>
-                    </button>
-                  </div>
-                  <div class="px-4 pt-0">
-                    <div v-if="memberFindOrRegis">
-                      <div class="row align-items-center">
-                        <div class="col-md-8">
-                          <h5 class="mb-2 fs-0"><u>Daftar Member:</u></h5>
-                        </div>
-                        <div class="col-md-4">
-                          <input v-model="inputSearchMember" class="form-control search-input fuzzy-search mb-3" type="search" placeholder="Search..." aria-label="Search">
-                        </div>
-                      </div>
-                      <hr class="p-0 m-0">
-
-                      <div class="row d-block d-md-none p-0 mb-3">
-                        <div class="scrollable-customize" style="min-height: 1vh; max-height: 55vh;">
-                          <div v-for="member in filteredMembers" class="col-12 col-md-3 col-lg-3 mb-3">
-                            <div class="card" @click="selectMemberOverview(member)">
-                              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/pro-member-bg.png');"></div>
-                              <div class="card-header d-flex justify-content-between">
-                                <div>
-                                  <h5 class="m-0">{{ member.nama }}</h5>
-                                  <p class="m-0 fs--1">{{ member.no_hp }}</p>
-                                  <p class="m-0 fs--1">{{ member.email }}</p>
-                                </div>
-                                <div>
-                                  <span class="fs--1">
-                                    {{ $root.formatDate(member.tanggal_lahir) }}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="d-none d-md-block table-scrollable-wrapper" style="min-height: 3vh; max-height: 30vh;">
-                        <table class="table table-scrollable table-sm table-hover">
-                          <thead>
-                            <tr>
-                              <!-- <th class="bg-white">Tipe</th> -->
-                              <th class="bg-white">Name</th>
-                              <th class="bg-white">Email</th>
-                              <th class="bg-white">Phone</th>
-                              <th class="bg-white">Tanggal Lahir</th>
-                              <th class="bg-white text-end">Aksi</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-if="filteredMembers.length == 0">
-                              <td class="text-center py-3" colspan="5">
-                                <h5 class="fs-0"><i>Data member tidak ditemukan</i></h5>
-                              </td>
-                            </tr>
-                            <tr v-for="member in filteredMembers" :id="member.member_id" class="align-middle">
-                              <!-- <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">
-                                <span class="badge rounded-pill" :class="member.tipe_konsumen.slug == master_code.tipeKonsumen.member ? 'badge-subtle-success' : member.tipe_konsumen.slug == master_code.tipeKonsumen.reseller ? 'badge-subtle-warning' : member.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan ? 'badge-subtle-primary' : ''">
-                                  {{ member.tipe_konsumen.nama_tipe }}
-                                </span>
-                              </td> -->
-                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ member.nama }}</td>
-                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ member.email }}</td>
-                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ member.no_hp }}</td>
-                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ $root.formatDate(member.tanggal_lahir) }}</td>
-                              <td class="text-end">
-                                <button class="btn btn-link p-0" type="button" v-on:click="selectEditMemberForm(member)">
-                                  <span class="fas fa-edit text-warning"></span>
-                                </button>
-                                <!-- <button class="btn btn-link p-0 ms-2" type="button">
-                                  <span class="fas fa-trash-alt text-danger"></span>
-                                </button> -->
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      
-                      <div v-if="totalPageMember > 1" class="d-flex justify-content-end mt-2">
-                        <nav aria-label="Page navigation example">
-                          <ul class="pagination pagination-sm">
-                            <li class="page-item" :class="{ 'disabled': currentPageMember === 1 }">
-                              <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataMember(currentPageMember - 1)">
-                                <span aria-hidden="true">&laquo;</span>
-                              </a>
-                            </li>
-
-                            <li v-for="pageNumber in totalPageMember" :key="pageNumber" class="page-item"  :class="{ 'active': pageNumber === currentPageMember }">
-                              <a class="page-link" href="javascript:void(0)" @click="fatchDataMember(pageNumber)">{{ pageNumber }}</a>
-                            </li>
-
-                            <li class="page-item" :class="{ 'disabled': currentPageMember === totalPageMember }">
-                              <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataMember(currentPageMember + 1)">
-                                <span aria-hidden="true">&raquo;</span>
-                              </a>
-                            </li>
-                          </ul>
-                        </nav>
-                      </div>
-                    </div>
-                    <div v-else>
-                      <form @submit.prevent="storeNewMember">
-                        <div class="mb-1">
-                          <label class="form-label mb-0" for="nama_member">Name<span class="text-danger">*</span></label>
-                          <input v-model="dataInputMember.nama" class="form-control bg-transparent" id="nama_member" type="text" placeholder="Masukkan nama lengkap" required>
-                        </div>
-                        <div class="mb-1">
-                          <label class="form-label mb-0" for="no_hp_member">No Hp<span class="text-danger">*</span></label>
-                          <input v-model="dataInputMember.no_hp" class="form-control bg-transparent" id="no_hp_member" type="text" placeholder="Masukkan nomor handpone" required>
-                        </div>
-                        <div class="mb-1">
-                          <label class="form-label mb-0" for="email_member">Email address<span class="text-danger">*</span></label>
-                          <input v-model="dataInputMember.email" class="form-control bg-transparent" id="email_member" type="email" placeholder="email@example.com" required>
-                        </div>
-                        <div class="mb-1">
-                          <label class="form-label mb-0" for="select_jk_member">Jenis Kelamin</label>
-                          <select v-model="dataInputMember.jenis_kelamin" class="form-select bg-transparent" id="select_jk_member">
-                            <option value="">Pilih jenis kelamin</option>
-                            <option value="male">Laki-laki</option>
-                            <option value="female">Perempuan</option>
-                            <option value="other">Lainnya</option>
-                          </select>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label mb-0" for="tanggal_lahir">Tanggal Lahir</label>
-                          <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="tanggal_lahir" type="date">
-                        </div>
-                        <div class="mb-3 text-end">
-                          <button class="btn btn-primary btn-sm" type="submit">Submit</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="modal fade" id="modalEditMember" tabindex="-1" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content position-relative border-0">
-            <div class="modal-body p-0">
-              <div class="card">
-                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-5i.png'); background-position: left; background-size: auto;"></div>
-                <div class="card-body position-relative p-0">
-                  <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
-                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="card-header rounded-top-3 py-3 ps-3 pe-6">
-                    <h5 class="mb-0" id="modalFindMemberLabel">Edit Member</h5>
-                    <button class="btn btn-outline-primary btn-sm me-1 mb-1" type="button" v-on:click="openModalFindOrRegis()">
-                      <p class="fs--2 mb-0">Temukan member</p>
-                    </button>
-                  </div>
-                  <div class="p-4 pt-0">
-                    <form @submit.prevent="updateEditDataMember">
-                      <div class="mb-1">
-                        <label class="form-label mb-0" for="edit_nama_member">Name <span class="text-danger">*</span></label>
-                        <input v-model="dataInputMember.nama" class="form-control bg-transparent" id="edit_nama_member" type="text" placeholder="Masukkan nama lengkap">
-                      </div>
-                      <div class="mb-1">
-                        <label class="form-label mb-0" for="edit_no_hp_member">No Hp <span class="text-danger">*</span></label>
-                        <input v-model="dataInputMember.no_hp" class="form-control bg-transparent" id="edit_no_hp_member" type="text" placeholder="Masukkan nomor handpone">
-                      </div>
-                      <div class="mb-1">
-                        <label class="form-label mb-0" for="edit_email_member">Email address <span class="text-danger">*</span></label>
-                        <input v-model="dataInputMember.email" class="form-control bg-transparent" id="edit_email_member" type="email" placeholder="email@example.com">
-                      </div>
-                      <div class="mb-1">
-                        <label class="form-label mb-0" for="edit_select_jk_member">Jenis Kelamin</label>
-                        <select v-model="dataInputMember.jenis_kelamin" class="form-select bg-transparent" id="edit_select_jk_member">
-                          <option value="">Pilih jenis kelamin</option>
-                          <option value="male">Laki-laki</option>
-                          <option value="female">Perempuan</option>
-                          <option value="other">Lainnya</option>
-                        </select>
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label mb-0" for="edit_tanggal_lahir">Tanggal Lahir</label>
-                        <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="edit_tanggal_lahir" type="date">
-                      </div>
-                      <div class="text-end">
-                        <button class="btn btn-primary btn-sm" type="submit">Simpan</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Modal rincian dan detail pesanan -->
       <div class="modal fade" id="modalConfirmPay" ref="modalConfirmPay" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modalConfirmPayLabel" aria-hidden="true">
@@ -1490,12 +1281,12 @@
               <div class="px-3">
                 <ul class="nav nav-tabs" id="navTabProductOrderTicket" role="tablist">
                   <li class="nav-item">
-                    <a class="nav-link py-1 px-2" :class="tabActivePillTicketOrder == listPillTicketOrder.reguler && 'active'" id="pillRegulerTab" data-bs-toggle="tab" href="#pillTabRegulerProduct" role="tab" aria-controls="pillTabRegulerProduct" aria-selected="true" @click="tabActivePillTicketOrder = listPillTicketOrder.reguler">
+                    <a class="nav-link py-1 px-2" :class="tabActivePillTicketOrder == listPillTicketOrder.reguler && 'active'" id="pillRegulerTab" data-bs-toggle="tab" href="#pillTabRegulerProduct" role="tab" aria-controls="pillTabRegulerProduct" aria-selected="true" @click="openModalCreateTicketOrder();">
                       <span class="fas fa-solar-panel"></span> Reguler
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link py-1 px-2" :class="tabActivePillTicketOrder == listPillTicketOrder.promo && 'active'" id="pillPromoTab" data-bs-toggle="tab" href="#pillTabPromoProduct" role="tab" aria-controls="pillTabPromoProduct" aria-selected="false" @click="tabActivePillTicketOrder = listPillTicketOrder.promo">
+                    <a class="nav-link py-1 px-2" :class="tabActivePillTicketOrder == listPillTicketOrder.promo && 'active'" id="pillPromoTab" data-bs-toggle="tab" href="#pillTabPromoProduct" role="tab" aria-controls="pillTabPromoProduct" aria-selected="false" @click="openModalTabPromoOrderTicket()">
                       <span class="fas fa-gifts"></span> Promo
                     </a>
                   </li>
@@ -1511,9 +1302,9 @@
                   <div class="tab-pane fade" :class="tabActivePillTicketOrder == listPillTicketOrder.reguler && 'active show'" id="pillTabRegulerProduct" role="tabpanel" aria-labelledby="home-tab">
                     <div class="row mb-3 px-2 justify-content-end">
                       <div class="col-md-12">
-                        <form @submit.prevent="fatchDataProductOrderTicket()">
+                        <form @submit.prevent="openModalCreateTicketOrder()">
                           <div class="input-group">
-                            <input v-model="inputSearchProductOrderTicket" @input="inputSearchProductOrderTicket.trim() == '' && fatchDataProductOrderTicket()" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Search...">
+                            <input v-model="inputSearchProductOrderTicket" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Search...">
                             <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
                           </div>
                         </form>
@@ -1585,6 +1376,17 @@
 
                   <!-- Pill Tab Content Promo -->
                   <div class="tab-pane fade" :class="tabActivePillTicketOrder == listPillTicketOrder.promo && 'active show'" id="pillTabPromoProduct" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="row mb-3 px-2 justify-content-end">
+                      <div class="col-md-12">
+                        <form @submit.prevent="openModalTabPromoOrderTicket()">
+                          <div class="input-group">
+                            <input v-model="inputSearchProductPromoOrderTicket" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Search...">
+                            <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+
                     <div class="scrollable-customize" style="min-height: 1vh; max-height: 50vh;">
                       <div class="row m-0">
                         <div class="col-6 col-sm-6 col-md-3 px-2 pb-3" v-for="product in dataAllPromoProductOrderTicket">
@@ -1771,7 +1573,19 @@
                     </div>
 
                     <div class="row pt-2 px-2">
-                      <div class="col-md-4 px-2">
+                      <div class="col-md-12 px-2 mb-2">
+                        <div class="input-group">
+                          <input :value="memberOverview != null ? memberOverview.nama : ''" class="form-control" type="text" placeholder="Select member ticket" aria-label="Select member ticket" aria-describedby="basic-addon2" disabled />
+                          <button class="btn btn-primary btn-sm" @click="openModalFindOrRegis()">
+                            Member
+                          </button>
+                          <button class="btn btn-secondary btn-sm" @click="memberOverview = null; switchBoxSendEamil = false">
+                            <span class="fas fa-redo-alt"></span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4 px-2 mb-2">
                         <div class="mb-1">
                           <label class="form-label mb-0">Priority</label>
                           <select v-model="selectPriorityOrderTicket" class="form-select bg-transparent">
@@ -1782,7 +1596,7 @@
                           </select>
                         </div>
                       </div>
-                      <div class="col-md-8 px-2">
+                      <div class="col-md-8 px-2 mb-2">
                         <label class="form-label mb-0">Catatan:</label>
                         <textarea v-model="descriptionOrderTicket" class="form-control" rows="1" placeholder="Tambahkan keterangan jika ada"></textarea>
                       </div>
@@ -1797,27 +1611,27 @@
                   <ul class="pagination pagination-sm m-0">
       
                     <li v-if="displayedPageProductOrderTicket[0] > 1">
-                      <a class="page-link" href="javascript:void(0)" @click="fatchDataProductOrderTicket()">First</a>
+                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder()">First</a>
                     </li>
       
                     <li class="page-item" :class="{ 'disabled': currentPageProductOrderTicket === 1 }">
-                      <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataProductOrderTicket(currentPageProductOrderTicket - 1)">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="openModalCreateTicketOrder(currentPageProductOrderTicket - 1)">
                         <span aria-hidden="true">&laquo;</span>
                       </a>
                     </li>
       
                     <li v-for="pageNumber in displayedPageProductOrderTicket" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageProductOrderTicket }">
-                      <a class="page-link" href="javascript:void(0)" @click="fatchDataProductOrderTicket(pageNumber)">{{ pageNumber }}</a>
+                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(pageNumber)">{{ pageNumber }}</a>
                     </li>
       
                     <li class="page-item" :class="{ 'disabled': currentPageProductOrderTicket === totalPageProductOrderTicket }">
-                      <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataProductOrderTicket(currentPageProductOrderTicket + 1)">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="openModalCreateTicketOrder(currentPageProductOrderTicket + 1)">
                         <span aria-hidden="true">&raquo;</span>
                       </a>
                     </li>
       
                     <li v-if="displayedPageProductOrderTicket[displayedPageProductOrderTicket.length - 1] < totalPageProductOrderTicket">
-                      <a class="page-link" href="javascript:void(0)" @click="fatchDataProductOrderTicket(totalPageProductOrderTicket)">Last</a>
+                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(totalPageProductOrderTicket)">Last</a>
                     </li>
       
                   </ul>
@@ -2201,6 +2015,214 @@
                     <div v-else class="text-center mt-3">
                       <span><i>Product Batch Not Found!</i></span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal fade" id="modalFindMember" tabindex="-1" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document" :style="!memberFindOrRegis ? 'max-width: 450px' : 'max-width: 850px'">
+          <div class="modal-content position-relative border-0">
+            <div class="modal-body p-0">
+              <div class="card">
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-5i.png'); background-position: left; background-size: cover;"></div>
+                <div class="card-body position-relative p-0">
+                  <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
+                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="card-header rounded-top-3 py-3 ps-3 pe-6">
+                    <h5 class="mb-0" id="modalFindMemberLabel">{{ memberFindOrRegis ? "Temukan" : "Daftarkan" }} Member</h5>
+                    <button v-on:click="this.memberFindOrRegis = !this.memberFindOrRegis" class="btn btn-outline-primary btn-sm me-1 mb-1" type="button">
+                      <p class="fs--2 mb-0">{{ memberFindOrRegis ? "Daftarkan member" : "Temukan member" }}</p>
+                    </button>
+                  </div>
+                  <div class="px-4 pt-0">
+                    <div v-if="memberFindOrRegis">
+                      <div class="row align-items-center">
+                        <div class="col-md-8">
+                          <h5 class="mb-2 fs-0"><u>Daftar Member:</u></h5>
+                        </div>
+                        <div class="col-md-4">
+                          <input v-model="inputSearchMember" class="form-control search-input fuzzy-search mb-3" type="search" placeholder="Search..." aria-label="Search">
+                        </div>
+                      </div>
+                      <hr class="p-0 m-0">
+
+                      <div class="row d-block d-md-none p-0 mb-3">
+                        <div class="scrollable-customize" style="min-height: 1vh; max-height: 55vh;">
+                          <div v-for="member in filteredMembers" class="col-12 col-md-3 col-lg-3 mb-3">
+                            <div class="card" @click="selectMemberOverview(member)">
+                              <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/pro-member-bg.png');"></div>
+                              <div class="card-header d-flex justify-content-between">
+                                <div>
+                                  <h5 class="m-0">{{ member.nama }}</h5>
+                                  <p class="m-0 fs--1">{{ member.no_hp }}</p>
+                                  <p class="m-0 fs--1">{{ member.email }}</p>
+                                </div>
+                                <div>
+                                  <span class="fs--1">
+                                    {{ $root.formatDate(member.tanggal_lahir) }}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-none d-md-block table-scrollable-wrapper" style="min-height: 3vh; max-height: 30vh;">
+                        <table class="table table-scrollable table-sm table-hover">
+                          <thead>
+                            <tr>
+                              <!-- <th class="bg-white">Tipe</th> -->
+                              <th class="bg-white">Name</th>
+                              <th class="bg-white">Email</th>
+                              <th class="bg-white">Phone</th>
+                              <th class="bg-white">Tanggal Lahir</th>
+                              <th class="bg-white text-end">Aksi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-if="filteredMembers.length == 0">
+                              <td class="text-center py-3" colspan="5">
+                                <h5 class="fs-0"><i>Data member tidak ditemukan</i></h5>
+                              </td>
+                            </tr>
+                            <tr v-for="member in filteredMembers" :id="member.member_id" class="align-middle">
+                              <!-- <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">
+                                <span class="badge rounded-pill" :class="member.tipe_konsumen.slug == master_code.tipeKonsumen.member ? 'badge-subtle-success' : member.tipe_konsumen.slug == master_code.tipeKonsumen.reseller ? 'badge-subtle-warning' : member.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan ? 'badge-subtle-primary' : ''">
+                                  {{ member.tipe_konsumen.nama_tipe }}
+                                </span>
+                              </td> -->
+                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ member.nama }}</td>
+                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ member.email }}</td>
+                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ member.no_hp }}</td>
+                              <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">{{ $root.formatDate(member.tanggal_lahir) }}</td>
+                              <td class="text-end">
+                                <button class="btn btn-link p-0" type="button" v-on:click="selectEditMemberForm(member)">
+                                  <span class="fas fa-edit text-warning"></span>
+                                </button>
+                                <!-- <button class="btn btn-link p-0 ms-2" type="button">
+                                  <span class="fas fa-trash-alt text-danger"></span>
+                                </button> -->
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <div v-if="totalPageMember > 1" class="d-flex justify-content-end mt-2">
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination pagination-sm">
+                            <li class="page-item" :class="{ 'disabled': currentPageMember === 1 }">
+                              <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataMember(currentPageMember - 1)">
+                                <span aria-hidden="true">&laquo;</span>
+                              </a>
+                            </li>
+
+                            <li v-for="pageNumber in totalPageMember" :key="pageNumber" class="page-item"  :class="{ 'active': pageNumber === currentPageMember }">
+                              <a class="page-link" href="javascript:void(0)" @click="fatchDataMember(pageNumber)">{{ pageNumber }}</a>
+                            </li>
+
+                            <li class="page-item" :class="{ 'disabled': currentPageMember === totalPageMember }">
+                              <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataMember(currentPageMember + 1)">
+                                <span aria-hidden="true">&raquo;</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                    <div v-else>
+                      <form @submit.prevent="storeNewMember">
+                        <div class="mb-1">
+                          <label class="form-label mb-0" for="nama_member">Name<span class="text-danger">*</span></label>
+                          <input v-model="dataInputMember.nama" class="form-control bg-transparent" id="nama_member" type="text" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div class="mb-1">
+                          <label class="form-label mb-0" for="no_hp_member">No Hp<span class="text-danger">*</span></label>
+                          <input v-model="dataInputMember.no_hp" class="form-control bg-transparent" id="no_hp_member" type="text" placeholder="Masukkan nomor handpone" required>
+                        </div>
+                        <div class="mb-1">
+                          <label class="form-label mb-0" for="email_member">Email address<span class="text-danger">*</span></label>
+                          <input v-model="dataInputMember.email" class="form-control bg-transparent" id="email_member" type="email" placeholder="email@example.com" required>
+                        </div>
+                        <div class="mb-1">
+                          <label class="form-label mb-0" for="select_jk_member">Jenis Kelamin</label>
+                          <select v-model="dataInputMember.jenis_kelamin" class="form-select bg-transparent" id="select_jk_member">
+                            <option value="">Pilih jenis kelamin</option>
+                            <option value="male">Laki-laki</option>
+                            <option value="female">Perempuan</option>
+                            <option value="other">Lainnya</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label mb-0" for="tanggal_lahir">Tanggal Lahir</label>
+                          <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="tanggal_lahir" type="date">
+                        </div>
+                        <div class="mb-3 text-end">
+                          <button class="btn btn-primary btn-sm" type="submit">Submit</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal fade" id="modalEditMember" tabindex="-1" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content position-relative border-0">
+            <div class="modal-body p-0">
+              <div class="card">
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-5i.png'); background-position: left; background-size: auto;"></div>
+                <div class="card-body position-relative p-0">
+                  <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
+                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="card-header rounded-top-3 py-3 ps-3 pe-6">
+                    <h5 class="mb-0" id="modalFindMemberLabel">Edit Member</h5>
+                    <button class="btn btn-outline-primary btn-sm me-1 mb-1" type="button" v-on:click="openModalFindOrRegis()">
+                      <p class="fs--2 mb-0">Temukan member</p>
+                    </button>
+                  </div>
+                  <div class="p-4 pt-0">
+                    <form @submit.prevent="updateEditDataMember">
+                      <div class="mb-1">
+                        <label class="form-label mb-0" for="edit_nama_member">Name <span class="text-danger">*</span></label>
+                        <input v-model="dataInputMember.nama" class="form-control bg-transparent" id="edit_nama_member" type="text" placeholder="Masukkan nama lengkap">
+                      </div>
+                      <div class="mb-1">
+                        <label class="form-label mb-0" for="edit_no_hp_member">No Hp <span class="text-danger">*</span></label>
+                        <input v-model="dataInputMember.no_hp" class="form-control bg-transparent" id="edit_no_hp_member" type="text" placeholder="Masukkan nomor handpone">
+                      </div>
+                      <div class="mb-1">
+                        <label class="form-label mb-0" for="edit_email_member">Email address <span class="text-danger">*</span></label>
+                        <input v-model="dataInputMember.email" class="form-control bg-transparent" id="edit_email_member" type="email" placeholder="email@example.com">
+                      </div>
+                      <div class="mb-1">
+                        <label class="form-label mb-0" for="edit_select_jk_member">Jenis Kelamin</label>
+                        <select v-model="dataInputMember.jenis_kelamin" class="form-select bg-transparent" id="edit_select_jk_member">
+                          <option value="">Pilih jenis kelamin</option>
+                          <option value="male">Laki-laki</option>
+                          <option value="female">Perempuan</option>
+                          <option value="other">Lainnya</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label mb-0" for="edit_tanggal_lahir">Tanggal Lahir</label>
+                        <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="edit_tanggal_lahir" type="date">
+                      </div>
+                      <div class="text-end">
+                        <button class="btn btn-primary btn-sm" type="submit">Simpan</button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -2845,9 +2867,11 @@ export default {
       allTicketInOrder: [],
       showLoadingTicket: true,
       
+      selectedMemberForOrderTicket: null,
       selectedRowTicketOrder: null,
       listDataProductForCreateTicket: [],
       inputSearchProductOrderTicket: '',
+      inputSearchProductPromoOrderTicket: '',
       dataAllPromoProductOrderTicket: [],
       dataAllProductOrderTicket: [],
       displayedPageProductOrderTicket: [],
@@ -4036,6 +4060,117 @@ export default {
     // End Logic
 
     // Logic Tiket Booking
+    openModalCreateTicketOrder: async function(page = 1){
+      this.$root.showLoading();
+      try{
+        const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+
+        const getAllProduct = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/getAllProduct',
+          params: {
+            page: page,
+            per_page: this.perPageProduct,
+            store_outlet: cacheStoreAccess.store_outlet,
+            search: this.inputSearchProductOrderTicket.trim(),
+          },
+        });
+        const response = getAllProduct.data;
+        var getDataProduct = response.data;
+        
+        this.currentPageProductOrderTicket = response.current_page;
+        this.totalPageProductOrderTicket = response.last_page;
+        this.updateDisplayedPagesProductOrderTicket();
+
+        const prepareDatas = getDataProduct.map((data) => {
+          const ifHaveInListSelect = this.listDataProductForCreateTicket.some((y) => y.product.itemCode === data.itemCode);
+          if(ifHaveInListSelect){
+            data.isSelectedProductTicket = true;
+          }
+          return data;
+        });
+
+        this.dataAllProductOrderTicket = prepareDatas;
+        // if(this.dataAllProductOrderTicket.length == 0){
+        // }
+
+        this.tabActivePillTicketOrder = this.listPillTicketOrder.reguler;
+        $('#modalSelectProductForTicket').modal('show');
+      } catch (error) {
+        this.$root.showAlertFunction('warning', 'Tiket Gagal!', 'Terjadi kesalahan! Coba beberapa saat lagi atau hubungi Administrator.');
+        console.log(error);
+      }
+      this.$root.hideLoading();
+    },
+
+    openModalTabPromoOrderTicket: async function(page = 1){
+      this.$root.showLoading();
+      try{
+        const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+
+        var responseAllDataPromoDetail = [];
+        const getAllProductPromo = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/getAllMasterPromoProductDetail',
+          params: {
+            page: page,
+            per_page: this.perPagePromoProduct,
+            store_outlet: cacheStoreAccess.store_outlet,
+            search: this.inputSearchProductPromoOrderTicket.trim(),
+          },
+        });
+
+        if(getAllProductPromo.status == 200){
+          const resDataAllProductPromo = getAllProductPromo.data;
+          resDataAllProductPromo.forEach(resDataProductPromo => {
+            const masterPromoProduct = resDataProductPromo.master_promo_product;
+            const masterPromo = resDataProductPromo.master_promo_product.master_promo;
+
+            const setObj = {
+              id: resDataProductPromo.id,
+              promo_product_id: resDataProductPromo.promo_product_id,
+              for_product_code: resDataProductPromo.for_product_code,
+              get_product_code: resDataProductPromo.get_product_code,
+              for_product_whs: resDataProductPromo.for_product_whs,
+              get_product_whs: resDataProductPromo.get_product_whs,
+              // for_product_price: resDataProductPromo.for_product_price,
+              // get_product_price: resDataProductPromo.get_product_price,
+              isActive: resDataProductPromo.isActive,
+              master_promo_product: resDataProductPromo.master_promo_product,
+              for_product: resDataProductPromo.for_product,
+              get_product: resDataProductPromo.get_product ?? null,
+            };
+            setObj.for_product.all_product_price = resDataProductPromo.for_product_price;
+            setObj.for_product.all_inventory_stok = resDataProductPromo.for_inventory_stok;
+            // setObj.for_product.all_inventory_batch = resDataProductPromo.for_inventory_batch;
+            setObj.for_product.all_product_diskon = resDataProductPromo.for_product_diskon;
+            setObj.for_product.all_product_detail = resDataProductPromo.for_product_detail;
+            
+            if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
+              setObj.get_product.all_product_price = resDataProductPromo.get_product_price;
+              setObj.get_product.all_inventory_stok = resDataProductPromo.get_inventory_stok;
+              // setObj.get_product.all_inventory_batch = resDataProductPromo.get_inventory_batch;
+              setObj.get_product.all_product_diskon = resDataProductPromo.get_product_diskon;
+              // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
+            }
+
+            responseAllDataPromoDetail.push(setObj);
+            // const startDate = new Date(masterPromo.start_date);
+            // const endDate = new Date(masterPromo.end_date);
+            // if(today >= startDate && today <= endDate){
+            // }
+          });
+        }
+        
+        this.dataAllPromoProductOrderTicket = responseAllDataPromoDetail;
+        this.tabActivePillTicketOrder = this.listPillTicketOrder.promo;
+      } catch (error) {
+        this.$root.showAlertFunction('warning', 'Tiket Gagal!', 'Terjadi kesalahan! Coba beberapa saat lagi atau hubungi Administrator.');
+        console.log(error);
+      }
+      this.$root.hideLoading();
+    },
+    
     clickAddProductOrderTicket: function(product){
       const findProduct = this.listDataProductForCreateTicket.find((x) => x.product == product);
       
@@ -4352,7 +4487,9 @@ export default {
         }
       }
 
-      const dataForAddToList = listDataProduct.map((x) => {
+      var prepareProductTicket = [];
+      for (let i = 0; i < listDataProduct.length; i++) {
+        const x = listDataProduct[i];
         const product = x.product;
         const productObj = {
           product: null,
@@ -4363,16 +4500,118 @@ export default {
           is_ticket: x.tiket,
         };
         if(x.promoProductDetailId){
-          const findPromoProduct = this.dataAllPromoProductOrderTicket.find((y) => y.id == x.promoProductDetailId);
-          productObj.product = findPromoProduct.for_product;
-          productObj.is_promo_product = findPromoProduct;
+          const findPromoProduct = await axios({
+            method: 'get',
+            url: this.$root.API_ERP + '/pos/app/sales/getDataPromoPRoductForProductById',
+            params: {
+              id_promo: x.promoProductDetailId,
+              store_outlet: cacheStoreAccess.store_outlet,
+            }
+          });
+          const dataFindPromoProduct = findPromoProduct.data;
+
+          const masterPromoProduct = dataFindPromoProduct.master_promo_product;
+          const masterPromo = dataFindPromoProduct.master_promo_product.master_promo;
+          const setObj = {
+            id: dataFindPromoProduct.id,
+            promo_product_id: dataFindPromoProduct.promo_product_id,
+            for_product_code: dataFindPromoProduct.for_product_code,
+            get_product_code: dataFindPromoProduct.get_product_code,
+            for_product_whs: dataFindPromoProduct.for_product_whs,
+            get_product_whs: dataFindPromoProduct.get_product_whs,
+            // for_product_price: dataFindPromoProduct.for_product_price,
+            // get_product_price: dataFindPromoProduct.get_product_price,
+            isActive: dataFindPromoProduct.isActive,
+            master_promo_product: dataFindPromoProduct.master_promo_product,
+            for_product: dataFindPromoProduct.for_product,
+            get_product: dataFindPromoProduct.get_product ?? null,
+          };
+          setObj.for_product.all_product_price = dataFindPromoProduct.for_product_price;
+          setObj.for_product.all_inventory_stok = dataFindPromoProduct.for_inventory_stok;
+          // setObj.for_product.all_inventory_batch = dataFindPromoProduct.for_inventory_batch;
+          setObj.for_product.all_product_diskon = dataFindPromoProduct.for_product_diskon;
+          setObj.for_product.all_product_detail = dataFindPromoProduct.for_product_detail;
+          
+          if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
+            setObj.get_product.all_product_price = dataFindPromoProduct.get_product_price;
+            setObj.get_product.all_inventory_stok = dataFindPromoProduct.get_inventory_stok;
+            // setObj.get_product.all_inventory_batch = dataFindPromoProduct.get_inventory_batch;
+            setObj.get_product.all_product_diskon = dataFindPromoProduct.get_product_diskon;
+            // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
+          }
+
+          // const findPromoProduct = this.dataAllPromoProductOrderTicket.find((y) => y.id == x.promoProductDetailId);
+          productObj.product = setObj.for_product;
+          productObj.is_promo_product = setObj;
         }else{
           productObj.product = product;
         }
 
-        return productObj;
-      });
-      this.listDataProductDetailSelectTicket = dataForAddToList;
+        prepareProductTicket.push(productObj);
+      }
+
+      // const dataForAddToList = listDataProduct.map(async (x) => {
+      //   const product = x.product;
+      //   const productObj = {
+      //     product: null,
+      //     qty: x.qty,
+      //     batch: [],
+      //     selectBatch:[],
+      //     is_promo_product: null,
+      //     is_ticket: x.tiket,
+      //   };
+      //   if(x.promoProductDetailId){
+      //     const findPromoProduct = await axios({
+      //       method: 'get',
+      //       url: this.$root.API_ERP + '/pos/app/sales/getDataPromoPRoductForProductById',
+      //       params: {
+      //         id_promo: x.promoProductDetailId,
+      //         store_outlet: cacheStoreAccess.store_outlet,
+      //       }
+      //     });
+      //     const dataFindPromoProduct = findPromoProduct.data;
+      //     console.log(dataFindPromoProduct);
+
+      //     const masterPromoProduct = dataFindPromoProduct.master_promo_product;
+      //     const masterPromo = dataFindPromoProduct.master_promo_product.master_promo;
+      //     const setObj = {
+      //       id: dataFindPromoProduct.id,
+      //       promo_product_id: dataFindPromoProduct.promo_product_id,
+      //       for_product_code: dataFindPromoProduct.for_product_code,
+      //       get_product_code: dataFindPromoProduct.get_product_code,
+      //       for_product_whs: dataFindPromoProduct.for_product_whs,
+      //       get_product_whs: dataFindPromoProduct.get_product_whs,
+      //       // for_product_price: dataFindPromoProduct.for_product_price,
+      //       // get_product_price: dataFindPromoProduct.get_product_price,
+      //       isActive: dataFindPromoProduct.isActive,
+      //       master_promo_product: dataFindPromoProduct.master_promo_product,
+      //       for_product: dataFindPromoProduct.for_product,
+      //       get_product: dataFindPromoProduct.get_product ?? null,
+      //     };
+      //     setObj.for_product.all_product_price = dataFindPromoProduct.for_product_price;
+      //     setObj.for_product.all_inventory_stok = dataFindPromoProduct.for_inventory_stok;
+      //     // setObj.for_product.all_inventory_batch = dataFindPromoProduct.for_inventory_batch;
+      //     setObj.for_product.all_product_diskon = dataFindPromoProduct.for_product_diskon;
+      //     setObj.for_product.all_product_detail = dataFindPromoProduct.for_product_detail;
+          
+      //     if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
+      //       setObj.get_product.all_product_price = dataFindPromoProduct.get_product_price;
+      //       setObj.get_product.all_inventory_stok = dataFindPromoProduct.get_inventory_stok;
+      //       // setObj.get_product.all_inventory_batch = dataFindPromoProduct.get_inventory_batch;
+      //       setObj.get_product.all_product_diskon = dataFindPromoProduct.get_product_diskon;
+      //       // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
+      //     }
+
+      //     // const findPromoProduct = this.dataAllPromoProductOrderTicket.find((y) => y.id == x.promoProductDetailId);
+      //     productObj.product = setObj.for_product;
+      //     productObj.is_promo_product = setObj;
+      //   }else{
+      //     productObj.product = product;
+      //   }
+
+      //   return productObj;
+      // });
+      this.listDataProductDetailSelectTicket = prepareProductTicket;
 
       $('#modalListTicket').modal('hide');
       $('#modalListProductTicketSelected').modal('show');

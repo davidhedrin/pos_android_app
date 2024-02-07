@@ -9,9 +9,10 @@
   <component :is="alert" :status="alertParam.status" :title="alertParam.title" :msg="alertParam.msg" :show-alert="showAlert"  @close-alert="showAlert = false"></component>
 
   <ion-app>
+    <MenuDrawer v-if="!minuHideHeaderFooter.includes(activeRoute)"></MenuDrawer>
     <Header v-if="!minuHideHeaderFooter.includes(activeRoute)"></Header>
     <ion-content>
-      <ion-router-outlet />
+      <ion-router-outlet id="main-content" />
     </ion-content>
     <Footer v-if="!minuHideHeaderFooter.includes(activeRoute)"></Footer>
   </ion-app>
@@ -33,20 +34,22 @@ import LoadingWhite from '@/views/components/LoadingWhite.vue';
 import Alert from '@/views/components/Alert.vue';
 import Header from '@/views/components/Header.vue';
 import Footer from '@/views/components/Footer.vue';
+import MenuDrawer from '@/views/components/MenuDrawer.vue';
 
 export default {
   components: {
     IonApp,
     IonRouterOutlet,
     Header,
-    Footer
+    Footer,
+    MenuDrawer
   },
   data() {
     const route = useRoute();
     const router = useRouter();
     // const API_ERP = 'https://ipos-tpsmtg.com:8087/';
     // const API_ERP = 'http://178.1.7.230:8062/';
-    const API_ERP = 'http://localhost:8085/';
+    const API_ERP = 'http://178.1.51.124:8085/';
     
     return {
       API_ERP: API_ERP,

@@ -152,6 +152,7 @@ export const pages = {
   login: 'Login',
   profile: 'Profile',
   sales:  'Sales',
+  about:  'About',
   transaksi: 'Transaksi',
   receiptitem: 'ReceiptItem',
   receiptitemv2: 'ReceiptItemV2',
