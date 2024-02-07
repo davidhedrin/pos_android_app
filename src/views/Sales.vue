@@ -1302,7 +1302,7 @@
                   <div class="tab-pane fade" :class="tabActivePillTicketOrder == listPillTicketOrder.reguler && 'active show'" id="pillTabRegulerProduct" role="tabpanel" aria-labelledby="home-tab">
                     <div class="row mb-3 px-2 justify-content-end">
                       <div class="col-md-12">
-                        <form @submit.prevent="openModalCreateTicketOrder()">
+                        <form @submit.prevent="openModalCreateTicketOrder(1, true)">
                           <div class="input-group">
                             <input v-model="inputSearchProductOrderTicket" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Search...">
                             <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
@@ -1378,7 +1378,7 @@
                   <div class="tab-pane fade" :class="tabActivePillTicketOrder == listPillTicketOrder.promo && 'active show'" id="pillTabPromoProduct" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row mb-3 px-2 justify-content-end">
                       <div class="col-md-12">
-                        <form @submit.prevent="openModalTabPromoOrderTicket()">
+                        <form @submit.prevent="openModalTabPromoOrderTicket(1, true)">
                           <div class="input-group">
                             <input v-model="inputSearchProductPromoOrderTicket" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Search...">
                             <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
@@ -1611,27 +1611,27 @@
                   <ul class="pagination pagination-sm m-0">
       
                     <li v-if="displayedPageProductOrderTicket[0] > 1">
-                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder()">First</a>
+                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(1, true)">First</a>
                     </li>
       
                     <li class="page-item" :class="{ 'disabled': currentPageProductOrderTicket === 1 }">
-                      <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="openModalCreateTicketOrder(currentPageProductOrderTicket - 1)">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="openModalCreateTicketOrder(currentPageProductOrderTicket - 1, true)">
                         <span aria-hidden="true">&laquo;</span>
                       </a>
                     </li>
       
                     <li v-for="pageNumber in displayedPageProductOrderTicket" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageProductOrderTicket }">
-                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(pageNumber)">{{ pageNumber }}</a>
+                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(pageNumber, true)">{{ pageNumber }}</a>
                     </li>
       
                     <li class="page-item" :class="{ 'disabled': currentPageProductOrderTicket === totalPageProductOrderTicket }">
-                      <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="openModalCreateTicketOrder(currentPageProductOrderTicket + 1)">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="openModalCreateTicketOrder(currentPageProductOrderTicket + 1, true)">
                         <span aria-hidden="true">&raquo;</span>
                       </a>
                     </li>
       
                     <li v-if="displayedPageProductOrderTicket[displayedPageProductOrderTicket.length - 1] < totalPageProductOrderTicket">
-                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(totalPageProductOrderTicket)">Last</a>
+                      <a class="page-link" href="javascript:void(0)" @click="openModalCreateTicketOrder(totalPageProductOrderTicket, true)">Last</a>
                     </li>
       
                   </ul>
@@ -4060,39 +4060,39 @@ export default {
     // End Logic
 
     // Logic Tiket Booking
-    openModalCreateTicketOrder: async function(page = 1){
+    openModalCreateTicketOrder: async function(page = 1, isPaging = false){
       this.$root.showLoading();
       try{
         const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
 
-        const getAllProduct = await axios({
-          method: 'get',
-          url: this.$root.API_ERP + '/pos/app/sales/getAllProduct',
-          params: {
-            page: page,
-            per_page: this.perPageProduct,
-            store_outlet: cacheStoreAccess.store_outlet,
-            search: this.inputSearchProductOrderTicket.trim(),
-          },
-        });
-        const response = getAllProduct.data;
-        var getDataProduct = response.data;
-        
-        this.currentPageProductOrderTicket = response.current_page;
-        this.totalPageProductOrderTicket = response.last_page;
-        this.updateDisplayedPagesProductOrderTicket();
-
-        const prepareDatas = getDataProduct.map((data) => {
-          const ifHaveInListSelect = this.listDataProductForCreateTicket.some((y) => y.product.itemCode === data.itemCode);
-          if(ifHaveInListSelect){
-            data.isSelectedProductTicket = true;
-          }
-          return data;
-        });
-
-        this.dataAllProductOrderTicket = prepareDatas;
-        // if(this.dataAllProductOrderTicket.length == 0){
-        // }
+        if(isPaging || this.dataAllProductOrderTicket.length == 0){
+          const getAllProduct = await axios({
+            method: 'get',
+            url: this.$root.API_ERP + '/pos/app/sales/getAllProduct',
+            params: {
+              page: page,
+              per_page: this.perPageProduct,
+              store_outlet: cacheStoreAccess.store_outlet,
+              search: this.inputSearchProductOrderTicket.trim(),
+            },
+          });
+          const response = getAllProduct.data;
+          var getDataProduct = response.data;
+          
+          this.currentPageProductOrderTicket = response.current_page;
+          this.totalPageProductOrderTicket = response.last_page;
+          this.updateDisplayedPagesProductOrderTicket();
+  
+          const prepareDatas = getDataProduct.map((data) => {
+            const ifHaveInListSelect = this.listDataProductForCreateTicket.some((y) => y.product.itemCode === data.itemCode);
+            if(ifHaveInListSelect){
+              data.isSelectedProductTicket = true;
+            }
+            return data;
+          });
+  
+          this.dataAllProductOrderTicket = prepareDatas;
+        }
 
         this.tabActivePillTicketOrder = this.listPillTicketOrder.reguler;
         $('#modalSelectProductForTicket').modal('show');
@@ -4103,66 +4103,69 @@ export default {
       this.$root.hideLoading();
     },
 
-    openModalTabPromoOrderTicket: async function(page = 1){
+    openModalTabPromoOrderTicket: async function(page = 1, isPaging = false){
       this.$root.showLoading();
       try{
         const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
 
-        var responseAllDataPromoDetail = [];
-        const getAllProductPromo = await axios({
-          method: 'get',
-          url: this.$root.API_ERP + '/pos/app/sales/getAllMasterPromoProductDetail',
-          params: {
-            page: page,
-            per_page: this.perPagePromoProduct,
-            store_outlet: cacheStoreAccess.store_outlet,
-            search: this.inputSearchProductPromoOrderTicket.trim(),
-          },
-        });
-
-        if(getAllProductPromo.status == 200){
-          const resDataAllProductPromo = getAllProductPromo.data;
-          resDataAllProductPromo.forEach(resDataProductPromo => {
-            const masterPromoProduct = resDataProductPromo.master_promo_product;
-            const masterPromo = resDataProductPromo.master_promo_product.master_promo;
-
-            const setObj = {
-              id: resDataProductPromo.id,
-              promo_product_id: resDataProductPromo.promo_product_id,
-              for_product_code: resDataProductPromo.for_product_code,
-              get_product_code: resDataProductPromo.get_product_code,
-              for_product_whs: resDataProductPromo.for_product_whs,
-              get_product_whs: resDataProductPromo.get_product_whs,
-              // for_product_price: resDataProductPromo.for_product_price,
-              // get_product_price: resDataProductPromo.get_product_price,
-              isActive: resDataProductPromo.isActive,
-              master_promo_product: resDataProductPromo.master_promo_product,
-              for_product: resDataProductPromo.for_product,
-              get_product: resDataProductPromo.get_product ?? null,
-            };
-            setObj.for_product.all_product_price = resDataProductPromo.for_product_price;
-            setObj.for_product.all_inventory_stok = resDataProductPromo.for_inventory_stok;
-            // setObj.for_product.all_inventory_batch = resDataProductPromo.for_inventory_batch;
-            setObj.for_product.all_product_diskon = resDataProductPromo.for_product_diskon;
-            setObj.for_product.all_product_detail = resDataProductPromo.for_product_detail;
-            
-            if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
-              setObj.get_product.all_product_price = resDataProductPromo.get_product_price;
-              setObj.get_product.all_inventory_stok = resDataProductPromo.get_inventory_stok;
-              // setObj.get_product.all_inventory_batch = resDataProductPromo.get_inventory_batch;
-              setObj.get_product.all_product_diskon = resDataProductPromo.get_product_diskon;
-              // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
-            }
-
-            responseAllDataPromoDetail.push(setObj);
-            // const startDate = new Date(masterPromo.start_date);
-            // const endDate = new Date(masterPromo.end_date);
-            // if(today >= startDate && today <= endDate){
-            // }
+        if(isPaging || this.dataAllPromoProductOrderTicket.length == 0){
+          var responseAllDataPromoDetail = [];
+          const getAllProductPromo = await axios({
+            method: 'get',
+            url: this.$root.API_ERP + '/pos/app/sales/getAllMasterPromoProductDetail',
+            params: {
+              page: page,
+              per_page: this.perPagePromoProduct,
+              store_outlet: cacheStoreAccess.store_outlet,
+              search: this.inputSearchProductPromoOrderTicket.trim(),
+            },
           });
+  
+          if(getAllProductPromo.status == 200){
+            const resDataAllProductPromo = getAllProductPromo.data;
+            resDataAllProductPromo.forEach(resDataProductPromo => {
+              const masterPromoProduct = resDataProductPromo.master_promo_product;
+              const masterPromo = resDataProductPromo.master_promo_product.master_promo;
+  
+              const setObj = {
+                id: resDataProductPromo.id,
+                promo_product_id: resDataProductPromo.promo_product_id,
+                for_product_code: resDataProductPromo.for_product_code,
+                get_product_code: resDataProductPromo.get_product_code,
+                for_product_whs: resDataProductPromo.for_product_whs,
+                get_product_whs: resDataProductPromo.get_product_whs,
+                // for_product_price: resDataProductPromo.for_product_price,
+                // get_product_price: resDataProductPromo.get_product_price,
+                isActive: resDataProductPromo.isActive,
+                master_promo_product: resDataProductPromo.master_promo_product,
+                for_product: resDataProductPromo.for_product,
+                get_product: resDataProductPromo.get_product ?? null,
+              };
+              setObj.for_product.all_product_price = resDataProductPromo.for_product_price;
+              setObj.for_product.all_inventory_stok = resDataProductPromo.for_inventory_stok;
+              // setObj.for_product.all_inventory_batch = resDataProductPromo.for_inventory_batch;
+              setObj.for_product.all_product_diskon = resDataProductPromo.for_product_diskon;
+              setObj.for_product.all_product_detail = resDataProductPromo.for_product_detail;
+              
+              if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
+                setObj.get_product.all_product_price = resDataProductPromo.get_product_price;
+                setObj.get_product.all_inventory_stok = resDataProductPromo.get_inventory_stok;
+                // setObj.get_product.all_inventory_batch = resDataProductPromo.get_inventory_batch;
+                setObj.get_product.all_product_diskon = resDataProductPromo.get_product_diskon;
+                // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
+              }
+  
+              responseAllDataPromoDetail.push(setObj);
+              // const startDate = new Date(masterPromo.start_date);
+              // const endDate = new Date(masterPromo.end_date);
+              // if(today >= startDate && today <= endDate){
+              // }
+            });
+          }
+          
+          this.dataAllPromoProductOrderTicket = responseAllDataPromoDetail;
         }
-        
-        this.dataAllPromoProductOrderTicket = responseAllDataPromoDetail;
+
         this.tabActivePillTicketOrder = this.listPillTicketOrder.promo;
       } catch (error) {
         this.$root.showAlertFunction('warning', 'Tiket Gagal!', 'Terjadi kesalahan! Coba beberapa saat lagi atau hubungi Administrator.');
