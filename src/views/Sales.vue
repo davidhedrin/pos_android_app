@@ -3707,6 +3707,38 @@ export default {
       //   this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
       // }
     },
+
+    checkProductPromoActiveDate: async function(product){
+      this.$root.showLoading();
+      var result = true;
+
+      try{
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/checkPromoProductActiveByIs',
+          params: {
+            id_detail: product.id
+          }
+        });
+
+        const reqData = request.data;
+        const masterPromo = reqData.master_promo_product.master_promo;
+        const currentDateTime = new Date();
+        const endDate = new Date(masterPromo.end_date);
+  
+        if(currentDateTime > endDate){
+          this.$root.showAlertFunction('warning', 'Promo Expired!', 'Promo product telah expired. Silahkan muat ulang (F5)');
+          result = false;
+        }
+      }catch(e){
+        this.$root.showAlertFunction('warning', 'Promo Expired!', 'Promo product invalid. Silahkan muat ulang (F5)');
+        result = false;
+        console.log(e);
+      }
+
+      this.$root.hideLoading();
+      return result;
+    },
     
     // Logic Product In Order List
     checkInventoryBatchProduct: async function(product){
@@ -3749,6 +3781,11 @@ export default {
     },
 
     validateModalBatchProduct: async function(product, qty = 1){
+      if(product.master_promo_product){
+        const checkIsPromoDate = await this.checkProductPromoActiveDate(product);
+        if(checkIsPromoDate == false) return false;
+      }
+
       const checkProduct = await this.checkInventoryBatchProduct(product);
 
       this.productSelectBatch = null;
@@ -4174,7 +4211,12 @@ export default {
       this.$root.hideLoading();
     },
     
-    clickAddProductOrderTicket: function(product){
+    clickAddProductOrderTicket: async function(product){
+      if(product.master_promo_product){
+        const checkIsPromoDate = await this.checkProductPromoActiveDate(product);
+        if(checkIsPromoDate == false) return false;
+      }
+
       const findProduct = this.listDataProductForCreateTicket.find((x) => x.product == product);
       
       if(findProduct){
