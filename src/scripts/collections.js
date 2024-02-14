@@ -99,6 +99,11 @@ export const master_code = {
     reguler: '1',
     silver: '2',
     gold: '3',
+  },
+
+  tipe_potongan: {
+    percent: '1',
+    value: '2',
   }
 }
 

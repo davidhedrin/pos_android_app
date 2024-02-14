@@ -47,9 +47,9 @@ export default {
   data() {
     const route = useRoute();
     const router = useRouter();
-    // const API_ERP = 'https://ipos-tpsmtg.com:8087/';
+    const API_ERP = 'https://ipos-tpsmtg.com:8087/';
     // const API_ERP = 'http://178.1.7.230:8062/';
-    const API_ERP = 'http://178.1.51.124:8085/';
+    // const API_ERP = 'http://178.1.51.124:8085/';
     
     return {
       API_ERP: API_ERP,
@@ -320,6 +320,15 @@ export default {
         if(isNotif) this.showAlertFunction('warning', 'Email Notif!', 'Terjadi kesalahan!! Invoice email gagal dikirim.');
         console.log(e);
         return null;
+      }
+    },
+
+    formatCurrencyK(value) {
+      if (value >= 1000) {
+        const formattedValue = Math.floor(value / 1000);
+        return `${formattedValue}K`;
+      } else {
+        return value.toString();
       }
     },
   }
