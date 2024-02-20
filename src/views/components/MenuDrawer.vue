@@ -33,7 +33,7 @@
               <span class="fas fa-user me-2"></span> Profile
             </ion-item> -->
             <ion-item class="fw-semi-bold text-secondary" @click="$root.gotoReplace(pages.about)">
-              <span class="fas fa-atlas me-2"></span> About
+              <span class="fas fa-cogs me-2"></span> Setting
             </ion-item>
             <ion-item class="fw-semi-bold text-secondary" @click="$root.clearSessionLocalStorege()">
               <span class="fas fa-sign-out-alt me-2"></span> Logout
