@@ -816,18 +816,18 @@
                         <a class="page-link" href="javascript:void(0)" @click="fatchDataPromoDiskon()">First</a>
                       </li>
 
-                      <li class="page-item" :class="{ 'disabled': currentPageTr === 1 }">
-                        <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataPromoDiskon(currentPageTr - 1)">
+                      <li class="page-item" :class="{ 'disabled': currentPagePromoDiskon === 1 }">
+                        <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataPromoDiskon(currentPagePromoDiskon - 1)">
                           <span aria-hidden="true">&laquo;</span>
                         </a>
                       </li>
 
-                      <li v-for="pageNumber in displayedPagesPromoDiskon" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageTr }">
+                      <li v-for="pageNumber in displayedPagesPromoDiskon" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPagePromoDiskon }">
                         <a class="page-link" href="javascript:void(0)" @click="fatchDataPromoDiskon(pageNumber)">{{ pageNumber }}</a>
                       </li>
 
-                      <li class="page-item" :class="{ 'disabled': currentPageTr === totalPagePromoDiskon }">
-                        <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataPromoDiskon(currentPageTr + 1)">
+                      <li class="page-item" :class="{ 'disabled': currentPagePromoDiskon === totalPagePromoDiskon }">
+                        <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataPromoDiskon(currentPagePromoDiskon + 1)">
                           <span aria-hidden="true">&raquo;</span>
                         </a>
                       </li>
@@ -3621,6 +3621,7 @@ export default {
 
     fatchDataPromoDiskon: async function(page = 1){
       this.$root.showLoading();
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
       try{
         const checkPromo = await axios({
           method: 'get',
@@ -3628,6 +3629,7 @@ export default {
           params: {
             page: page,
             per_page: this.perPagePromoDiskon,
+            store_outlet: cacheStoreAccess.store_outlet,
             search: this.inputSearchKodePromo.trim()
           }
         });
@@ -5583,6 +5585,26 @@ export default {
 
         if (inputSelectedMetodeBayarVal === "" ){
           inputSelectedMetodeBayar.addClass('border-red');
+          return false;
+        }
+      }
+
+      if(this.selectedMetodeBayar.kode == this.master_code.metodeBayar.cash){
+        const inputElement = document.getElementById('inputNominalMethodCash');
+
+        if(this.inputNominalMethodCash == null || this.inputNominalMethodCash.trim() == ''){
+          inputElement.classList.add('border-red');
+          return false;
+        }
+        
+        const price = this.inputNominalMethodCash;
+        const numericPrice = price.replace(/[^0-9]/g, '');
+
+        const number = parseFloat(numericPrice);
+        if(number > this.calculateTotalBayarPrice){
+          inputElement.classList.remove('border-red');
+        }else{
+          inputElement.classList.add('border-red');
           return false;
         }
       }
