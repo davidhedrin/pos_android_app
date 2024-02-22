@@ -95,90 +95,89 @@
             </div>
           </div>
           
-          <ion-infinite-scroll @ionInfinite="infiniteLoopingDataProduct">
-            <ion-infinite-scroll-content loading-text="Loading Product..." loading-spinner="bubbles">
-              <div class="row mx-0">
-                <div v-if="$root.selectedStoreAccess" class="mb-1 col-6 col-md-2 col-sm-6 p-1" v-for="product in filteredProducts" :key="product.itemCode">
-                  <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
-                    <div class="overflow-hidden">
-                      <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
-                        <div class="d-block text-center">
-                          <div v-if="product.promo_product_id">
-                            <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 140px;" alt="">
-                            <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
-                          </div>
-                          <div v-else>
-                            <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 140px;" alt="">
-                            <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
-                          </div>
-                          <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
-                            <div v-if="product.promo_product_id">
-                              <span class="badge rounded-pill p-1 fs--3 me-1" :class="'bg-' + product.master_promo_product.master_kode_promo_product.badge">
-                                {{ product.master_promo_product.master_kode_promo_product.nama_promo }}
-                              </span>
-                              <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge bg-warning rounded-pill p-1 fs--3">
-                                {{ product.master_promo_product.buy_item }} Get {{ product.master_promo_product.get_item }}
-                              </span>
-                              <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge bg-danger rounded-pill p-1 fs--3">
-                                <span v-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
-                                  {{ product.master_promo_product.percent }}%
-                                </span>
-                                <span v-else-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.value">
-                                  {{ $root.formatCurrencyK(parseInt(product.master_promo_product.value_potongan)) }}
-                                </span>
-                              </span>
-                            </div>
-                            <div v-else>
-                              <span v-if="$root.filterDiskonProduct(product).discCode != master_code.diskon.tanpa_diskon_code" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ $root.filterDiskonProduct(product).discount }}% </span>
-                            </div>
-                          </div>
-                          <span class="badge badge-subtle-secondary position-absolute mb-1 ms-2 z-2 px-1 bottom-0 start-0 fs--2 fw-bold" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.itemCode : product.itemCode }}</span>
-                          <span class="badge badge-subtle-success position-absolute mb-1 me-2 z-2 px-1 bottom-0 end-0 fs--2" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : $root.filterStokProduct(product).onHand }}</span>
-                        </div>
+          <div class="row mx-0">
+            <div v-if="$root.selectedStoreAccess" class="mb-1 col-6 col-md-2 col-sm-6 p-1" v-for="product in filteredProducts" :key="product.itemCode">
+              <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
+                <div class="overflow-hidden">
+                  <div class="position-relative rounded-top overflow-hidden cursor-pointer" @click="validateModalBatchProduct(product)">
+                    <div class="d-block text-center">
+                      <div v-if="product.promo_product_id">
+                        <img v-if="product.for_product.imageUrl != null && product.for_product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.for_product.imageUrl" style="width: 100%; height: 140px;" alt="">
+                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
                       </div>
-                      <div class="p-2 pb-1 text-center">
-                        <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
-                          <h5 class="fs-0 mb-0">
-                            <div class="text-1100">
-                              <span class="d-inline-block text-truncate max-width-text-truncate">
-                                {{ product.promo_product_id ? product.for_product.itemName : product.itemName }}
-                              </span>
-                            </div>
-                          </h5>
-                        </button>
+                      <div v-else>
+                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 140px;" alt="">
+                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 140px;" alt="">
+                      </div>
+                      <div class=" position-absolute mt-1 me-2 z-2 top-0 end-0">
                         <div v-if="product.promo_product_id">
-                          <strong class="fs-0 text-warning mb-0 text-center">
-                            Rp
+                          <span class="badge rounded-pill p-1 fs--3 me-1" :class="'bg-' + product.master_promo_product.master_kode_promo_product.badge">
+                            {{ product.master_promo_product.master_kode_promo_product.nama_promo }}
+                          </span>
+                          <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle" class="badge bg-warning rounded-pill p-1 fs--3">
+                            {{ product.master_promo_product.buy_item }} Get {{ product.master_promo_product.get_item }}
+                          </span>
+                          <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge bg-danger rounded-pill p-1 fs--3">
                             <span v-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
-                              {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
+                              {{ product.master_promo_product.percent }}%
                             </span>
                             <span v-else-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.value">
-                              {{ $root.formatPrice(product.for_product.all_product_price[0].price - product.master_promo_product.value_potongan) }}
+                              {{ $root.formatCurrencyK(parseInt(product.master_promo_product.value_potongan)) }}
                             </span>
-                            
-                            <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
-                              {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
-                            </del>
-                          </strong>
+                          </span>
                         </div>
                         <div v-else>
-                          <div v-if="$root.filterDiskonProduct(product).discCode == master_code.diskon.tanpa_diskon_code">
-                            <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price) }}
-                            </strong>
-                          </div>
-                          <div v-else>
-                            <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price - ($root.filterPriceProduct(product).price * ($root.filterDiskonProduct(product).discount/100))) }}
-                              <del class="text-secondary fs-0">{{ $root.formatPrice($root.filterPriceProduct(product).price) }}</del>
-                            </strong>
-                          </div>
+                          <span v-if="$root.filterDiskonProduct(product).discCode != master_code.diskon.tanpa_diskon_code" class="badge bg-danger rounded-pill p-1 fs--3"> -{{ $root.filterDiskonProduct(product).discount }}% </span>
                         </div>
+                      </div>
+                      <span class="badge badge-subtle-secondary position-absolute mb-1 ms-2 z-2 px-1 bottom-0 start-0 fs--2 fw-bold" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.itemCode : product.itemCode }}</span>
+                      <span class="badge badge-subtle-success position-absolute mb-1 me-2 z-2 px-1 bottom-0 end-0 fs--2" style="font-weight: normal;">{{ product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : $root.filterStokProduct(product).onHand }}</span>
+                    </div>
+                  </div>
+                  <div class="p-2 pb-1 text-center">
+                    <button v-on:click="productShowDetail = product" class="btn btn-sm p-0 ps-1" data-bs-toggle="offcanvas" data-bs-target="#canvasShowDetailProduct" aria-controls="canvasShowDetailProduct">
+                      <h5 class="fs-0 mb-0">
+                        <div class="text-1100">
+                          <span class="d-inline-block text-truncate max-width-text-truncate">
+                            {{ product.promo_product_id ? product.for_product.itemName : product.itemName }}
+                          </span>
+                        </div>
+                      </h5>
+                    </button>
+                    <div v-if="product.promo_product_id">
+                      <strong class="fs-0 text-warning mb-0 text-center">
+                        Rp
+                        <span v-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
+                          {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
+                        </span>
+                        <span v-else-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.value">
+                          {{ $root.formatPrice(product.for_product.all_product_price[0].price - product.master_promo_product.value_potongan) }}
+                        </span>
+                        
+                        <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
+                          {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
+                        </del>
+                      </strong>
+                    </div>
+                    <div v-else>
+                      <div v-if="$root.filterDiskonProduct(product).discCode == master_code.diskon.tanpa_diskon_code">
+                        <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price) }}
+                        </strong>
+                      </div>
+                      <div v-else>
+                        <strong class="fs-0 text-warning mb-0 text-center"> Rp {{ $root.formatPrice($root.filterPriceProduct(product).price - ($root.filterPriceProduct(product).price * ($root.filterDiskonProduct(product).discount/100))) }}
+                          <del class="text-secondary fs-0">{{ $root.formatPrice($root.filterPriceProduct(product).price) }}</del>
+                        </strong>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- <div style="min-height: 90vh;">
-              </div> -->
+            </div>
+          </div>
+          
+          <ion-infinite-scroll @ionInfinite="infiniteLoopingDataProduct">
+            <ion-infinite-scroll-content loading-text="Loading Product..." loading-spinner="bubbles">
             </ion-infinite-scroll-content>
           </ion-infinite-scroll>
         </div>

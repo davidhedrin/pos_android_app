@@ -64,7 +64,7 @@ import './assets/vendor/js/jquery.min.js';
 import './assets/vendor/js/simplebar.min.js';
 import './assets/vendor/js/all.min.js';
 
-import './assets/vendor/js/popper.min.js';
+// import './assets/vendor/js/popper.min.js';
 import './assets/vendor/js/bootstrap.min.js';
 import './assets/vendor/js/lodash.min.js';
 

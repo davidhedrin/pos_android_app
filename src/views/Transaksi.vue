@@ -44,10 +44,11 @@
               <div class="card-header p-3">
                 <h6 class="mb-1">Amount Transaksi</h6>
                 <div class="display-4 fs-2 mb-1 fw-normal font-sans-serif">
-                  <span class="fs-1">Rp</span> {{ dataTransactionReport ? $root.formatPrice(dataTransactionReport.total_value) : '-' }}
+                  <span class="fs-1">Rp</span> 
+                  {{ dataTransactionReport ? dataTransactionReport.total_value ? $root.formatPrice(dataTransactionReport.total_value) : '0' : '0' }}
                 </div>
                 <span class="fw-semi-bold fs--1 text-nowrap">
-                  Januari 2024
+                  {{ dataTransactionReport ? dataTransactionReport.amount_tr_month_now : '-' }}
                 </span>
               </div>
             </div>
@@ -59,7 +60,10 @@
                 <div class="display-4 fs-2 mb-1 fw-normal font-sans-serif">
                   Rp 0
                 </div>
-                <span class="badge badge-subtle-info rounded-pill">0.0%</span>
+                <a class="fw-semi-bold fs--1 text-nowrap" href="javascript:void(0)" type="button" data-bs-toggle="modal" data-bs-target="#modalViewMoreReport">
+                  Statistics 
+                  <span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span>
+                </a>
               </div>
             </div>
           </ion-col>
@@ -314,10 +318,10 @@
                               <p class="mb-0">{{ data.product.itemCode }}</p>
                             </td>
                             <td class="align-middle text-center">x{{ data.qty }}</td>
-                            <td class="align-middle text-center">Rp {{ $root.formatPrice($root.filterPriceProduct(data.product).price) }}</td>
+                            <td class="align-middle text-center">Rp {{ $root.formatPrice(data.price) }}</td>
                             <td class="align-middle text-end">
                               Rp
-                              {{ $root.formatPrice(data.qty * $root.filterPriceProduct(data.product).price) }}
+                              {{ $root.formatPrice(data.qty * data.price) }}
                             </td>
                           </tr>
                         </tbody>
@@ -346,6 +350,10 @@
                             <tr v-if="selectedTrView.amountDiskonPoint && selectedTrView.amountDiskonPoint > 0" class="border-top">
                               <th class="text-900">Point Member</th>
                               <td class="fw-semi-bold text-end">-Rp {{ $root.formatPrice(selectedTrView.amountDiskonPoint) }}</td>
+                            </tr>
+                            <tr v-if="selectedTrView.discountPromoValue && selectedTrView.discountPromoValue > 0" class="border-top">
+                              <th>Diskon Promo Value <span v-if="selectedTrView.discountPromoPercent && selectedTrView.discountPromoPercent > 0">({{ selectedTrView.discountPromoPercent }}%)</span></th>
+                              <td class="fw-semi-bold text-end">-Rp {{ $root.formatPrice(selectedTrView.discountPromoValue) }}</td>
                             </tr>
                             <tr class="border-top border-top-2 fw-bolder">
                               <th class="text-900">Total Bayar</th>
@@ -378,6 +386,51 @@
                     <button class="btn btn-secondary btn-sm me-2">Struk by Print <span class="fas fa-print"></span></button>
                     <button class="btn btn-primary btn-sm" data-bs-dismiss="modal">Selesai</button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+  
+      <div class="modal fade" id="modalViewMoreReport" tabindex="0" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 1100px">
+          <div class="modal-content position-relative">
+            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
+              <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+              <div class="card">
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-1i.png'); background-size: cover;"></div>
+                <div class="card-body position-relative p-3">
+                  <div class="rounded-top-3 pe-6 pb-3">
+                    <h4 class="mb-1" id="modalExampleDemoLabel">Statistics</h4>
+                  </div>
+
+                  <!-- <div>
+                    <form @submit.prevent="inputSearchFreeProduct != '' && findDataProductFree()" class="mb-3">
+                      <div class="input-group">
+                        <input v-model="inputSearchFreeProduct" @input="inputSearchFreeProduct == '' && (allDataFindProductFree = [])" class="form-control search-input fuzzy-search" type="search" placeholder="Masukkan item code product...">
+                        <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
+                      </div>
+                    </form>
+                  </div> -->
+
+                  <div class="table-responsive scrollbar">
+                    <table class="table table-hover table-striped overflow-hidden">
+                      <thead>
+
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- <div class="text-end">
+                    <button class="btn btn-primary btn-sm" data-bs-dismiss="modal">Selesai</button>
+                  </div> -->
                 </div>
               </div>
             </div>
