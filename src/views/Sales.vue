@@ -147,16 +147,21 @@
                     <div v-if="product.promo_product_id">
                       <strong class="fs-0 text-warning mb-0 text-center">
                         Rp
-                        <span v-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
-                          {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
-                        </span>
-                        <span v-else-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.value">
-                          {{ $root.formatPrice(product.for_product.all_product_price[0].price - product.master_promo_product.value_potongan) }}
-                        </span>
-                        
-                        <del v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="text-secondary fs-0">
+                        <span v-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.bundle">
                           {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
-                        </del>
+                        </span>
+                        <span v-else-if="product.master_promo_product.tipe_promo == master_coll.tipePromo.percent">
+                          <span v-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
+                            {{ $root.formatPrice(product.for_product.all_product_price[0].price - (product.for_product.all_product_price[0].price * (product.master_promo_product.percent/100))) }}
+                          </span>
+                          <span v-else-if="product.master_promo_product.tipe_potongan == master_code.tipe_potongan.value">
+                            {{ $root.formatPrice(product.for_product.all_product_price[0].price - product.master_promo_product.value_potongan) }}
+                          </span>
+
+                          <del class="text-secondary fs--1 ms-1">
+                            {{ $root.formatPrice(product.for_product.all_product_price[0].price) }}
+                          </del>
+                        </span>
                       </strong>
                     </div>
                     <div v-else>
