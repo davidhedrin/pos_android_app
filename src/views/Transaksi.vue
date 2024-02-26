@@ -520,8 +520,10 @@ export default {
       this.$root.hideLoading();
     },
     
-    fatchDataTransaction: async function(page = 1, startDate = this.dateRangeValueTr[0], endDate = this.dateRangeValueTr[1]){
+    fatchDataTransaction: async function(page = 1){
       this.$root.showLoading();
+      const startDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[0]));
+      const endDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[1]));
       try{
         const userLogin = JSON.parse(localStorage.getItem(this.local_storage.data_user));
         const getAllDataTr = await axios({
@@ -612,6 +614,22 @@ export default {
       
       const formattedDateTime = `${day}-${month}-${year} ${hours}:${minutes}`;
       return formattedDateTime;
+    },
+
+    formatToDateTimeRequest: function (date) {
+      return (
+        date.getFullYear() +
+        '-' +
+        ('0' + (date.getMonth() + 1)).slice(-2) +
+        '-' +
+        ('0' + date.getDate()).slice(-2) +
+        ' ' +
+        ('0' + date.getHours()).slice(-2) +
+        ':' +
+        ('0' + date.getMinutes()).slice(-2) +
+        ':' +
+        ('0' + date.getSeconds()).slice(-2)
+      );
     },
 
     sendEmailInvoiceMember: async function(docNum, email = null){

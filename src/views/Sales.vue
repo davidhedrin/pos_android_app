@@ -1220,7 +1220,8 @@
                 </div>
                 <hr v-else />
                 <div v-for="product in allDataFindProductFree" class="py-2 px-3">
-                  <img class="rounded-3 mb-2" :src="product.imageUrl" alt="" style="width: 100%; height: 155px; object-fit: cover;">
+                  <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="rounded-3 mb-2" :src="product.imageUrl" alt="" style="width: 100%; height: 155px; object-fit: cover;">
+                  <img v-else class="img-fluid rounded" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 155px; object-fit: cover;" alt="" />
                   <span class="badge badge-subtle-secondary fs--1 fw-bold mb-1" style="font-weight: normal;">
                     {{ product.itemCode }}
                   </span>
@@ -4996,6 +4997,10 @@ export default {
     },
 
     checkValidasiGelarMember: function(){
+      if(this.memberOverview.tipe_konsumen.slug != this.master_code.tipeKonsumen.reseller){
+        return false;
+      }
+
       let gelarTerpilih = this.dataAllGelars.find((gelar) => {
         const minimalNilai = parseFloat(gelar.minimal_nilai);
         const maksimalNilai = parseFloat(gelar.maksimal_nilai);
@@ -5480,38 +5485,39 @@ export default {
           this.$root.hideLoading();
           return false;
         }
-        if(this.memberOverview.tipe_konsumen.slug.toLowerCase() != promo.promo_member_for.toLowerCase()){
+        if(promo.promo_member_for && this.memberOverview.tipe_konsumen.slug.toLowerCase() != promo.promo_member_for.toLowerCase()){
           this.$root.showAlertFunction('warning', 'Promo Gagal!', `Promo ini hanya berlaku untuk konsumen ${promo.promo_member_for}`);
           this.$root.hideLoading();
           return false;
         }
       }
 
-      // const filterProductNoPromo = this.dataProductInList.filter((product) => !product.is_promo_product);
-      var totalPriceNonPromo = this.checkTotalPriceNonPromo();
+      if(promo.isForRegulerOrPromoProduct === false){
+        var totalPriceNonPromo = this.checkTotalPriceNonPromo();
 
-      if(totalPriceNonPromo > 0){
-        const calculateDiscount = totalPriceNonPromo * (promo.percent/100);
-        this.totalDiscountPromo = calculateDiscount;
+        if(totalPriceNonPromo > 0){
+          const calculateDiscount = totalPriceNonPromo * (promo.percent/100);
+          this.totalDiscountPromo = calculateDiscount;
 
-        if(promo.percent_after_dic != null && promo.percent_after_dic > 0){
-          const afterDiscValue = totalPriceNonPromo - calculateDiscount;
-          const calculateAfterDiscValue = afterDiscValue * (promo.percent_after_dic/100);
-          this.afterDiscountPromo = calculateAfterDiscValue;
-        }
-        if(promo.percent_additional != null && promo.percent_additional > 0){
-          const totalMinimal = totalPriceNonPromo - calculateDiscount;
-          if(totalMinimal > parseInt(promo.min_value)){
-            const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
-            const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
-            this.discountPromoAdditional = calculateAfterMinimal;
+          if(promo.percent_after_dic != null && promo.percent_after_dic > 0){
+            const afterDiscValue = totalPriceNonPromo - calculateDiscount;
+            const calculateAfterDiscValue = afterDiscValue * (promo.percent_after_dic/100);
+            this.afterDiscountPromo = calculateAfterDiscValue;
           }
+          if(promo.percent_additional != null && promo.percent_additional > 0){
+            const totalMinimal = totalPriceNonPromo - calculateDiscount;
+            if(totalMinimal > parseInt(promo.min_value)){
+              const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
+              const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
+              this.discountPromoAdditional = calculateAfterMinimal;
+            }
+          }
+          // this.totalBayarPrice = this.totalBayarPrice - calculateDiscount;
+        }else{
+            this.$root.showAlertFunction('warning', 'Promo Gagal!', 'Promo berlaku untuk product reguler');
+            this.$root.hideLoading();
+            return false;
         }
-        // this.totalBayarPrice = this.totalBayarPrice - calculateDiscount;
-      }else{
-          this.$root.showAlertFunction('warning', 'Promo Gagal!', 'Promo berlaku untuk product reguler');
-          this.$root.hideLoading();
-          return false;
       }
 
       
