@@ -2295,6 +2295,33 @@
         </div>
       </div>
 
+      <!-- Modal show notif confirm if batch qty is 0 -->
+      <div class="modal fade" id="modalNotifConfirmQtyBatch" tabindex="0" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 400px">
+          <div class="modal-content position-relative">
+            <div class="modal-body p-0 pb-2">
+              <div class="rounded-top-3 py-3 bg-body-tertiary text-center">
+                <h4 class="mb-1" id="modalExampleDemoLabel">Informasi On Hand Batch</h4>
+              </div>
+              <div class="py-2 text-center">
+                <div class="d-flex justify-content-center mb-2">
+                  <img src="@/assets/img/icons/Gif/warning-icon-2.gif" height="60" alt="">
+                </div>
+                <h5 class="m-0 px-1">
+                  Batch item tidak cukup!
+                </h5>
+                <p class="m-0 px-3">
+                  Jumlah QTY on hand batch yang dipilih <strong>0</strong>!
+                </p>
+              </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+              <button class="btn btn-secondary btn-sm" type="button" data-bs-dismiss="modal">Tutup</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="offcanvas offcanvas-end" id="canvasShowDetailProduct" tabindex="-1" aria-labelledby="canvasShowDetailProductLabel">
         <!-- Header nama product dan btn close -->
         <div v-if="productShowDetail" class="offcanvas-header pb-0 align-items-start">
@@ -3813,6 +3840,9 @@ export default {
       this.allDataFindProductFree = [];
       this.calculatePcsItemOrderList();
       $('#modalFindProductFree').modal('hide');
+      if(parseInt(batch.onHand) == 0){
+        $('#modalNotifConfirmQtyBatch').modal('show');
+      }
       // if(parseInt(batch.onHand) > 0){
       // }else{
       //   this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
@@ -3942,6 +3972,9 @@ export default {
             is_promo_product: product.promo_product_id ? product : null,
           };
           this.dataProductInList.push(productObj);
+          if(parseInt(batch.onHand) == 0){
+            $('#modalNotifConfirmQtyBatch').modal('show');
+          }
           // if(parseInt(batch.onHand) > 0){
           // }else{
           //   this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
@@ -4502,6 +4535,7 @@ export default {
       }
     },
 
+    // Panding fungction (No Used)
     submitFindOrderWithTiket: async function (){
       try{
         this.$root.showLoading();
@@ -4557,6 +4591,9 @@ export default {
                   is_ticket: data,
                 };
                 this.dataProductInList.push(productObj);
+                // if(parseInt(batch.onHand) == 0){
+                //   $('#modalNotifConfirmQtyBatch').modal('show');
+                // }
                 // if(parseInt(batch.onHand) > 0){
                 // }else{
                 //   this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
@@ -4997,7 +5034,7 @@ export default {
     },
 
     checkValidasiGelarMember: function(){
-      if(this.memberOverview.tipe_konsumen.slug != this.master_code.tipeKonsumen.reseller){
+      if(this.memberOverview && this.memberOverview.tipe_konsumen.slug != this.master_code.tipeKonsumen.reseller){
         return false;
       }
 
@@ -5111,6 +5148,9 @@ export default {
       this.confirmationPayment();
       $('#modalProductSingleGwp').modal('hide');
       $('#modalShowActivePromoDiskon').modal('hide');
+      if(parseInt(batch.onHand) == 0){
+        $('#modalNotifConfirmQtyBatch').modal('show');
+      }
       // if(parseInt(batch.onHand) > 0){
       // }else{
       //   this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
@@ -5368,6 +5408,9 @@ export default {
 
       $('#modalShowBatchProductMinValGwp').modal('hide');
       this.productSelectBatchMinValGwp = null;
+      if(parseInt(batch.onHand) == 0){
+        $('#modalNotifConfirmQtyBatch').modal('show');
+      }
       // if(parseInt(batch.onHand) > 0){
       // }else{
       //   this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
