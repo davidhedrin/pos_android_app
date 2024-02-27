@@ -2316,7 +2316,8 @@
               </div>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-              <button class="btn btn-secondary btn-sm" type="button" data-bs-dismiss="modal">Tutup</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-bs-dismiss="modal">Batal</button>
+              <button class="btn btn-primary btn-sm" type="button">Lanjutkan</button>
             </div>
           </div>
         </div>
@@ -3832,6 +3833,7 @@ export default {
           batch: batch,
           is_promo_product: null,
           is_free_product: true,
+          is_from_find_free: true,
         };
         this.dataProductInList.push(productObj);
       }
