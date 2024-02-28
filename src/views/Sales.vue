@@ -5036,31 +5036,31 @@ export default {
     },
 
     checkValidasiGelarMember: function(){
-      if(this.memberOverview && this.memberOverview.tipe_konsumen.slug != this.master_code.tipeKonsumen.reseller){
+      if(this.memberOverview != null && this.memberOverview.tipe_konsumen.slug == this.master_code.tipeKonsumen.reseller){
+        let gelarTerpilih = this.dataAllGelars.find((gelar) => {
+          const minimalNilai = parseFloat(gelar.minimal_nilai);
+          const maksimalNilai = parseFloat(gelar.maksimal_nilai);
+          var totalPriceNonPromo = parseFloat(this.checkTotalPriceNonPromo());
+  
+          if (gelar.minimal_nilai !== null && gelar.maksimal_nilai !== null) {
+            return totalPriceNonPromo >= minimalNilai && totalPriceNonPromo <= maksimalNilai;
+          } else if (gelar.minimal_nilai !== null) {
+            return totalPriceNonPromo >= minimalNilai;
+          } else if (gelar.maksimal_nilai !== null) {
+            return totalPriceNonPromo <= maksimalNilai;
+          }
+  
+          return false;
+        });
+  
+        // if (!gelarTerpilih) {
+        //   gelarTerpilih = this.dataAllGelars.find((gelar) => gelar.slug === this.master_code.gelarBeli.reguler);
+        // }
+  
+        return gelarTerpilih;
+      }else{
         return false;
       }
-
-      let gelarTerpilih = this.dataAllGelars.find((gelar) => {
-        const minimalNilai = parseFloat(gelar.minimal_nilai);
-        const maksimalNilai = parseFloat(gelar.maksimal_nilai);
-        var totalPriceNonPromo = parseFloat(this.checkTotalPriceNonPromo());
-
-        if (gelar.minimal_nilai !== null && gelar.maksimal_nilai !== null) {
-          return totalPriceNonPromo >= minimalNilai && totalPriceNonPromo <= maksimalNilai;
-        } else if (gelar.minimal_nilai !== null) {
-          return totalPriceNonPromo >= minimalNilai;
-        } else if (gelar.maksimal_nilai !== null) {
-          return totalPriceNonPromo <= maksimalNilai;
-        }
-
-        return false;
-      });
-
-      // if (!gelarTerpilih) {
-      //   gelarTerpilih = this.dataAllGelars.find((gelar) => gelar.slug === this.master_code.gelarBeli.reguler);
-      // }
-
-      return gelarTerpilih;
     },
 
     validationBeforeContinueBtnBilling: function(){
