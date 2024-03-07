@@ -3839,7 +3839,7 @@ export default {
         product.all_inventory_stok.push(findSelectInventory);
   
         const existingProduct = this.dataProductInList.find((p) => { 
-          return !p.is_promo_product && p.is_free_product  && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim()
+          return !p.is_promo_product && p.is_free_product  && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate
         });
         
         if(parseInt(batch.onHand) == 0){
@@ -3974,7 +3974,8 @@ export default {
                 if(p.is_promo_product){ // Jika sudah ada di list product yang diorder
                   return p.is_promo_product.promo_product_id === product.promo_product_id &&
                   p.is_promo_product.for_product.itemCode === product.for_product.itemCode && 
-                  p.batch.batchNo.trim() === batch.batchNo.trim()
+                  p.batch.batchNo.trim() === batch.batchNo.trim() &&
+                  p.batch.expiredDate === batch.expiredDate
                 }
               });
             }catch(error){
@@ -3983,7 +3984,7 @@ export default {
             }
           }else{ // Jika product reguler
             existingProduct = this.dataProductInList.find((p) => { 
-              return !p.is_promo_product && !p.is_free_product  && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim()
+              return !p.is_promo_product && !p.is_free_product  && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate
             });
           }
   
@@ -4027,7 +4028,8 @@ export default {
               if(p.is_promo_product){
                 return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
                 p.is_promo_product.for_product.itemCode === product.product.itemCode && 
-                p.batch.batchNo.trim() === batch.batchNo.trim()
+                p.batch.batchNo.trim() === batch.batchNo.trim() &&
+                p.batch.expiredDate === batch.expiredDate
               }
             });
           }catch(error){
@@ -4035,7 +4037,7 @@ export default {
             console.log(error);
           }
         }else{ // Jika product reguler
-          indexToDelete = this.dataProductInList.findIndex((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim());
+          indexToDelete = this.dataProductInList.findIndex((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
         }
       }
       
@@ -4075,7 +4077,8 @@ export default {
             if(p.is_promo_product){
               return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
               p.is_promo_product.for_product.itemCode === product.product.itemCode && 
-              p.batch.batchNo.trim() === batch.batchNo.trim()
+              p.batch.batchNo.trim() === batch.batchNo.trim() &&
+              p.batch.expiredDate === batch.expiredDate
             }
           });
         }catch(error){
@@ -4083,7 +4086,7 @@ export default {
           console.log(error);
         }
       }else{ // Jika product reguler
-        existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim());
+        existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
       }
 
       if(existingProduct){
@@ -4105,7 +4108,8 @@ export default {
             if(p.is_promo_product){
               return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
               p.is_promo_product.for_product.itemCode === product.product.itemCode && 
-              p.batch.batchNo.trim() === batch.batchNo.trim()
+              p.batch.batchNo.trim() === batch.batchNo.trim() && 
+              p.batch.expiredDate === batch.expiredDate
             }
           });
         }catch(error){
@@ -4113,7 +4117,7 @@ export default {
           console.log(error);
         }
       }else{ // Jika product reguler
-        existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim());
+        existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
       }
 
       if(existingProduct){
@@ -4608,7 +4612,7 @@ export default {
             responseData.tiket_detail.forEach(data => {
               var product = data.product;
               const batch = data.batch;
-              const findProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim());
+              const findProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
               if(findProduct){
                 findProduct.qty = findProduct.qty + data.qty;
               }else{
@@ -4961,7 +4965,7 @@ export default {
       const getTiket = this.allTicketInOrder[index];
       getTiket.tiket_detail.forEach(product => {
         const batch = product.batch;
-        const findProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim());
+        const findProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
         if(product.qty == findProduct.qty){
           this.deleteProductById(product, batch);
         }else{
