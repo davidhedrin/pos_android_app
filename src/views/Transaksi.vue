@@ -122,6 +122,14 @@
                   </div>
                 </div>
               </ion-col>
+              <ion-col size="12" size-md="3" size-lg="3">
+                <div class="text-end">
+                  Total Amount:
+                  <strong class="text-warning">
+                    Rp {{ $root.formatPrice(totalAmountTrasactionRange) }}
+                  </strong>
+                </div>
+              </ion-col>
             </ion-row>
           </ion-grid>
 
@@ -162,6 +170,11 @@
                     <button class="btn btn-link p-0" type="button">
                       <span class="fas fa-print text-secondary"> </span>
                     </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-end" colspan="8">
+                    Total Amount: <span class="text-warning">Rp {{ $root.formatPrice(totalAmountTrasactionRange) }}</span>
                   </td>
                 </tr>
               </tbody>
@@ -479,6 +492,7 @@ export default {
       currentPageTr: 1,
       perPageTr: 10,
       totalPageTr: 0,
+      totalAmountTrasactionRange: 0,
 
       dataTransactionReport: null,
       dateRangeValueTr: [],
@@ -541,6 +555,7 @@ export default {
         this.currentPageTr = response.current_page;
         this.totalPageTr = response.last_page;
         this.dataAllTransaction = response.data;
+        this.totalAmountTrasactionRange = response.data.reduce((total, data) => total + parseInt(data.paymentAmount), 0);
 
         this.updateDisplayedPagesTr();
       } catch (error) {

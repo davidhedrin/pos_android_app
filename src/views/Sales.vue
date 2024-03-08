@@ -2946,7 +2946,7 @@ export default {
         email: '',
         jenis_kelamin: '',
         tanggal_lahir: '',
-        jenis_member: null,
+        jenis_member: 'member',
       },
 
       inputSearchProduct: '',
@@ -4158,6 +4158,7 @@ export default {
       this.$root.showLoading();
       try{
         this.dataInputMember.user_login = this.$root.dataAuthToken;
+        this.dataInputMember.jenis_member = 'member';
         const store = await axios({
           method: 'post',
           url: this.$root.API_ERP + '/pos/app/sales/storeNewMember',
@@ -6624,41 +6625,42 @@ export default {
       });
 
       // --MTS--
-      autoTable(docStruk, {
-        body: [
-          [
-            {
-              content: '--MTS--',
-              styles: {
-                halign: 'center',
-                fontSize: sizeFont,
-                cellPadding: callPadding,
-              }
-            }
-          ],
-        ],
-        margin: marginPaper,
-        theme: 'plain',
-      });
+      // autoTable(docStruk, {
+      //   body: [
+      //     [
+      //       {
+      //         content: '--MTS--',
+      //         styles: {
+      //           halign: 'center',
+      //           fontSize: sizeFont,
+      //           cellPadding: callPadding,
+      //         }
+      //       }
+      //     ],
+      //   ],
+      //   margin: marginPaper,
+      //   theme: 'plain',
+      // });
       
-      autoTable(docStruk, {
-        body: [
-          [
-            {
-              content: '-',
-              styles: {
-                halign: 'center',
-                fontSize: sizeFont,
-                cellPadding: callPadding,
-              }
-            }
-          ],
-        ],
-        margin: marginPaper,
-        theme: 'plain',
-      });
+      // autoTable(docStruk, {
+      //   body: [
+      //     [
+      //       {
+      //         content: '-',
+      //         styles: {
+      //           halign: 'center',
+      //           fontSize: sizeFont,
+      //           cellPadding: callPadding,
+      //         }
+      //       }
+      //     ],
+      //   ],
+      //   margin: marginPaper,
+      //   theme: 'plain',
+      // });
 
       // return docStruk.save('Struk Belanja');
+      
       const pdfDataUri = docStruk.output('datauristring');
 
       // const iframe = this.$refs["pdf_struk_transaksi"];
