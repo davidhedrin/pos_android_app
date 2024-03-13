@@ -901,8 +901,9 @@
                               <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
                             </div>
                             <div class="col-md-8 text-end fs--1">
-                              <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                              <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                              <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                              <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                              <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                             </div>
                           </div>
                         </div>
@@ -1087,8 +1088,9 @@
                         <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
                       </div>
                       <div class="col-md-8 text-end fs--1">
-                        <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                        <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                        <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                        <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                        <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                       </div>
                     </div>
                   </div>
@@ -1126,8 +1128,9 @@
                             <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
                           </div>
                           <div class="col-md-8 text-end fs--1">
-                            <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                            <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                            <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                            <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                           </div>
                         </div>
                       </div>
@@ -1148,8 +1151,9 @@
                             <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
                           </div>
                           <div class="col-md-8 text-end fs--1">
-                            <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                            <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                            <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                            <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                           </div>
                         </div>
                       </div>
@@ -1248,8 +1252,9 @@
                               <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
                             </div>
                             <div class="col-md-8 text-end fs--1">
-                              <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                              <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                              <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                              <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                              <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                             </div>
                           </div>
                           <!-- <span class="far fa-check-circle text-success"></span> -->
@@ -2042,8 +2047,9 @@
                             </span>
                           </div>
                           <div class="col-md-8 text-end fs--1">
-                            <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                            <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                            <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                            <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                           </div>
                         </div>
                       </div>
@@ -2070,8 +2076,9 @@
                             </span>
                           </div>
                           <div class="col-md-8 text-end fs--1">
-                            <p class="m-0">Exp Date: <strong>{{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</strong></p>
-                            <p class="m-0">Warehouse: <strong>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</strong></p>
+                            <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                            <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
                           </div>
                         </div>
                       </div>
@@ -3799,7 +3806,7 @@ export default {
       let qtyPcs = 0;
 
       this.dataProductInList.forEach(item => {
-        qtyPcs += item.qty;
+        qtyPcs += parseInt(item.qty);
       });
 
       if(!isNaN(qtyPcs) || qtyPcs > 0){
@@ -3842,7 +3849,7 @@ export default {
           return !p.is_promo_product && p.is_free_product  && p.product.itemCode === product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate
         });
         
-        if(parseInt(batch.onHand) == 0){
+        if(parseInt(batch.onHand) < 1){
           await this.waitForConfirmationNoQtyBatch();
         }
   
@@ -3988,7 +3995,7 @@ export default {
             });
           }
   
-          if(parseInt(batch.onHand) == 0){
+          if(parseInt(batch.onHand) < 1){
             await this.waitForConfirmationNoQtyBatch();
           }
 
@@ -4069,64 +4076,92 @@ export default {
 
     incDecQtyInput: function(event, product, batch){
       const newValue = parseInt(event.target.value);
-      let existingProduct = null;
+      const onHandBatch = parseInt(batch.onHand);
+      if(onHandBatch > 0 && newValue > onHandBatch){
+        product.qty = batch.onHand;
+        this.$root.showAlertFunction('warning', 'Batch QTY Invalid!', 'Batch qty tidak boleh melebihi On Hand.');
+        this.calculatePcsItemOrderList();
+        this.calculateAmoutPrice();
+        return false;
+      };
       
-      if(product.is_promo_product){ // Jika product promo
-        try{
-          existingProduct = this.dataProductInList.find((p) => {
-            if(p.is_promo_product){
-              return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
-              p.is_promo_product.for_product.itemCode === product.product.itemCode && 
-              p.batch.batchNo.trim() === batch.batchNo.trim() &&
-              p.batch.expiredDate === batch.expiredDate
-            }
-          });
-        }catch(error){
-          existingProduct = null;
-          console.log(error);
-        }
-      }else{ // Jika product reguler
-        existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
+      if (!isNaN(newValue) && newValue > 0) {
+        product.qty = newValue;
+        this.calculatePcsItemOrderList();
+        this.calculateAmoutPrice();
       }
 
-      if(existingProduct){
-        if (!isNaN(newValue) || newValue > 0) {
-          existingProduct.qty = newValue;
-          this.calculatePcsItemOrderList();
-          this.calculateAmoutPrice();
-        }
-      }
+      // let existingProduct = null;
+      
+      // if(product.is_promo_product){ // Jika product promo
+      //   try{
+      //     existingProduct = this.dataProductInList.find((p) => {
+      //       if(p.is_promo_product){
+      //         return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
+      //         p.is_promo_product.for_product.itemCode === product.product.itemCode && 
+      //         p.batch.batchNo.trim() === batch.batchNo.trim() &&
+      //         p.batch.expiredDate === batch.expiredDate
+      //       }
+      //     });
+      //   }catch(error){
+      //     existingProduct = null;
+      //     console.log(error);
+      //   }
+      // }else{ // Jika product reguler
+      //   existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
+      // }
+
+      // if(existingProduct){
+      //   if (!isNaN(newValue) || newValue > 0) {
+      //     existingProduct.qty = newValue;
+      //     this.calculatePcsItemOrderList();
+      //     this.calculateAmoutPrice();
+      //   }
+      // }
     },
     
     incDecQtyChange: function(event, product, batch){
       const newValue = parseInt(event.target.value);
-      let existingProduct = null;
-
-      if(product.is_promo_product){ // Jika product promo
-        try{
-          existingProduct = this.dataProductInList.find((p) => {
-            if(p.is_promo_product){
-              return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
-              p.is_promo_product.for_product.itemCode === product.product.itemCode && 
-              p.batch.batchNo.trim() === batch.batchNo.trim() && 
-              p.batch.expiredDate === batch.expiredDate
-            }
-          });
-        }catch(error){
-          existingProduct = null;
-          console.log(error);
-        }
-      }else{ // Jika product reguler
-        existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
+      const onHandBatch = parseInt(batch.onHand);
+      if(onHandBatch > 0 && newValue > onHandBatch){
+        product.qty = batch.onHand;
+        this.$root.showAlertFunction('warning', 'Batch QTY Invalid!', 'Batch qty tidak boleh melebihi On Hand.');
+        return false;
+      };
+      
+      if (!isNaN(newValue) && newValue > 0) {
+        product.qty = newValue;
+      }else{
+        product.qty = 1;
       }
 
-      if(existingProduct){
-        if (!isNaN(newValue) || newValue > 0) {
-          existingProduct.qty = newValue;
-        }else{
-          existingProduct.qty = 1;
-        }
-      }
+      // let existingProduct = null;
+
+      // if(product.is_promo_product){ // Jika product promo
+      //   try{
+      //     existingProduct = this.dataProductInList.find((p) => {
+      //       if(p.is_promo_product){
+      //         return p.is_promo_product.promo_product_id === product.is_promo_product.promo_product_id &&
+      //         p.is_promo_product.for_product.itemCode === product.product.itemCode && 
+      //         p.batch.batchNo.trim() === batch.batchNo.trim() && 
+      //         p.batch.expiredDate === batch.expiredDate
+      //       }
+      //     });
+      //   }catch(error){
+      //     existingProduct = null;
+      //     console.log(error);
+      //   }
+      // }else{ // Jika product reguler
+      //   existingProduct = this.dataProductInList.find((p) => !p.is_promo_product && p.product.itemCode === product.product.itemCode && p.batch.batchNo.trim() === batch.batchNo.trim() && p.batch.expiredDate === batch.expiredDate);
+      // }
+
+      // if(existingProduct){
+      //   if (!isNaN(newValue) || newValue > 0) {
+      //     existingProduct.qty = newValue;
+      //   }else{
+      //     existingProduct.qty = 1;
+      //   }
+      // }
       
       this.calculatePcsItemOrderList();
       this.calculateAmoutPrice();
@@ -5170,7 +5205,7 @@ export default {
           return false;
         }
         
-        if(parseInt(batch.onHand) == 0){
+        if(parseInt(batch.onHand) < 1){
           await this.waitForConfirmationNoQtyBatch();
         }
   
@@ -5430,7 +5465,7 @@ export default {
           }
         }
         
-        if(parseInt(batch.onHand) == 0){
+        if(parseInt(batch.onHand) < 1){
           await this.waitForConfirmationNoQtyBatch();
         }
   
