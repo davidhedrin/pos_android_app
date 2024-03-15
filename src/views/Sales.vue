@@ -5090,7 +5090,7 @@ export default {
       }
       
       const number = parseFloat(numericPrice);
-      if(number > this.calculateTotalBayarPrice){
+      if(number >= this.calculateTotalBayarPrice){
         this.totalKembalianMetodeCash = number - this.calculateTotalBayarPrice;
         inputElement.classList.remove('border-red');
       }else{
@@ -5751,7 +5751,7 @@ export default {
         const numericPrice = price.replace(/[^0-9]/g, '');
 
         const number = parseFloat(numericPrice);
-        if(number > this.calculateTotalBayarPrice){
+        if(number >= this.calculateTotalBayarPrice){
           inputElement.classList.remove('border-red');
         }else{
           inputElement.classList.add('border-red');
