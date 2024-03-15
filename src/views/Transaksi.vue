@@ -70,15 +70,15 @@
         </ion-row>
       </ion-grid>
 
-      <div class="card">
+      <div class="card mb-3">
         <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-1-left.png'); background-position: left; background-size: cover;"></div>
         <div class="card-body position-relative">
           <div class="row align-items-center">
             <div class="col-md-8">
-              <h4>Daftar transaksi</h4>
+              <h5>Daftar transaksi</h5>
             </div>
             <div class="col-md-4 mb-3">
-              <form @submit.prevent="fatchDataTransaction()" class="d-flex align-items-center">
+              <form @submit.prevent="fatchDataTransaction(1, true, true)" class="d-flex align-items-center">
                 <VueDatePicker
                   v-model="dateRangeValueTr" range
                 />
@@ -122,21 +122,9 @@
                   </div>
                 </div>
               </ion-col>
-              <ion-col size="12" size-md="3" size-lg="3">
-                <div class="text-end">
-                  Total Amount:
-                  <strong class="text-warning">
-                    Rp {{ $root.formatPrice(totalAmountTrasactionRange) }}
-                  </strong>
-                </div>
-              </ion-col>
             </ion-row>
           </ion-grid>
 
-          <!-- <div class="d-none d-md-block table-scrollable-wrapper mb-2" style="min-height: 49vh; max-height: 49vh;">
-            <table class="table table-scrollable">
-            </table>
-          </div> -->
           <div class="d-none d-md-block table-responsive scrollbar mb-2">
             <table class="table table-hover overflow-hidden">
               <thead>
@@ -172,46 +160,75 @@
                     </button>
                   </td>
                 </tr>
-                <tr>
-                  <td class="text-end" colspan="8">
-                    Total Amount: <span class="text-warning">Rp {{ $root.formatPrice(totalAmountTrasactionRange) }}</span>
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
 
           <div v-if="totalPageTr > 1" class="d-flex justify-content-end">
             <nav aria-label="Page navigation example">
-              <ul class="pagination pagination-sm">
+              <ul class="pagination pagination-sm mb-0">
 
                 <li v-if="displayedPagesTr[0] > 1">
-                  <a class="page-link fs-0" href="javascript:void(0)" @click="fatchDataTransaction()">First</a>
+                  <a class="page-link fs-0" href="javascript:void(0)" @click="fatchDataTransaction(1, true)">First</a>
                 </li>
 
                 <li class="page-item" :class="{ 'disabled': currentPageTr === 1 }">
-                  <a class="page-link fs-0" href="javascript:void(0)" aria-label="Previous" @click="fatchDataTransaction(currentPageTr - 1)">
+                  <a class="page-link fs-0" href="javascript:void(0)" aria-label="Previous" @click="fatchDataTransaction(currentPageTr - 1, true)">
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
 
                 <li v-for="pageNumber in displayedPagesTr" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageTr }">
-                  <a class="page-link fs-0" href="javascript:void(0)" @click="fatchDataTransaction(pageNumber)">{{ pageNumber }}</a>
+                  <a class="page-link fs-0" href="javascript:void(0)" @click="fatchDataTransaction(pageNumber, true)">{{ pageNumber }}</a>
                 </li>
 
                 <li class="page-item" :class="{ 'disabled': currentPageTr === totalPageTr }">
-                  <a class="page-link fs-0" href="javascript:void(0)" aria-label="Next" @click="fatchDataTransaction(currentPageTr + 1)">
+                  <a class="page-link fs-0" href="javascript:void(0)" aria-label="Next" @click="fatchDataTransaction(currentPageTr + 1, true)">
                     <span aria-hidden="true">&raquo;</span>
                   </a>
                 </li>
 
                 <li v-if="displayedPagesTr[displayedPagesTr.length - 1] < totalPageTr">
-                  <a class="page-link fs-0" href="javascript:void(0)" @click="fatchDataTransaction(totalPageTr)">Last</a>
+                  <a class="page-link fs-0" href="javascript:void(0)" @click="fatchDataTransaction(totalPageTr, true)">Last</a>
                 </li>
 
               </ul>
             </nav>
           </div>
+
+          <hr>
+          <div class="card-footer position-relative">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <h5 class="mb-0">Payment Overview</h5>
+                <span class="fs--1">{{ $root.formatDate(dateRangeValueTr[0]) }} - {{ $root.formatDate(dateRangeValueTr[1]) }}</span>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <strong>
+                  Total Amount: <span class="text-warning">Rp {{ $root.formatPrice(totalAmountTrasactionRange) }}</span>
+                </strong>
+              </div>
+            </div>
+
+            <!-- <u>Payment List:</u> -->
+            <div class="row ">
+              <div v-for="payment in allPaymentMethod" class="col-md-3 mb-3 text-center">
+                <div class="card">
+                  <div class="card-header">
+                    <!-- {{ payment.nama }} -->
+                    <img :src="'assets/img/po-img/' + payment.image" height="20" alt="">
+                    <div>
+                      <label>
+                        Total: <span class="fs-0" :class="payment.total_amont > 0  && 'text-warning'">
+                          Rp {{ $root.formatPrice(payment.total_amont) }}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>C
         </div>
       </div>
 
@@ -499,6 +516,7 @@ export default {
       dataTransactionReport: null,
       dateRangeValueTr: [],
       selectedTrView: null,
+      allPaymentMethod: [],
     };
   },
 
@@ -527,8 +545,11 @@ export default {
 
         const reqData = requset.data;
         this.dataTransactionReport = reqData.dataTransactionReport;
+        this.allPaymentMethod = reqData.allPaymentMethod.map(x => {
+          return {...x, total_amont: 0}
+        });
 
-        await this.fatchDataTransaction(this.currentPageTr);
+        await this.fatchDataTransaction(this.currentPageTr, false, true);
       } catch (error) {
         console.log(error);
       }
@@ -536,8 +557,8 @@ export default {
       this.$root.hideLoading();
     },
     
-    fatchDataTransaction: async function(page = 1){
-      this.$root.showLoading();
+    fatchDataTransaction: async function(page = 1, isLoading = false, isUpdate = false){
+      if(isLoading) this.$root.showLoading();
       const startDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[0]));
       const endDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[1]));
       try{
@@ -552,6 +573,8 @@ export default {
             date_end: endDate,
           },
         });
+          
+        if(isUpdate) await this.fatchDataTrUserDetailPaymentAmount();
 
         const response = getAllDataTr.data.data;
         this.currentPageTr = response.current_page;
@@ -566,7 +589,34 @@ export default {
       } catch (error) {
         console.log(error);
       }
-      this.$root.hideLoading();
+      if(isLoading) this.$root.hideLoading();
+    },
+
+    fatchDataTrUserDetailPaymentAmount: async function(){
+      const startDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[0]));
+      const endDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[1]));
+      try{
+        const check_uuid = localStorage.getItem(this.local_storage.is_dynamic);
+        const getAllDataTr = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/transaksi/getTrByUserDetailPaymentAmount/' + check_uuid,
+          params: {
+            date_start: startDate,
+            date_end: endDate,
+          },
+        });
+
+        const reqData = getAllDataTr.data;
+        this.allPaymentMethod.map(x => {
+          let z = reqData.find(y => y.payment_type === x.slug);
+          if (z) {
+            x.total_amont = parseInt(z.total_payment);
+          }
+          return x;
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     
     updateDisplayedPagesTr() {
