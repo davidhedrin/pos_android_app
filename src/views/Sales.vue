@@ -2113,18 +2113,25 @@
                   <div class="px-4 pt-0">
                     <div v-if="memberFindOrRegis">
                       <div class="row align-items-center">
-                        <div class="col-md-8">
+                        <div class="col-md-4">
                           <h5 class="mb-2 fs-0"><u>Daftar Member:</u></h5>
                         </div>
-                        <div class="col-md-4">
-                          <input v-model="inputSearchMember" class="form-control search-input fuzzy-search mb-3" type="search" placeholder="Search..." aria-label="Search">
+                        <div class="col-md-8">
+                          <form @submit.prevent="fatchDataMember()" class="d-flex justify-content-end">
+                            <div class="me-2">
+                              <input v-model="inputSearchMember" @input="inputSearchMember.trim() == '' && fatchDataMember()" class="form-control search-input fuzzy-search mb-3" type="search" placeholder="Search..." aria-label="Search">
+                            </div>
+                            <div>
+                              <button class="btn btn-primary" type="submit"><span class="fas fa-search"></span></button>
+                            </div>
+                          </form>
                         </div>
                       </div>
                       <hr class="p-0 m-0">
 
                       <div class="row d-block d-md-none p-0 mb-3">
                         <div class="scrollable-customize" style="min-height: 1vh; max-height: 55vh;">
-                          <div v-for="member in filteredMembers" class="col-12 col-md-3 col-lg-3 mb-3">
+                          <div v-for="member in dataAllMembers" class="col-12 col-md-3 col-lg-3 mb-3">
                             <div class="card" @click="selectMemberOverview(member)">
                               <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/pro-member-bg.png');"></div>
                               <div class="card-header d-flex justify-content-between">
@@ -2144,7 +2151,7 @@
                         </div>
                       </div>
 
-                      <div class="d-none d-md-block table-scrollable-wrapper" style="min-height: 3vh; max-height: 30vh;">
+                      <div class="d-none d-md-block table-scrollable-wrapper" style="min-height: 3vh; max-height: 45vh;">
                         <table class="table table-scrollable table-sm table-hover">
                           <thead>
                             <tr>
@@ -2157,12 +2164,12 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-if="filteredMembers.length == 0">
+                            <tr v-if="dataAllMembers.length == 0">
                               <td class="text-center py-3" colspan="5">
                                 <h5 class="fs-0"><i>Data member tidak ditemukan</i></h5>
                               </td>
                             </tr>
-                            <tr v-for="member in filteredMembers" :id="member.member_id" class="align-middle">
+                            <tr v-for="member in dataAllMembers" :id="member.member_id" class="align-middle">
                               <!-- <td class="text-nowrap" v-on:click="selectMemberOverview(member)" style="cursor: pointer;">
                                 <span class="badge rounded-pill" :class="member.tipe_konsumen.slug == master_code.tipeKonsumen.member ? 'badge-subtle-success' : member.tipe_konsumen.slug == master_code.tipeKonsumen.reseller ? 'badge-subtle-warning' : member.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan ? 'badge-subtle-primary' : ''">
                                   {{ member.tipe_konsumen.nama_tipe }}
@@ -2906,8 +2913,9 @@ export default {
 
       dataAllMembers: [],
       currentPageMember: 1,
-      perPageMember: 10,
+      perPageMember: 15,
       totalPageMember: 0,
+      inputSearchMember: '',
 
       dataAllTicket: [],
       dataFilterAllTicket: [],
@@ -2967,7 +2975,6 @@ export default {
       switchBoxSendEamil: false,
 
       selectedFilterBrand: null,
-      inputSearchMember: '',
       selectSalesBy: this.$root.master_code.salesBy.wi,
       selectedBscWa: '',
 
@@ -3662,7 +3669,7 @@ export default {
       this.displayedPageProductOrderTicket = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     },
 
-    fatchDataMember: async function(page){
+    fatchDataMember: async function(page = 1){
       this.$root.showLoading();
       try{
         const getAllMember = await axios({
@@ -3671,6 +3678,7 @@ export default {
           params: {
             page: page,
             per_page: this.perPageMember,
+            search: this.inputSearchMember.trim(),
           },
         });
 
