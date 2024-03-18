@@ -903,7 +903,7 @@
                             <div class="col-md-8 text-end fs--1">
                               <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                               <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                              <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                              <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                             </div>
                           </div>
                         </div>
@@ -1090,7 +1090,7 @@
                       <div class="col-md-8 text-end fs--1">
                         <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                         <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                        <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                        <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                       </div>
                     </div>
                   </div>
@@ -1130,7 +1130,7 @@
                           <div class="col-md-8 text-end fs--1">
                             <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                             <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                            <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                           </div>
                         </div>
                       </div>
@@ -1153,7 +1153,7 @@
                           <div class="col-md-8 text-end fs--1">
                             <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                             <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                            <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                           </div>
                         </div>
                       </div>
@@ -1254,7 +1254,7 @@
                             <div class="col-md-8 text-end fs--1">
                               <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                               <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                              <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                              <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                             </div>
                           </div>
                           <!-- <span class="far fa-check-circle text-success"></span> -->
@@ -2049,7 +2049,7 @@
                           <div class="col-md-8 text-end fs--1">
                             <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                             <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                            <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                           </div>
                         </div>
                       </div>
@@ -2078,7 +2078,7 @@
                           <div class="col-md-8 text-end fs--1">
                             <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                             <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
-                            <p class="m-0">Whs: {{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</p>
+                            <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
                           </div>
                         </div>
                       </div>
