@@ -88,9 +88,9 @@
                   <span class="ms-2 me-1">Ticket</span>
                   <span v-if="listDataProductForCreateTicket.length > 0" class="badge rounded-pill bg-danger py-1">{{ listDataProductForCreateTicket.length }}</span>
                 </button>
-                <!-- <button class="btn btn-outline-warning btn-sm ms-2" type="button" @click="fatchAllDataProduct()">
-                  Semua <span class="fas fa-cloud-download-alt"></span>
-                </button> -->
+                <button class="btn btn-outline-warning ms-2" type="button" @click="openModalListPromoBundling()">
+                  Bundle <span class="fas fa-tags"></span>
+                </button>
               </div>
             </div>
           </div>
@@ -346,6 +346,513 @@
         </ion-fab-button> -->
       </ion-fab>
 
+      <!-- Modal show all promo bundle -->
+      <div class="modal fade" id="modalShowAllPromoBundling" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 950px">
+          <div class="modal-content position-relative">
+            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
+              <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+              <div class="rounded-top-3 py-3 ps-4 pe-6 bg-body-tertiary">
+                <h5 class="m-0">List Bundle</h5>
+              </div>
+
+              <div class="p-4 py-3">
+                <form @submit.prevent="fatchDataListPromoBundling(1, true)" class="mb-3">
+                  <div class="input-group">
+                    <input v-model="inputSearchNamaBundle" @input="inputSearchNamaBundle.trim() == '' && fatchDataListPromoBundling(1, true)" class="form-control search-input fuzzy-search" type="search" placeholder="Masukkan Nama Bundle">
+                    <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
+                  </div>
+                </form>
+
+                <div v-if="dataAllPromoBundle.length > 0" class="row">
+                  <div v-for="bundle in dataAllPromoBundle" class="col-md-4 mb-3">
+                    <div class="card cursor-pointer" @click="clickPromoBundlingDetail(bundle)">
+                      <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/bundle-i.png');"></div>
+                      <div class="card-header position-relative">
+                        <h5 class="m-0">
+                          {{ bundle.nama_promo_bundle }}
+                        </h5>
+                        <label class="m-0 fw-normal fs--2"><u>Tipe bundling:</u></label>
+                        <div class="fs--1">
+                          <span class="fas fa-tags"></span>
+                          {{ 
+                            bundle.tipe_promo_bundle == '1' ? 
+                            'Buy Get Remix Brand' : 
+                            'Free Gift Product' 
+                          }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="text-center mt-3">
+                  <label class="form-label fst-italic">Promo Bundle Tidak Ditemukan!</label>
+                </div>
+
+                <nav v-if="totalPagePromoBundle > 1" aria-label="Page navigation example">
+                  <ul class="pagination pagination-sm mb-0">
+
+                    <li v-if="displayedPagesPromoBundle[0] > 1">
+                      <a class="page-link" href="javascript:void(0)" @click="fatchDataListPromoBundling(1, true)">First</a>
+                    </li>
+
+                    <li class="page-item" :class="{ 'disabled': currentPagePromoBundle === 1 }">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataListPromoBundling(currentPagePromoBundle - 1, true)">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+
+                    <li v-for="pageNumber in displayedPagesPromoBundle" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPagePromoBundle }">
+                      <a class="page-link" href="javascript:void(0)" @click="fatchDataListPromoBundling(pageNumber, true)">{{ pageNumber }}</a>
+                    </li>
+
+                    <li class="page-item" :class="{ 'disabled': currentPagePromoBundle === totalPagePromoBundle }">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataListPromoBundling(currentPagePromoBundle + 1, true)">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+
+                    <li v-if="displayedPagesPromoBundle[displayedPagesPromoBundle.length - 1] < totalPagePromoBundle">
+                      <a class="page-link" href="javascript:void(0)" @click="fatchDataListPromoBundling(totalPagePromoBundle, true)">Last</a>
+                    </li>
+
+                  </ul>
+                </nav>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-sm btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+              <button class="btn btn-sm btn-primary" type="button">Selesai</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal select product promo bundle -->
+      <div class="modal fade" id="modalSelectProductPromoBundling" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="max-width: 950px">
+          <div class="modal-content position-relative border-0">
+            <div class="modal-body p-0">
+              <div class="card">
+                <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-5i.png'); background-size: cover;"></div>
+                <div class="card-body position-relative p-0 pb-4">
+                  <div class="position-absolute top-0 end-0 mt-2 me-3 z-1">
+                    <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div v-if="promoBundleSelected">
+                    <div class="card-header rounded-top-3 pt-3 pb-1 ps-3 pe-6">
+                      <h5 class="m-0">Set Bundle "{{ promoBundleSelected.bundle.nama_promo_bundle }}"</h5>
+                      <span v-if="promoBundleSelected.bundle.tipe_promo_bundle == '1'" class="m-0 fs--1">Buy and Get Free Item</span>
+                      <span v-else-if="promoBundleSelected.bundle.tipe_promo_bundle == '2'" class="m-0 fs--1">Free Gift Product</span>
+                    </div>
+                    <hr class="my-1"/>
+                    <div>
+                      <!-- Promo product spesifict gift product -->
+                      <div v-if="promoBundleSelected.bundle.tipe_promo_bundle == '2'" class="px-3">
+                        <label><b>Product to Buy</b></label>
+                        <div class="row gx-2">
+                          <div v-for="product in promoBundleSelected.detail.detail_buy" class="col-md-4">
+                            <div class="card">
+                              <div class="card-header p-1 pb-2">
+                                <div class="row g-2 align-items-center">
+                                  <div class="col-4">
+                                    <img v-if="product.item.imageUrl != null && product.item.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.item.imageUrl" style="width: 100%; height: 60px;" alt="">
+                                    <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 60px;" alt="">
+                                  </div>
+                                  <div class="col-8 pe-2">
+                                    <span class="fs--2">
+                                      {{ product.itemCode }}
+                                    </span>
+                                    <div class="text-truncate">
+                                      <label class="fs-0 m-0">
+                                        {{ product.item.itemName }}
+                                      </label>
+                                    </div>
+                                    <span class="fs--1">
+                                      <strong class="text-warning mb-0 text-center">Rp {{ $root.formatPrice(product.item.all_product_price[0].price) }}</strong> | x{{ product.pcsQty }} Pcs
+                                    </span>
+                                  </div>
+                                </div>
+                                <hr class="my-1" />
+                                <div class="px-1">
+                                  <button class="btn btn-sm btn-outline-warning fs--2 p-1 py-0 fw-semi-bold me-2" type="button" @click="pilihBatchProductToBuyBundle(promoBundleSelected.bundle, product)">
+                                    Pilih Batch
+                                  </button>
+                                  <span class="badge rounded-pill fw-medium py-1" :class="product.selectBatch == null ? 'badge-subtle-secondary' : 'badge-subtle-success'">
+                                    Batch: 
+                                    <span v-if="product.selectBatch == null"> Not Select!</span>
+                                    <span v-else>
+                                      {{ product.selectBatch.batchNo }}
+                                      Exp: {{ $root.formatDate(product.selectBatch.expiredDate) }}
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr class="mt-4" />
+
+                        <label><b>Product Gift</b> <span class="badge bg-danger">Free</span></label>
+                        <div class="row gx-2">
+                          <div v-for="product in promoBundleSelected.detail.detail_get" class="col-md-4">
+                            <div class="card">
+                              <div class="card-header p-1 pb-2">
+                                <div class="row g-2 align-items-center">
+                                  <div class="col-4">
+                                    <img v-if="product.item.imageUrl != null && product.item.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.item.imageUrl" style="width: 100%; height: 60px;" alt="">
+                                    <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 60px;" alt="">
+                                  </div>
+                                  <div class="col-8 pe-2">
+                                    <span class="fs--2">
+                                      {{ product.itemCode }}
+                                    </span>
+                                    <div class="text-truncate">
+                                      <label class="fs-0 m-0">
+                                        {{ product.item.itemName }}
+                                      </label>
+                                    </div>
+                                    <span class="fs--1">
+                                      <strong class="text-warning mb-0 text-center">Rp {{ $root.formatPrice(product.item.all_product_price[0].price) }}</strong> | x{{ product.pcsQty }} Pcs
+                                    </span>
+                                  </div>
+                                </div>
+                                <hr class="my-1" />
+                                <div class="px-1">
+                                  <button class="btn btn-sm btn-outline-warning fs--2 p-1 py-0 fw-semi-bold me-2" type="button" @click="pilihBatchProductToBuyBundle(promoBundleSelected.bundle, product)">
+                                    Pilih Batch
+                                  </button>
+                                  <span class="badge rounded-pill fw-medium py-1" :class="product.selectBatch == null ? 'badge-subtle-secondary' : 'badge-subtle-success'">
+                                    Batch: 
+                                    <span v-if="product.selectBatch == null"> Not Select!</span>
+                                    <span v-else>
+                                      {{ product.selectBatch.batchNo }}
+                                      Exp: {{ $root.formatDate(product.selectBatch.expiredDate) }}
+                                    </span>
+                                    <!-- <a href="javascript:void(0)" class="text-danger" @click="deleteProductFromListOrderTicket(product)">
+                                      <span class="fas fa-window-close"></span>
+                                    </a> -->
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Promo product bundle from brand -->
+                      <div v-else-if="promoBundleSelected.bundle.tipe_promo_bundle == '1'" class="px-3">
+                        <div>
+                          <label class="fw-normal me-1 m-0">
+                            Find product Buy Brand
+                            <b v-for="(brand, idx) in promoBundleSelected.detail.detail_brand_buy">
+                              {{ brand.brandCode }}{{ idx + 1 == promoBundleSelected.detail.detail_brand_buy.length ? '' : ', ' }}
+                            </b>:
+                          </label>
+                          <span v-if="selectedItemProductPromoBundleBuy.length == 0" class="badge rounded-pill badge-subtle-secondary fw-medium py-1">
+                            Product: Not Select!
+                          </span>
+                          <div v-else class="customn-scrollable-x">
+                            <span v-for="(data, index) in selectedItemProductPromoBundleBuy" class="badge badge-subtle-primary fw-bold me-2" style="font-weight: normal;">
+                              {{ data.product.itemCode }} ({{ data.batch.batchNo }}) x {{ data.qty }} PCS
+                              <span class="cursor-pointer" @click="removeSelectBatchBundleBrand(selectedItemProductPromoBundleBuy, index, data)">
+                                <span class="fas fa-window-close text-danger ms-1"></span>
+                              </span>
+                            </span>
+                          </div>
+                          <form @submit.prevent="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, 1, true)" class="mb-3 mt-2">
+                            <div class="input-group">
+                              <input v-model="inputSearchFreeItemForBundleBrandBuy" @input="inputSearchFreeItemForBundleBrandBuy.trim() == '' && findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, 1, true)" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Masukkan nama atau item code product">
+                              <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
+                            </div>
+                          </form>
+                          <div class="row gx-2">
+                            <div v-for="product in dataAllProductBrandBundleBuy" class="col-6 col-sm-6 col-md-2 pb-3">
+                              <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
+                                <div class="overflow-hidden">
+                                  <div class="position-relative rounded-top overflow-hidden">
+                                    <div class="d-block text-center">
+                                      <div class="cursor-pointer" @click="pilihBatchProductToBuyBundleBrand(promoBundleSelected.bundle, product, master_code.buyGet.buy)">
+                                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 90px;" alt="">
+                                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 90px;" alt="">
+                                      </div>
+                                      <div v-if="product.isSelect" class="position-absolute mb-1 ms-2 z-2 top-0 end-0">
+                                        <span class="badge rounded-pill fw-medium badge-subtle-success py-1">
+                                          <span class="fas fa-check fs--2"></span> <span class="fs--2 me-1">Dipilih</span>
+                                          <a href="javascript:void(0)" class="text-danger" @click="removeSelecteItemBundleBrand(promoBundleSelected.bundle, product, master_code.buyGet.buy)">
+                                            <span class="fas fa-window-close"></span>
+                                          </a>
+                                        </span>
+                                      </div>
+                                      <div class="position-absolute mb-1 ms-2 z-2 bottom-0 start-0 cursor-pointer" @click="pilihBatchProductToBuyBundleBrand(promoBundleSelected.bundle, product, master_code.buyGet.buy)">
+                                        <span class="badge badge-subtle-secondary px-1 fs--2 fw-bold" style="font-weight: normal;">
+                                          {{ product.itemCode }}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div class="m-2 text-truncate">
+                                    <h5 class="fs-0 mb-0">
+                                      {{ product.itemName }}
+                                    </h5>
+                                    <div>
+                                      <span class="fs--1 me-2">
+                                        <strong class="text-warning mb-0 text-center">
+                                          Rp {{ $root.formatPrice(product.all_product_price[0].price) }}
+                                        </strong>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div v-if="dataAllProductBrandBundleBuy.length == 0" class="col-md-12 text-center">
+                              <i><label>Product tidak ditemukan!</label></i>
+                            </div>
+                          </div>
+                          <nav v-if="totalPageProductBrandBundleBuy > 1" aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm mb-0">
+      
+                              <li v-if="displayedPagesProductBrandBundleBuy[0] > 1">
+                                <a class="page-link" href="javascript:void(0)" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, 1, true)">First</a>
+                              </li>
+      
+                              <li class="page-item" :class="{ 'disabled': currentPageProductBrandBundleBuy === 1 }">
+                                <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, currentPageProductBrandBundleBuy - 1, true)">
+                                  <span aria-hidden="true">&laquo;</span>
+                                </a>
+                              </li>
+      
+                              <li v-for="pageNumber in displayedPagesProductBrandBundleBuy" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageProductBrandBundleBuy }">
+                                <a class="page-link" href="javascript:void(0)" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, pageNumber, true)">{{ pageNumber }}</a>
+                              </li>
+      
+                              <li class="page-item" :class="{ 'disabled': currentPageProductBrandBundleBuy === totalPageProductBrandBundleBuy }">
+                                <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, currentPageProductBrandBundleBuy + 1, true)">
+                                  <span aria-hidden="true">&raquo;</span>
+                                </a>
+                              </li>
+      
+                              <li v-if="displayedPagesProductBrandBundleBuy[displayedPagesProductBrandBundleBuy.length - 1] < totalPageProductBrandBundleBuy">
+                                <a class="page-link" href="javascript:void(0)" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_buy, master_code.buyGet.buy, totalPageProductBrandBundleBuy, true)">Last</a>
+                              </li>
+      
+                            </ul>
+                          </nav>
+                        </div>
+                        
+                        <hr class="" />
+
+                        <div>
+                          <label class="fw-normal me-1 m-0">
+                            Find product Get <span class="badge bg-danger">Free</span>
+                            Brand
+                            <b v-for="(brand, idx) in promoBundleSelected.detail.detail_brand_get">
+                              {{ brand.brandCode }}{{ idx + 1 == promoBundleSelected.detail.detail_brand_get.length ? '' : ', ' }}
+                            </b>
+                            (Max value Rp <span class="text-warning fw-bold">{{ $root.formatPrice(reduceMaxAmountValueBundleBrand) }}</span>):
+                          </label>
+                          <span v-if="selectedItemProductPromoBundleGet.length == 0" class="badge rounded-pill badge-subtle-secondary fw-medium py-1">
+                            Product: Not Select!
+                          </span>
+                          <div v-else class="customn-scrollable-x">
+                            <span v-for="(data, index) in selectedItemProductPromoBundleGet" class="badge badge-subtle-primary fw-bold me-2" style="font-weight: normal;">
+                              {{ data.product.itemCode }} x {{ data.qty }} PCS
+                              <span class="cursor-pointer" @click="removeSelectBatchBundleBrand(selectedItemProductPromoBundleGet, index, data)">
+                                <span class="fas fa-window-close text-danger ms-1"></span>
+                              </span>
+                            </span>
+                          </div>
+                          <form @submit.prevent="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, 1, true)" class="mb-3 mt-2">
+                            <div class="input-group">
+                              <input v-model="inputSearchFreeItemForBundleBrandGet" @input="inputSearchFreeItemForBundleBrandGet.trim() == '' && findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, 1, true)" class="form-control form-control-sm search-input fuzzy-search" type="search" placeholder="Masukkan nama atau item code product">
+                              <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
+                            </div>
+                          </form>
+                          <div class="row gx-2">
+                            <div v-for="product in dataAllProductBrandBundleGet" class="col-6 col-sm-6 col-md-2 pb-3">
+                              <div class="border rounded-1 h-100 d-flex flex-column justify-content-between">
+                                <div class="overflow-hidden">
+                                  <div class="position-relative rounded-top overflow-hidden">
+                                    <div class="d-block text-center">
+                                      <div class="cursor-pointer" @click="pilihBatchProductToBuyBundleBrand(promoBundleSelected.bundle, product, master_code.buyGet.get)">
+                                        <img v-if="product.imageUrl != null && product.imageUrl.trim() != ''" class="img-fluid rounded-top" :src="product.imageUrl" style="width: 100%; height: 90px;" alt="">
+                                        <img v-else class="img-fluid rounded-top" src="@/assets/img/product/no_image.jpg" style="width: 100%; height: 90px;" alt="">
+                                      </div>
+                                      <div v-if="product.isSelect" class="position-absolute mb-1 ms-2 z-2 top-0 end-0">
+                                        <span class="badge rounded-pill fw-medium badge-subtle-success py-1">
+                                          <span class="fas fa-check fs--2"></span> <span class="fs--2 me-1">Dipilih</span>
+                                          <a href="javascript:void(0)" class="text-danger" @click="removeSelecteItemBundleBrand(promoBundleSelected.bundle, product, master_code.buyGet.get)">
+                                            <span class="fas fa-window-close"></span>
+                                          </a>
+                                        </span>
+                                      </div>
+                                      <div class="position-absolute mb-1 ms-2 z-2 bottom-0 start-0 cursor-pointer" @click="pilihBatchProductToBuyBundleBrand(promoBundleSelected.bundle, product, master_code.buyGet.get)">
+                                        <span class="badge badge-subtle-secondary px-1 fs--2 fw-bold" style="font-weight: normal;">
+                                          {{ product.itemCode }}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div class="m-2 text-truncate">
+                                    <h5 class="fs-0 mb-0">
+                                      {{ product.itemName }}
+                                    </h5>
+                                    <div>
+                                      <span class="fs--1 me-2">
+                                        <strong class="text-warning mb-0 text-center">
+                                          Rp {{ $root.formatPrice(product.all_product_price[0].price) }}
+                                        </strong>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div v-if="dataAllProductBrandBundleGet.length == 0" class="col-md-12 text-center">
+                              <i><label>Product tidak ditemukan!</label></i>
+                            </div>
+                          </div>
+                          <nav v-if="totalPageProductBrandBundleGet > 1" aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm mb-0">
+      
+                              <li v-if="displayedPagesProductBrandBundleGet[0] > 1">
+                                <a class="page-link" href="javascript:void(0)" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, 1, true)">First</a>
+                              </li>
+      
+                              <li class="page-item" :class="{ 'disabled': currentPageProductBrandBundleGet === 1 }">
+                                <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, currentPageProductBrandBundleGet - 1, true)">
+                                  <span aria-hidden="true">&laquo;</span>
+                                </a>
+                              </li>
+      
+                              <li v-for="pageNumber in displayedPagesProductBrandBundleGet" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageProductBrandBundleGet }">
+                                <a class="page-link" href="javascript:void(0)" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, pageNumber, true)">{{ pageNumber }}</a>
+                              </li>
+      
+                              <li class="page-item" :class="{ 'disabled': currentPageProductBrandBundleGet === totalPageProductBrandBundleGet }">
+                                <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, currentPageProductBrandBundleGet + 1, true)">
+                                  <span aria-hidden="true">&raquo;</span>
+                                </a>
+                              </li>
+      
+                              <li v-if="displayedPagesProductBrandBundleGet[displayedPagesProductBrandBundleGet.length - 1] < totalPageProductBrandBundleGet">
+                                <a class="page-link" href="javascript:void(0)" @click="findProductForPromoBundleBrand(promoBundleSelected.detail.detail_brand_get, master_code.buyGet.get, totalPageProductBrandBundleGet, true)">Last</a>
+                              </li>
+      
+                            </ul>
+                          </nav>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer position-relative">
+                  <button class="btn btn-sm btn-secondary" type="button" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalShowAllPromoBundling"><span class="fas fa-arrow-left"></span> Kembali Promo</button>
+                  <button class="btn btn-sm btn-primary" type="button" @click="checkoutSetPromoBundling()">Selesai</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal show batch product promo bundle -->
+      <div class="modal fade" id="modalShowBatchProductPromoBundle" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px">
+          <div class="modal-content position-relative">
+            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
+              <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+              <div class="rounded-top-3 py-3 ps-4 pe-6 bg-body-tertiary">
+                <h5 class="mb-1" id="modalExampleDemoLabel">Batch product </h5>
+              </div>
+              <div v-if="productSelectBatchPromoBundle != null" class="px-3 pb-3">
+                <div class="scrollable-customize mb-2" style="min-height: 1vh; max-height: 70vh;">
+                  <!-- For Regular Product -->
+                  <div v-if="productSelectBatchPromoBundle.all_inventory_batch.length > 0" class="card cursor-pointer mt-3" v-for="batch in productSelectBatchPromoBundle.all_inventory_batch" @click="selectBatchProductBuyBundle(productSelectBatchPromoBundle, batch)">
+                    <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: auto;"></div>
+                    <div class="card-header position-relative py-2 px-3">
+                      <div class="row align-items-center">
+                        <div class="col-md-4">
+                          <span class="fs--2"><u>Batch Number:</u></span>
+                          <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
+                        </div>
+                        <div class="col-md-8 text-end fs--1">
+                          <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                          <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                          <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-center mt-3">
+                    <span><i>Product Batch Not Found!</i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal show batch product promo bundle brand -->
+      <div class="modal fade" id="modalShowBatchProductPromoBundleBrand" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px">
+          <div class="modal-content position-relative">
+            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
+              <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+              <div class="rounded-top-3 py-3 ps-4 pe-6 bg-body-tertiary">
+                <h5 class="mb-1" id="modalExampleDemoLabel">Batch product </h5>
+              </div>
+              <div v-if="productSelectBatchPromoBundleBrand != null" class="px-3 pb-3">
+                <div class="scrollable-customize mb-2" style="min-height: 1vh; max-height: 70vh;">
+                  <!-- For Regular Product -->
+                  <div v-if="productSelectBatchPromoBundleBrand.product.all_inventory_batch.length > 0" class="card mt-3" v-for="batch in productSelectBatchPromoBundleBrand.product.all_inventory_batch">
+                    <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: auto;"></div>
+                    <div class="card-header position-relative py-2 px-3">
+                      <div class="row align-items-center">
+                        <div class="col-md-4">
+                          <span class="fs--2"><u>Batch Number:</u></span>
+                          <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
+                          <form @submit.prevent="selectBatchProductBuyBundleBrand(productSelectBatchPromoBundleBrand, batch)" class="d-flex">
+                            <div class="me-2">
+                              <input v-if="productSelectBatchPromoBundleBrand.setFor == master_code.buyGet.buy" v-model="batch.batchQty" type="number" class="form-control form-control-sm fw-semi-bold" min="1" />
+                              <input v-else-if="productSelectBatchPromoBundleBrand.setFor == master_code.buyGet.get" value="1" type="text" class="form-control form-control-sm fw-semi-bold" disabled />
+                            </div>
+                            <div>
+                              <button type="submit" class="btn btn-sm btn-primary">
+                                <span class="fas fa-plus"></span>
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                        <div class="col-md-8 text-end fs--1">
+                          <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
+                          <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
+                          <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-center mt-3">
+                    <span><i>Product Batch Not Found!</i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Modal rincian dan detail pesanan -->
       <div class="modal fade" id="modalConfirmPay" ref="modalConfirmPay" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modalConfirmPayLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px">
@@ -381,6 +888,7 @@
                           <p class="mb-0 text-dark me-4"><strong>{{ data.qty }} x </strong>{{ data.product.itemName }}</p>
                           <span class="text-dark">
                             <strong v-if="data.is_free_product">FREE</strong>
+                            <strong v-else-if="data.is_free_bundling">BUNDLE</strong>
                             <strong v-else>{{ $root.formatPrice(data.qty * data.product.all_product_price[0].price) }}</strong>
                           </span>
                         </div>
@@ -407,6 +915,10 @@
                         <tr v-if="totalHematDiskon > 0" class="border-bottom">
                           <th class="ps-0 py-1" style="font-weight: normal;">Hemat Diskon </th>
                           <th class="pe-0 py-1 text-end text-dark">-Rp {{ $root.formatPrice(totalHematDiskon) }}</th>
+                        </tr>
+                        <tr v-if="totalHematProduct > 0" class="border-bottom">
+                          <th class="ps-0 py-1" style="font-weight: normal;">Hemat Product </th>
+                          <th class="pe-0 py-1 text-end text-dark">-Rp {{ $root.formatPrice(totalHematProduct) }}</th>
                         </tr>
                         <tr class="border-bottom">
                           <th class="ps-0 py-1" style="font-weight: normal;">Total Belanja </th>
@@ -2559,7 +3071,10 @@
                     <span v-if="data.is_free_product" class="badge bg-danger rounded-pill p-1">
                       FREE
                     </span>
-                    <span v-if="data.is_promo_product">
+                    <span v-else-if="data.is_free_bundling" class="badge bg-warning rounded-pill p-1 fs--2">
+                      BUNDLE
+                    </span>
+                    <span v-else-if="data.is_promo_product">
                       <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
                         -
                         <span v-if="data.is_promo_product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
@@ -2595,7 +3110,7 @@
                 </p>
                 <p class="d-flex justify-content-between align-items-center my-0">
                   <div>
-                    <a v-if="data.is_ticket" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
+                    <a v-if="data.is_ticket || data.is_promo_bundling" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
                       Remove
                     </a>
                     <a v-else href="javascript:void(0)" @click="deleteProductById(data, data.batch, index)" class="p-0 fs--1 text-danger">
@@ -2606,7 +3121,7 @@
                     <input class="form-control p-0 ps-2 set-text-bold" type="number" min="1" :value="data.qty" style="width: 60px;" 
                     @input="incDecQtyInput($event, data, data.batch)"
                     @change="incDecQtyChange($event, data, data.batch)"
-                    :disabled="data.is_ticket">
+                    :disabled="data.is_ticket || data.is_promo_bundling">
                   </div>
                 </p>
               </div>
@@ -2673,7 +3188,10 @@
                       <span v-if="data.is_free_product" class="badge bg-danger rounded-pill p-1">
                         FREE
                       </span>
-                      <span v-if="data.is_promo_product">
+                      <span v-else-if="data.is_free_bundling" class="badge bg-warning rounded-pill p-1 fs--2">
+                        BUNDLE
+                      </span>
+                      <span v-else-if="data.is_promo_product">
                         <span v-if="data.is_promo_product.master_promo_product.tipe_promo == master_coll.tipePromo.percent" class="badge badge-subtle-danger rounded-pill p-1 fs--2">
                           -
                           <span v-if="data.is_promo_product.master_promo_product.tipe_potongan == master_code.tipe_potongan.percent">
@@ -2709,7 +3227,7 @@
                   </p>
                   <p class="d-flex justify-content-between align-items-center my-0">
                     <div>
-                      <a v-if="data.is_ticket" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
+                      <a v-if="data.is_ticket || data.is_promo_bundling" href="javascript:void(0)" class="p-0 fs--1 text-secondary" style="cursor: not-allowed;">
                         Remove
                       </a>
                       <a v-else href="javascript:void(0)" @click="deleteProductById(data, data.batch, index)" class="p-0 fs--1 text-danger">
@@ -2720,7 +3238,7 @@
                       <input class="form-control p-0 ps-2 set-text-bold" type="number" min="1" :value="data.qty" style="width: 60px;" 
                       @input="incDecQtyInput($event, data, data.batch)"
                       @change="incDecQtyChange($event, data, data.batch)"
-                      :disabled="data.is_ticket">
+                      :disabled="data.is_ticket || data.is_promo_bundling">
                     </div>
                   </p>
                 </div>
@@ -2947,6 +3465,7 @@ export default {
       totalPcsItemOrder: 0,
       totalPriceRingkasanProduct: 0,
       totalHematDiskon: 0,
+      totalHematProduct: 0,
       totalDiskonPercentReseller: 0,
       nominalMoreMetodeBayar: [],
       checkboxMemberPotonganPoint: false,
@@ -3064,6 +3583,39 @@ export default {
 
       headerModalInfoPlafon: '',
       bodyModalInfoPlafon: '',
+      
+      productBriefForPromoBundling: [],
+      dataAllPromoBundle: [],
+      displayedPagesPromoBundle: [],
+      totalDisplayedPagesPromoBundle: 3,
+      currentPagePromoBundle: 1,
+      perPagePromoBundle: 9,
+      totalPagePromoBundle: 0,
+      inputSearchNamaBundle: '',
+      promoBundleSelected: null,
+
+      dataAllProductBrandBundleBuy: [],
+      displayedPagesProductBrandBundleBuy: [],
+      totalDisplayedPagesProductBrandBundleBuy: 3,
+      currentPageProductBrandBundleBuy: 1,
+      perPageProductBrandBundleBuy: 6,
+      totalPageProductBrandBundleBuy: 0,
+      inputSearchFreeItemForBundleBrandBuy: '',
+      selectedItemProductPromoBundleBuy: [],
+
+      dataAllProductBrandBundleGet: [],
+      displayedPagesProductBrandBundleGet: [],
+      totalDisplayedPagesProductBrandBundleGet: 3,
+      currentPageProductBrandBundleGet: 1,
+      perPageProductBrandBundleGet: 6,
+      totalPageProductBrandBundleGet: 0,
+      inputSearchFreeItemForBundleBrandGet: '',
+      selectedItemProductPromoBundleGet: [],
+
+      productSelectBatchPromoBundle: null,
+      productSelectBatchPromoBundleBrand: null,
+      selectedProductPromoBundleBrand: null,
+      reduceMaxAmountValueBundleBrand: 0,
     };
   },
 
@@ -3196,6 +3748,454 @@ export default {
       event.target.complete();
     },
     // End Logic Mobile
+
+    // Start logic promo bundling
+    openModalListPromoBundling: async function(){
+      this.$root.showLoading();
+      try{
+        this.selectedItemProductPromoBundleBuy = [];
+        this.selectedItemProductPromoBundleGet = [];
+        
+        this.productSelectBatchPromoBundle = null;
+        this.productSelectBatchPromoBundleBrand = null;
+        this.selectedProductPromoBundleBrand = null;
+        this.reduceMaxAmountValueBundleBrand = 0;
+        
+        await this.fatchDataListPromoBundling();
+        $('#modalShowAllPromoBundling').modal('show');
+      }catch(e){
+
+      }
+      this.$root.hideLoading();
+    },
+
+    fatchDataListPromoBundling: async function(page = 1, isLoading = false){
+      if(isLoading) this.$root.showLoading();
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+      try{
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/loadAllDataPromoBundling',
+          params: {
+            page: page,
+            per_page: this.perPagePromoBundle,
+            store_code: cacheStoreAccess.store_outlet.storeCode,
+            search: this.inputSearchNamaBundle.trim(),
+          }
+        });
+
+        const reqData = request.data;
+        this.currentPagePromoBundle = reqData.current_page;
+        this.totalPagePromoBundle = reqData.last_page;
+        this.dataAllPromoBundle = reqData.data;
+
+        this.updateDisplayedPagesPromoBundle();
+      }catch(e){
+        console.log(e);
+      }
+      if(isLoading) this.$root.hideLoading();
+    },
+
+    updateDisplayedPagesPromoBundle: function() {
+      try{
+        const halfDisplayedPages = Math.floor(this.totalDisplayedPagesPromoBundle / 2);
+  
+        let startPage = Math.max(1, this.currentPagePromoBundle - halfDisplayedPages);
+        let endPage = Math.min(this.totalPagePromoBundle, startPage + this.totalDisplayedPagesPromoBundle - 1);
+  
+        if (endPage - startPage + 1 < this.totalDisplayedPagesPromoBundle) {
+          startPage = Math.max(1, endPage - this.totalDisplayedPagesPromoBundle + 1);
+        }
+  
+        this.displayedPagesPromoBundle = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      }catch(e){
+        console.log(e);
+      }
+    },
+
+    checkPromoBundleIsActive: async function(bundle){
+      try{
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/checkPromoBundleIsActive',
+          params: {
+            id: bundle.id,
+            promo_code: bundle.promo_code
+          }
+        });
+
+        const reqData = request.data;
+        const currentDateTime = new Date();
+        const endDate = new Date(reqData.end_date);
+
+        if(currentDateTime > endDate || reqData.isActive == false){
+          this.$root.showAlertFunction('warning', 'Promo Expired!', 'Promo bundle telah expired. Silahkan muat ulang promo bundle');
+          return false;
+        }
+      }catch(e){
+        if(e.response && e.response.data.status == 101){
+          this.$root.showAlertFunction('warning', 'Promo gagal!', `${e.response.data.message}. Silahkan muat ulang promo bundle.`);
+        }else{
+          this.$root.showAlertFunction('warning', 'Terjadi kesalahan!', 'Coba beberapa saat lagi atau hubungi Administrator.');
+        }
+        console.log(e);
+        return false;
+      }
+
+      return true;
+    },
+
+    clickPromoBundlingDetail: async function(bundle){
+      this.promoBundleSelected = null;
+      this.$root.showLoading();
+
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+      const store = {
+        discCode: cacheStoreAccess.store_outlet.discCode,
+        priceCode: cacheStoreAccess.store_outlet.priceCode,
+        whsCode: cacheStoreAccess.store_outlet.whsCode,
+      }
+
+      const checkPromoBundleStatus = await this.checkPromoBundleIsActive(bundle);
+      if(checkPromoBundleStatus == false){
+        this.$root.hideLoading();
+        return false;
+      }
+
+      try{
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/checkDetailDataPromoBundling',
+          params: {
+            promo_code: bundle.promo_code,
+            tipe_bundle: bundle.tipe_promo_bundle,
+            store_outlet: store
+          }
+        });
+
+        const reqData = request.data;
+        this.promoBundleSelected = {};
+        this.promoBundleSelected.bundle = bundle;
+        this.promoBundleSelected.detail = {};
+
+        if(bundle.tipe_promo_bundle == '1'){
+          this.promoBundleSelected.detail.detail_brand_buy = reqData.filter(x => x.tipe_set == this.master_code.buyGet.buy) ?? [];
+          this.promoBundleSelected.detail.detail_brand_get = reqData.filter(x => x.tipe_set == this.master_code.buyGet.get) ?? [];
+
+          await this.findProductForPromoBundleBrand(this.promoBundleSelected.detail.detail_brand_buy, this.master_code.buyGet.buy);
+          await this.findProductForPromoBundleBrand(this.promoBundleSelected.detail.detail_brand_get, this.master_code.buyGet.get);
+        }
+        else if(bundle.tipe_promo_bundle == '2'){
+          this.promoBundleSelected.detail.detail_buy = reqData.filter(x => x.tipe_set === this.master_code.buyGet.buy).map(x => {
+            return { ...x, selectBatch: null };
+          }) ?? [];
+          this.promoBundleSelected.detail.detail_get = reqData.filter(x => x.tipe_set === this.master_code.buyGet.get).map(x => {
+            return { ...x, selectBatch: null };
+          }) ?? [];
+        }
+        
+        $('#modalShowAllPromoBundling').modal('hide');
+        $('#modalSelectProductPromoBundling').modal('show');
+      }catch(e){
+        console.log(e);
+      }
+      this.$root.hideLoading();
+    },
+
+    findProductForPromoBundleBrand: async function(brand, setFor, page = 1, isLoading = false){
+      if(isLoading) this.$root.showLoading();
+      try{
+        const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+        const store = {
+          discCode: cacheStoreAccess.store_outlet.discCode,
+          priceCode: cacheStoreAccess.store_outlet.priceCode,
+          whsCode: cacheStoreAccess.store_outlet.whsCode,
+        }
+
+        const search = setFor == this.master_code.buyGet.buy ? this.inputSearchFreeItemForBundleBrandBuy.trim() : this.inputSearchFreeItemForBundleBrandGet.trim();
+        const perPage = setFor == this.master_code.buyGet.buy ? this.perPageProductBrandBundleBuy : this.perPageProductBrandBundleGet;
+        
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/findItemProductForPromoBundleBrand',
+          params: {
+            page: page,
+            per_page: perPage,
+            list_brand: brand,
+            store_outlet: store,
+            search: search.trim(),
+          }
+        });
+
+        const reqData = request.data;
+        if(setFor == this.master_code.buyGet.buy){
+          this.currentPageProductBrandBundleBuy = reqData.current_page;
+          this.totalPageProductBrandBundleBuy = reqData.last_page;
+          this.dataAllProductBrandBundleBuy = reqData.data.map(x => {
+            const ifHaveInList = this.selectedItemProductPromoBundleBuy.some(y => y.product.itemCode == x.itemCode);
+            return {...x, isSelect: ifHaveInList};
+          });
+
+          this.updateDisplayedPagesProductBrandBundleBuy();
+        }
+        else if(setFor == this.master_code.buyGet.get){
+          this.currentPageProductBrandBundleGet = reqData.current_page;
+          this.totalPageProductBrandBundleGet = reqData.last_page;
+          this.dataAllProductBrandBundleGet = reqData.data.map(x => {
+            const ifHaveInList = this.selectedItemProductPromoBundleGet.some(y => y.product.itemCode == x.itemCode);
+            return {...x, isSelect: ifHaveInList};
+          });
+  
+          this.updateDisplayedPagesProductBrandBundleGet();
+        }
+      }catch(e){
+        console.log(e);
+      }
+      if(isLoading) this.$root.hideLoading();
+    },
+
+    updateDisplayedPagesProductBrandBundleBuy: function() {
+      try{
+        const halfDisplayedPages = Math.floor(this.totalDisplayedPagesProductBrandBundleBuy / 2);
+
+        let startPage = Math.max(1, this.currentPageProductBrandBundleBuy - halfDisplayedPages);
+        let endPage = Math.min(this.totalPageProductBrandBundleBuy, startPage + this.totalDisplayedPagesProductBrandBundleBuy - 1);
+
+        if (endPage - startPage + 1 < this.totalDisplayedPagesProductBrandBundleBuy) {
+          startPage = Math.max(1, endPage - this.totalDisplayedPagesProductBrandBundleBuy + 1);
+        }
+
+        this.displayedPagesProductBrandBundleBuy = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      }catch(e){
+        console.log(e);
+      }
+    },
+
+    updateDisplayedPagesProductBrandBundleGet: function() {
+      try{
+        const halfDisplayedPages = Math.floor(this.totalDisplayedPagesProductBrandBundleGet / 2);
+  
+        let startPage = Math.max(1, this.currentPageProductBrandBundleGet - halfDisplayedPages);
+        let endPage = Math.min(this.totalPageProductBrandBundleGet, startPage + this.totalDisplayedPagesProductBrandBundleGet - 1);
+  
+        if (endPage - startPage + 1 < this.totalDisplayedPagesProductBrandBundleGet) {
+          startPage = Math.max(1, endPage - this.totalDisplayedPagesProductBrandBundleGet + 1);
+        }
+  
+        this.displayedPagesProductBrandBundleGet = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      }catch(e){
+        console.log(e);
+      }
+    },
+
+    pilihBatchProductToBuyBundle: async function(bundle, product){
+      this.$root.showLoading();
+      const checkPromoBundleStatus = await this.checkPromoBundleIsActive(bundle);
+      if(checkPromoBundleStatus == false){
+        this.$root.hideLoading();
+        return false;
+      }
+
+      this.productSelectBatchPromoBundle = null;
+      product.id = product.item.id;
+      const checkProduct = await this.checkInventoryBatchProduct(product);
+
+      this.productSelectBatchPromoBundle = checkProduct;
+      $('#modalShowBatchProductPromoBundle').modal('show');
+      
+      this.$root.hideLoading();
+    },
+
+    selectBatchProductBuyBundle: async function(detailProduct, batch){
+      try{
+        detailProduct.selectBatch = batch;
+        $('#modalShowBatchProductPromoBundle').modal('hide');
+      }catch(e){}
+    },
+
+    pilihBatchProductToBuyBundleBrand: async function(bundle, product, setFor){
+      if(setFor === this.master_code.buyGet.get){
+        if(this.selectedItemProductPromoBundleBuy.length == 0){
+          this.$root.showAlertFunction('warning', 'Gagal Pilih!', 'Silahkan pilih product untuk dibeli terlebih dahulu.');
+          return false
+        }
+        
+        const productPrice = parseInt(product.all_product_price[0].price);
+        if(productPrice > this.reduceMaxAmountValueBundleBrand){
+          const formatingPrice = this.$root.formatPrice(this.reduceMaxAmountValueBundleBrand);
+          this.$root.showAlertFunction('warning', 'Gagal Pilih!', `Harga product free tidak boleh lebih besar dari Rp ${formatingPrice}.`);
+          return false;
+        }
+
+        if(this.selectedItemProductPromoBundleGet.length > 0){
+          this.$root.showAlertFunction('warning', 'Gagal Pilih!', 'Product free tidak boleh lebih dari satu item.');
+          return false
+        }
+      }
+
+      this.$root.showLoading();
+      const checkPromoBundleStatus = await this.checkPromoBundleIsActive(bundle);
+      if(checkPromoBundleStatus == false){
+        this.$root.hideLoading();
+        return false;
+      }
+
+      this.productSelectBatchPromoBundleBrand = null;
+      const checkProduct = await this.checkInventoryBatchProduct(product);
+      checkProduct.all_inventory_batch = checkProduct.all_inventory_batch.map(x => {
+        return {...x, batchQty: 1}
+      });
+
+      this.productSelectBatchPromoBundleBrand = {};
+      this.productSelectBatchPromoBundleBrand.product = checkProduct;
+      this.productSelectBatchPromoBundleBrand.bundle = bundle;
+      this.productSelectBatchPromoBundleBrand.setFor = setFor;
+      $('#modalShowBatchProductPromoBundleBrand').modal('show');
+      
+      this.$root.hideLoading();
+    },
+    
+    selectBatchProductBuyBundleBrand: async function(detailProduct, batch){
+      try{
+        if(parseInt(batch.batchQty) > parseInt(batch.onHand)){
+          this.$root.showAlertFunction('warning', 'Batch QTY Invalid!', 'Batch qty tidak boleh melebihi On Hand.');
+          return false;
+        }
+        
+        const product = detailProduct.product;
+        const setNewObj = {
+          product: product,
+          qty: batch.batchQty,
+          batch: batch,
+          is_promo_bundling: detailProduct.bundle,
+          info_bundling_buyget: 'Buy Get Remix',
+          is_free_bundling: detailProduct.setFor == this.master_code.buyGet.get,
+        };
+
+        if(detailProduct.setFor === this.master_code.buyGet.buy){
+          const findExisting = this.selectedItemProductPromoBundleBuy.find(x => x.is_promo_bundling.promo_code == detailProduct.bundle.promo_code && x.product.itemCode == product.itemCode && x.is_free_bundling == false && x.batch.batchNo.trim() === batch.batchNo.trim() && x.batch.expiredDate === batch.expiredDate);
+          if(findExisting){
+            if(parseInt(batch.batchQty + findExisting.qty) > parseInt(batch.onHand)){
+              this.$root.showAlertFunction('warning', 'Batch QTY Invalid!', 'Batch qty tidak boleh melebihi On Hand.');
+              return false;
+            }
+
+            findExisting.qty += batch.batchQty;
+          }else{
+            this.selectedItemProductPromoBundleBuy.push(setNewObj);
+          }
+
+          const foundItems = {};
+          const uniqueListObj = this.selectedItemProductPromoBundleBuy.filter(obj => {
+            if (!foundItems[obj.product.itemCode]) {
+              foundItems[obj.product.itemCode] = true;
+              return true;
+            }
+            return false;
+          });
+          const lowestAmountValue = uniqueListObj.reduce((min, obj) => obj.product.all_product_price[0].price < min ? obj.product.all_product_price[0].price : min, uniqueListObj[0].product.all_product_price[0].price);
+          this.reduceMaxAmountValueBundleBrand = parseInt(lowestAmountValue);
+
+          this.selectedItemProductPromoBundleGet = [];
+          this.dataAllProductBrandBundleGet.forEach(obj => {
+            obj.isSelect = false;
+          });
+        }else if(detailProduct.setFor === this.master_code.buyGet.get){
+          const findExisting = this.selectedItemProductPromoBundleGet.find(x => x.is_promo_bundling.promo_code == detailProduct.bundle.promo_code && x.product.itemCode == product.itemCode && x.is_free_bundling == true && x.batch.batchNo.trim() === batch.batchNo.trim() && x.batch.expiredDate === batch.expiredDate);
+          if(findExisting){
+            if(parseInt(batch.batchQty + findExisting.qty) > parseInt(batch.onHand)){
+              this.$root.showAlertFunction('warning', 'Batch QTY Invalid!', 'Batch qty tidak boleh melebihi On Hand.');
+              return false;
+            }
+
+            findExisting.qty += batch.batchQty;
+          }else{
+            this.selectedItemProductPromoBundleGet.push(setNewObj);
+          }
+        }
+
+        product.isSelect = true;
+
+        $('#modalShowBatchProductPromoBundleBrand').modal('hide');
+      }catch(e){
+        console.log(e);
+      }
+    },
+
+    removeSelecteItemBundleBrand: function(detailBundle, product, setFor){
+      if(setFor === this.master_code.buyGet.buy){
+        this.selectedItemProductPromoBundleBuy = this.selectedItemProductPromoBundleBuy.filter(x => !(x.is_promo_bundling.promo_code == detailBundle.promo_code && x.product.itemCode == product.itemCode && x.is_free_bundling == false));
+        product.isSelect = false;
+      }else if(setFor === this.master_code.buyGet.get){
+        this.selectedItemProductPromoBundleGet = this.selectedItemProductPromoBundleGet.filter(x => !(x.is_promo_bundling.promo_code == detailBundle.promo_code && x.product.itemCode == product.itemCode && x.is_free_bundling == true));
+        product.isSelect = false;
+      }
+    },
+
+    removeSelectBatchBundleBrand: function(listBatch, index, data){
+      if(listBatch.length == 1) data.product.isSelect = false;
+      listBatch.splice(index, 1);
+    },
+
+    checkoutSetPromoBundling: function(){
+      const detail = this.promoBundleSelected.detail;
+      
+      if(this.promoBundleSelected.bundle.tipe_promo_bundle == '1'){
+        const concatAllProduct = this.selectedItemProductPromoBundleBuy.concat(this.selectedItemProductPromoBundleGet);
+        
+        concatAllProduct.forEach(x => {
+          const existingProduct =  this.dataProductInList.find((p) => { 
+            return x.is_promo_bundling && p.is_promo_bundling && x.is_promo_bundling.promo_code == p.is_promo_bundling.promo_code && p.product.itemCode === x.product.itemCode && p.batch.batchNo.trim() === x.batch.batchNo.trim() && p.batch.expiredDate === x.batch.expiredDate
+          });
+
+          if(existingProduct){
+            existingProduct.qty += x.pcsQty;
+          }else{
+            this.dataProductInList.push(x);
+          }
+        });
+      }
+      else if(this.promoBundleSelected.bundle.tipe_promo_bundle == '2'){
+        const coutBuy = detail.detail_buy.length;
+        const coutGet = detail.detail_get.length;
+        const allProduct = detail.detail_buy.concat(detail.detail_get);
+
+        var allProdBatch = allProduct.every(x => x.selectBatch === null);
+        if(allProdBatch){
+          this.$root.showAlertFunction('warning', 'Gagal melanjutkan!', 'Mohon untuk melengkapi semua batch product.');
+          return false;
+        }
+
+        allProduct.forEach(x => {
+          const product = x.item;
+          product.all_inventory_batch = x.all_inventory_batch;
+          product.all_inventory_stok = x.all_inventory_stok;
+          const productObj = {
+            product: product,
+            qty: x.pcsQty,
+            batch: x.selectBatch,
+            is_promo_bundling: this.promoBundleSelected.bundle,
+            info_bundling_buyget: `Bundle ${coutBuy} Get ${coutGet}`,
+            is_free_bundling: x.tipe_set == this.master_code.buyGet.get,
+          };
+
+          const existingProduct =  this.dataProductInList.find((p) => { 
+            return productObj.is_promo_bundling && p.is_promo_bundling && productObj.is_promo_bundling.promo_code == p.is_promo_bundling.promo_code && p.product.itemCode === productObj.product.itemCode && p.batch.batchNo.trim() === productObj.batch.batchNo.trim() && p.batch.expiredDate === productObj.batch.expiredDate
+          });
+
+          if(existingProduct){
+            existingProduct.qty += x.pcsQty;
+          }else{
+            this.dataProductInList.push(productObj);
+          }
+        });
+      }
+      
+      this.calculatePcsItemOrderList();
+      this.calculateAmoutPrice();
+      $('#modalSelectProductPromoBundling').modal('hide');
+    },
+    // End logic
     
     fatchDynamicDataProduct: async function(isLoading = false){
       if(isLoading) this.$root.showLoading();
@@ -3771,7 +4771,7 @@ export default {
       this.totalHematDiskon = 0;
 
       this.dataProductInList.forEach((product) => {
-        if(!product.is_free_product){
+        if(!product.is_free_product && !product.is_free_bundling){
           var getProduct = product.product;
           
           let formatHarga = 0;
@@ -3790,15 +4790,15 @@ export default {
             }
           }else{
             if(this.$root.filterDiskonProduct(getProduct).discCode == this.master_code.diskon.tanpa_diskon_code){
-              formatHarga = parseInt(this.$root.filterPriceProduct(getProduct).price);
+              formatHarga = parseInt(getProduct.all_product_price[0].price);
             }else{
-              formatHarga = parseInt(this.$root.filterPriceProduct(getProduct).price  - (this.$root.filterPriceProduct(getProduct).price * (this.$root.filterDiskonProduct(getProduct).discount/100)));
+              formatHarga = parseInt(getProduct.all_product_price[0].price  - (getProduct.all_product_price[0].price * (this.$root.filterDiskonProduct(getProduct).discount/100)));
             }
           }
           var calculatePrice = formatHarga * product.qty;
           this.subTotalPrice += calculatePrice;
 
-          this.totalPriceRingkasanProduct += parseInt(getProduct.all_product_price[0].price * product.qty);
+          this.totalPriceRingkasanProduct += parseInt(getProduct.all_product_price[0].price) * product.qty;
         }
       });
       
@@ -5037,6 +6037,7 @@ export default {
       this.totalKembalianMetodeCash = 0;
       this.checkboxMemberPotonganPoint = false;
       this.totalHematDiskon = 0;
+      this.totalHematProduct = 0;
       this.totalDiskonPercentReseller = 0;
       this.totalDiscountPromo = 0;
       this.afterDiscountPromo = 0;
@@ -5561,6 +6562,13 @@ export default {
       }
       this.dataProductListForStruk = dataProductList;
 
+      this.dataProductListForStruk.forEach((product) => {
+        var getProduct = product.product;
+        if(product.is_free_product || product.is_free_bundling){
+          this.totalHematProduct += parseInt(getProduct.all_product_price[0].price) * parseInt(product.qty);
+        }
+      });
+
       const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
       try{
         const checkPromo = await axios({
@@ -5725,7 +6733,7 @@ export default {
       }
 
       this.dataAllIsFreeProduct = this.dataProductListForStruk.filter(x => {
-        return x.is_free_product;
+        return x.is_free_product || x.is_free_bundling;
       });
 
       this.calculateTotalBayarPrice = this.calculateTotalBayarPrice - (this.totalDiskonPercentReseller + this.totalDiscountPromo + this.afterDiscountPromo + this.discountPromoAdditional);
@@ -5832,6 +6840,7 @@ export default {
 
           subTotalAmount: this.totalPriceRingkasanProduct > 0 ? parseInt(this.totalPriceRingkasanProduct) : null,
           totalDicountAmount: this.totalHematDiskon > 0 ? parseInt(this.totalHematDiskon) : null,
+          totalHematProductAmount: this.totalHematProduct > 0 ? parseInt(this.totalHematProduct) : null,
           afterTotalDicountAmount: this.totalBayarPrice > 0 ? parseInt(this.totalBayarPrice) : null,
           extraDiscountAmount: this.totalDiskonPercentReseller > 0 ? parseInt(this.totalDiskonPercentReseller) : null,
           
@@ -5929,6 +6938,7 @@ export default {
       this.inputNominalMethodCash = null;
       this.totalKembalianMetodeCash = 0;
       this.totalHematDiskon = 0;
+      this.totalHematProduct = 0;
       this.totalDiskonPercentReseller = 0;
       this.totalDiscountPromo = 0;
       this.afterDiscountPromo = 0;
@@ -5977,7 +6987,7 @@ export default {
         body: [
           [
             {
-              content: storeDetail.storeName.toUpperCase(),
+              content: `MARTHATILAAR SHOP ${storeDetail.storeName.toUpperCase()}`,
               styles: {
                 halign: 'center',
                 fontSize: sizeFont,
@@ -6127,6 +7137,11 @@ export default {
         ]
       ];
 
+      const cP01 = [0.5, 0, 0, 0];
+      const cP02 = [0, 1.5, 0.5, 0];
+      const cP03 = [0.5, 0, 0.5, 1];
+      const cP04 = [0.5, 0, 0.5, 0.5];
+      const cP05 = [0.5, 1.5, 0.5, 0];
       // Add data to ringkasan
       this.dataProductListForStruk.forEach(data => {
         const product = data.product;
@@ -6141,7 +7156,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0, 0],
+                  cellPadding: cP01,
                 }
               },
             ];
@@ -6166,7 +7181,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0, 1.5, 0.5, 0],
+                  cellPadding: cP02,
                 }
               },
               {
@@ -6182,7 +7197,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 1],
+                  cellPadding: cP03
                 }
               },
               {
@@ -6190,7 +7205,7 @@ export default {
                 styles: {
                   halign: 'right',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 0.5],
+                  cellPadding: cP04,
                 }
               }
             ];
@@ -6205,7 +7220,7 @@ export default {
                   styles: {
                     halign: 'left',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 1.5, 0.5, 0],
+                    cellPadding: cP05,
                   }
                 },
                 {
@@ -6222,7 +7237,7 @@ export default {
                   styles: {
                     halign: 'right',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 0, 0.5, 0.5],
+                    cellPadding: cP04,
                   }
                 }
               ];
@@ -6233,7 +7248,7 @@ export default {
                   styles: {
                     halign: 'left',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 1.5, 0.5, 0],
+                    cellPadding: cP05,
                   }
                 },
                 {
@@ -6249,7 +7264,7 @@ export default {
                   styles: {
                     halign: 'left',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 0, 0.5, 1],
+                    cellPadding: cP03,
                   }
                 },
                 {
@@ -6257,23 +7272,101 @@ export default {
                   styles: {
                     halign: 'right',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 0, 0.5, 0.5],
+                    cellPadding: cP04,
                   }
                 }
               ];
             }
             bodyRinkasanProduct.push(objProdPromo);
           }
-        }else{
-          let objProdPromo;
-          if(data.is_free_product){
-            objProdPromo = [
+        }
+        else if(data.is_promo_bundling){
+          if(data.is_free_bundling){
+            bodyRinkasanProduct.push([
               {
                 content: product.itemNameShort,
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 1.5, 0.5, 0],
+                  cellPadding: cP05,
+                }
+              },
+              {
+                content: data.qty,
+                styles: {
+                  halign: 'center',
+                  fontSize: sizeFont,
+                  cellPadding: callPaddingProduct,
+                }
+              },
+              {
+                content: '0',
+                colSpan: 2,
+                styles: {
+                  halign: 'right',
+                  fontSize: sizeFont,
+                  cellPadding: cP04,
+                }
+              }
+            ]);
+          }else{
+            bodyRinkasanProduct.push([
+              {
+                content: product.itemNameShort,
+                colSpan: 4,
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP01,
+                }
+              },
+            ]);
+
+            bodyRinkasanProduct.push([
+              {
+                content: data.info_bundling_buyget,
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP02,
+                }
+              },
+              {
+                content: data.qty,
+                styles: {
+                  halign: 'center',
+                  fontSize: sizeFont,
+                  cellPadding: callPaddingProduct,
+                }
+              },
+              {
+                content: this.$root.formatPrice(product.all_product_price[0].price),
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP03,
+                }
+              },
+              {
+                content: this.$root.formatPrice(product.all_product_price[0].price * data.qty),
+                styles: {
+                  halign: 'right',
+                  fontSize: sizeFont,
+                  cellPadding: cP04,
+                }
+              }
+            ]);
+          }
+        }
+        else{
+          if(data.is_free_product){
+            const objProd = [
+              {
+                content: product.itemNameShort,
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP05,
                 }
               },
               {
@@ -6290,18 +7383,19 @@ export default {
                 styles: {
                   halign: 'right',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 0.5],
+                  cellPadding: cP04,
                 }
               }
             ];
+            bodyRinkasanProduct.push(objProd);
           }else{
-            objProdPromo = [
+            const objProd = [
               {
                 content: product.itemNameShort,
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 1.5, 0.5, 0],
+                  cellPadding: cP05,
                 }
               },
               {
@@ -6317,7 +7411,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 1],
+                  cellPadding: cP03,
                 }
               },
               {
@@ -6325,12 +7419,12 @@ export default {
                 styles: {
                   halign: 'right',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 0.5],
+                  cellPadding: cP04,
                 }
               }
             ];
+            bodyRinkasanProduct.push(objProd);
           }
-          bodyRinkasanProduct.push(objProdPromo);
         }
       });
 
@@ -6745,7 +7839,7 @@ export default {
         body: [
           [
             {
-              content: `MARTHA TILAAR SHOP ${storeDetail.storeName.toUpperCase()}`,
+              content: `MARTHATILAAR SHOP ${storeDetail.storeName.toUpperCase()}`,
               styles: {
                 halign: 'center',
                 fontSize: sizeFont,
@@ -6844,6 +7938,12 @@ export default {
         ]
       ];
 
+      const cP01 = [0.5, 0, 0, 0];
+      const cP02 = [0, 1.5, 0.5, 0];
+      const cP03 = [0.5, 0, 0.5, 1];
+      const cP04 = [0.5, 0, 0.5, 0.5];
+      const cP05 = [0.5, 1.5, 0.5, 0];
+      // Add data to ringkasan
       this.dataProductListForStruk.forEach(data => {
         const product = data.product;
 
@@ -6857,7 +7957,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0, 0],
+                  cellPadding: cP01,
                 }
               },
             ];
@@ -6882,7 +7982,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0, 1.5, 0.5, 0],
+                  cellPadding: cP02,
                 }
               },
               {
@@ -6898,7 +7998,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 1],
+                  cellPadding: cP03,
                 }
               },
               {
@@ -6906,7 +8006,7 @@ export default {
                 styles: {
                   halign: 'right',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 0.5],
+                  cellPadding: cP04,
                 }
               }
             ];
@@ -6921,7 +8021,7 @@ export default {
                   styles: {
                     halign: 'left',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 1.5, 0.5, 0],
+                    cellPadding: cP05,
                   }
                 },
                 {
@@ -6938,7 +8038,7 @@ export default {
                   styles: {
                     halign: 'right',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 0, 0.5, 0.5],
+                    cellPadding: cP04,
                   }
                 }
               ];
@@ -6949,7 +8049,7 @@ export default {
                   styles: {
                     halign: 'left',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 1.5, 0.5, 0],
+                    cellPadding: cP05,
                   }
                 },
                 {
@@ -6965,7 +8065,7 @@ export default {
                   styles: {
                     halign: 'left',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 0, 0.5, 1],
+                    cellPadding: cP03,
                   }
                 },
                 {
@@ -6973,23 +8073,101 @@ export default {
                   styles: {
                     halign: 'right',
                     fontSize: sizeFont,
-                    cellPadding: [0.5, 0, 0.5, 0.5],
+                    cellPadding: cP04,
                   }
                 }
               ];
             }
             bodyRinkasanProduct.push(objProdPromo);
           }
-        }else{
-          let objProdPromo;
-          if(data.is_free_product){
-            objProdPromo = [
+        }
+        else if(data.is_promo_bundling){
+          if(data.is_free_bundling){
+            bodyRinkasanProduct.push([
               {
                 content: product.itemNameShort,
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 1.5, 0.5, 0],
+                  cellPadding: cP05,
+                }
+              },
+              {
+                content: data.qty,
+                styles: {
+                  halign: 'center',
+                  fontSize: sizeFont,
+                  cellPadding: callPaddingProduct,
+                }
+              },
+              {
+                content: '0',
+                colSpan: 2,
+                styles: {
+                  halign: 'right',
+                  fontSize: sizeFont,
+                  cellPadding: cP04,
+                }
+              }
+            ]);
+          }else{
+            bodyRinkasanProduct.push([
+              {
+                content: product.itemNameShort,
+                colSpan: 4,
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP01,
+                }
+              },
+            ]);
+
+            bodyRinkasanProduct.push([
+              {
+                content: data.info_bundling_buyget,
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP02,
+                }
+              },
+              {
+                content: data.qty,
+                styles: {
+                  halign: 'center',
+                  fontSize: sizeFont,
+                  cellPadding: callPaddingProduct,
+                }
+              },
+              {
+                content: this.$root.formatPrice(product.all_product_price[0].price),
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP03,
+                }
+              },
+              {
+                content: this.$root.formatPrice(product.all_product_price[0].price * data.qty),
+                styles: {
+                  halign: 'right',
+                  fontSize: sizeFont,
+                  cellPadding: cP04,
+                }
+              }
+            ]);
+          }
+        }
+        else{
+          if(data.is_free_product){
+            const objProd = [
+              {
+                content: product.itemNameShort,
+                styles: {
+                  halign: 'left',
+                  fontSize: sizeFont,
+                  cellPadding: cP05,
                 }
               },
               {
@@ -7006,18 +8184,19 @@ export default {
                 styles: {
                   halign: 'right',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 0.5],
+                  cellPadding: cP04,
                 }
               }
             ];
+            bodyRinkasanProduct.push(objProd);
           }else{
-            objProdPromo = [
+            const objProd = [
               {
                 content: product.itemNameShort,
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 1.5, 0.5, 0],
+                  cellPadding: cP05,
                 }
               },
               {
@@ -7033,7 +8212,7 @@ export default {
                 styles: {
                   halign: 'left',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 1],
+                  cellPadding: cP03,
                 }
               },
               {
@@ -7041,12 +8220,12 @@ export default {
                 styles: {
                   halign: 'right',
                   fontSize: sizeFont,
-                  cellPadding: [0.5, 0, 0.5, 0.5],
+                  cellPadding: cP04,
                 }
               }
             ];
+            bodyRinkasanProduct.push(objProd);
           }
-          bodyRinkasanProduct.push(objProdPromo);
         }
       });
 

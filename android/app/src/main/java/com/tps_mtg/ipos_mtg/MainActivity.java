@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.tps_mtg.ipos_mtg;
 
 import com.getcapacitor.BridgeActivity;
 
