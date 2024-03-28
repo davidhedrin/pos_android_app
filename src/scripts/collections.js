@@ -104,6 +104,11 @@ export const master_code = {
   tipe_potongan: {
     percent: '1',
     value: '2',
+  },
+
+  buyGet: {
+    buy: 'buy',
+    get: 'get',
   }
 }
 
@@ -130,34 +135,20 @@ export const master_coll = {
   },
 }
 
-export const firebase_conf = {
-  collection: {
-    device_sales: 'device_sales',
-  },
-  doc_id: {
-    update_status: 'update_status',
-  }
-}
-
 export const local_storage = {
   app_token: 'app_token',
   token_sso: 'token_sso',
 
   current_page: 'current_page',
-  data_user: 'data_user',
-  access_store: 'selected_access_store',
-
-  device_info: 'device_info',
-  device_info_access: 'device_info_access',
+  is_dynamic: 'is_dynamic',
+  access_store: 'selected_access_store'
 }
 
 export const pages = {
-  splash: 'Splash',
-  home: 'Home',
+  dashboard: 'Dashboard',
   login: 'Login',
   profile: 'Profile',
   sales:  'Sales',
-  about:  'About',
   transaksi: 'Transaksi',
   receiptitem: 'ReceiptItem',
   receiptitemv2: 'ReceiptItemV2',
@@ -166,10 +157,17 @@ export const pages = {
   transout: 'TransOut',
   kartustok: 'KartuStok',
   mutasistok: 'MutasiStok',
+  tickettotin: 'TicketToTin',
 
   // Master
   productlist: 'ProductList',
   promolist: 'PromoList',
   promoproduct: 'PromoProduct',
   userlist: 'UserList',
+  
+  // Cycle Count
+  ccdocument: 'CCDocument',
+  entrycc: 'EntryCC',
+  sodocument: 'SODocument',
+  entryso: 'EntrySO',
 }
