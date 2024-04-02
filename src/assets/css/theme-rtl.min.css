@@ -8829,7 +8829,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
   outline: 0
 }
 
-/* .modal-backdrop {
+.modal-backdrop {
   --falcon-backdrop-zindex: 1050;
   --falcon-backdrop-bg: #000;
   --falcon-backdrop-opacity: 0.5;
@@ -8848,7 +8848,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
 
 .modal-backdrop.show {
   opacity: var(--falcon-backdrop-opacity)
-} */
+}
 
 .modal-header {
   display: -webkit-box;
@@ -11365,6 +11365,10 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
 
 .w-25 {
   width: 25% !important
+}
+
+.w-30 {
+    width: 30% !important
 }
 
 .w-50 {

@@ -42,7 +42,7 @@
           <ion-col size="6" size-md="3" size-lg="3">
             <div class="card overflow-hidden">
               <div class="card-header p-3">
-                <h6 class="mb-1">Amount Transaksi</h6>
+                <h6 class="mb-1">Your Amount</h6>
                 <div class="display-4 fs-2 mb-1 fw-normal font-sans-serif">
                   <span class="fs-1">Rp</span> 
                   {{ dataTransactionReport ? dataTransactionReport.total_value ? $root.formatPrice(dataTransactionReport.total_value) : '0' : '0' }}
@@ -56,11 +56,15 @@
           <ion-col size="6" size-md="3" size-lg="3">
             <div class="card overflow-hidden">
               <div class="card-header p-3">
-                <h6 class="mb-1">Revenue</h6>
+                <h6 class="mb-1">Store User's</h6>
                 <div class="display-4 fs-2 mb-1 fw-normal font-sans-serif">
-                  Rp 0
+                  {{ dataTransactionReport && dataTransactionReport.users_count }} Account
                 </div>
-                <a class="fw-semi-bold fs--1 text-nowrap" href="javascript:void(0)" type="button" data-bs-toggle="modal" data-bs-target="#modalViewMoreReport">
+                <a v-if="dataUserLogin && dataUserLogin.role_code == master_code.role.super_admin" class="fw-semi-bold fs--1 text-nowrap" href="javascript:void(0)" type="button" @click="openModalShowTransactionSA()">
+                  Statistics 
+                  <span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span>
+                </a>
+                <a v-else class="fw-semi-bold fs--1 text-secondary text-nowrap" href="javascript:void(0)">
                   Statistics 
                   <span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span>
                 </a>
@@ -144,7 +148,7 @@
                   <td colspan="8" class="text-center"><i>Tidak ada transaksi ditemukan</i></td>
                 </tr>
                 <tr v-for="(trans, index) in dataAllTransaction" :key="trans.ducNum">
-                  <td>{{ (currentPageTr * 10 - 10) + index + 1 }}</td>
+                  <td>{{ (currentPageTr * perPageTr - perPageTr) + index + 1 }}</td>
                   <td>{{ trans.ducNum }}</td>
                   <td>{{ trans.bonStruk }}</td>
                   <td>{{ trans.sales_type.nama_sales }}</td>
@@ -211,15 +215,18 @@
             </div>
 
             <!-- <u>Payment List:</u> -->
-            <div class="row ">
-              <div v-for="payment in allPaymentMethod" class="col-md-3 mb-3 text-center">
+            <div class="row g-2">
+              <div v-for="payment in allPaymentMethod" class="col-md-2 col-md-4 mb-2 text-center">
                 <div class="card">
                   <div class="card-header">
-                    <!-- {{ payment.nama }} -->
-                    <img :src="'assets/img/po-img/' + payment.image" height="20" alt="">
+                    <img :src="'assets/img/po-img/' + payment.image" height="17" alt="">
                     <div>
-                      <label>
-                        Total: <span class="fs-0" :class="payment.total_amont > 0  && 'text-warning'">
+                      <label class="m-0"><u>{{ payment.nama }}</u></label>
+                    </div>
+                    <div>
+                      <label class="fs--1 m-0">
+                        Total: 
+                        <span :class="payment.total_amont > 0  && 'text-warning'">
                           Rp {{ $root.formatPrice(payment.total_amont) }}
                         </span>
                       </label>
@@ -422,44 +429,146 @@
           </div>
         </div>
       </div>
-      
   
-      <div class="modal fade" id="modalViewMoreReport" tabindex="0" role="dialog" aria-hidden="true">
+      <div v-if="dataUserLogin && dataUserLogin.role_code == master_code.role.super_admin" class="modal fade" id="modalViewMoreReport" tabindex="0" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 1100px">
           <div class="modal-content position-relative">
-            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
+            <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
               <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
               <div class="card">
                 <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-1i.png'); background-size: cover;"></div>
                 <div class="card-body position-relative p-3">
-                  <div class="rounded-top-3 pe-6 pb-3">
-                    <h4 class="mb-1" id="modalExampleDemoLabel">Statistics</h4>
-                  </div>
+                  <div class="rounded-top-3">
+                    <h5 class="mb-1" id="modalExampleDemoLabel">Statistics {{ selectedStoreOutlet.store_outlet.storeName }}</h5>
+                    <form @submit.prevent="fatchDataSalesTransactionSA(1, true, true)" class="row g-2">
+                      <div class="col-md-2">
+                        <select v-model="filterSelectedReportSearch" class="form-select bg-transparent border-1" style="border: 1px solid rgba(0, 0, 0, 0.3);" aria-label="Default select example">
+                          <option value="" selected>Filter</option>
+                          <option value="101">Date ASC</option>
+                          <option value="102">Date DESC</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <select v-model="selectBAReportSearchTrSA" class="form-select bg-transparent border-1" style="border: 1px solid rgba(0, 0, 0, 0.3);" aria-label="Default select example">
+                          <option value="" selected>Select BA</option>
+                          <option v-for="data in allDataUserInStore" :value="data.user_uuid">{{ data.user.nama_lengkap }}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 d-flex align-items-center">
+                        <VueDatePicker
+                          v-model="dateRangeValueTrSA" range
+                        />
 
-                  <!-- <div>
-                    <form @submit.prevent="inputSearchFreeProduct != '' && findDataProductFree()" class="mb-3">
-                      <div class="input-group">
-                        <input v-model="inputSearchFreeProduct" @input="inputSearchFreeProduct == '' && (allDataFindProductFree = [])" class="form-control search-input fuzzy-search" type="search" placeholder="Masukkan item code product...">
-                        <button class="btn btn-primary card-link" type="submit" style="z-index: 1"><span class="fas fa-search"></span></button>
+                        <div class="ms-2">
+                          <button class="btn btn-sm btn-primary" type="submit">
+                            <span class="fas fa-search"></span>
+                          </button>
+                        </div>
                       </div>
                     </form>
-                  </div> -->
+                  </div>
 
-                  <div class="table-responsive scrollbar">
-                    <table class="table table-hover table-striped overflow-hidden">
-                      <thead>
+                  <div class="mt-3 mb-2">
+                    <div class="table-responsive scrollbar">
+                      <table class="table table-sm overflow-hidden">
+                        <thead>
+                          <tr class="p-0">
+                            <th class="py-1 bg-white">#</th>
+                            <th class="py-1 bg-white">BA Kasir</th>
+                            <th class="py-1 bg-white">Waktu Transaksi</th>
+                            <th class="py-1 bg-white">Nomor Bon</th>
+                            <th class="py-1 bg-white">Sales By</th>
+                            <th class="py-1 bg-white">Pembayaran</th>
+                            <th class="py-1 bg-white">Total Jual</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(trans, idx) in dataAllTrSA">
+                            <td>{{ (currentPageTrSA * perPageTrSA - perPageTrSA) + idx + 1 }}</td>
+                            <td>{{ trans.user.nama_lengkap }}</td>
+                            <td>{{ formatDateTime(trans.docDate) }}</td>
+                            <td>{{ trans.bonStruk }}</td>
+                            <td>{{ trans.sales_type.nama_sales }}</td>
+                            <td><img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
+                            <td class="text-warning">Rp {{ $root.formatPrice(trans.paymentAmount) }}</td>
+                          </tr>
+                          <tr align="center" v-if="dataAllTrSA.length == 0">
+                            <td class="py-5" colspan="7"><i>Data transaksi tidak ditemukan!</i></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div v-if="totalPageTrSA > 1">
+                          <nav aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm mb-0">
+        
+                              <li v-if="displayedPagesTrSA[0] > 1">
+                                <a class="page-link" href="javascript:void(0)" @click="fatchDataSalesTransactionSA(1, true)">First</a>
+                              </li>
+        
+                              <li class="page-item" :class="{ 'disabled': currentPageTrSA === 1 }">
+                                <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataSalesTransactionSA(currentPageTrSA - 1, true)">
+                                  <span aria-hidden="true">&laquo;</span>
+                                </a>
+                              </li>
+        
+                              <li v-for="pageNumber in displayedPagesTrSA" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageTrSA }">
+                                <a class="page-link" href="javascript:void(0)" @click="fatchDataSalesTransactionSA(pageNumber, true)">{{ pageNumber }}</a>
+                              </li>
+        
+                              <li class="page-item" :class="{ 'disabled': currentPageTrSA === totalPageTrSA }">
+                                <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataSalesTransactionSA(currentPageTrSA + 1, true)">
+                                  <span aria-hidden="true">&raquo;</span>
+                                </a>
+                              </li>
+        
+                              <li v-if="displayedPagesTrSA[displayedPagesTrSA.length - 1] < totalPageTrSA">
+                                <a class="page-link" href="javascript:void(0)" @click="fatchDataSalesTransactionSA(totalPageTrSA, true)">Last</a>
+                              </li>
+        
+                            </ul>
+                          </nav>
+                        </div>
+                      </div>
+                      <div class="col-md-6 text-end">
+                        <strong>
+                          Total Amount: <span class="text-warning">Rp {{ $root.formatPrice(totalAmountTrasactionRangeTrSA) }}</span>
+                        </strong>
+                      </div>
+                    </div>
 
-                      </thead>
-                      <tbody>
+                    <hr />
 
-                      </tbody>
-                    </table>
+                    <div class="scrollable-customize mb-3" style="min-height: 46vh; max-height: 46vh;">
+                      <div class="row g-2 m-0">
+                        <div v-for="payment in allPaymentMethodTrSA" class="col-lg-3 col-md-6 mb-1 text-center">
+                          <div class="card">
+                            <div class="card-header">
+                              <img :src="'assets/img/po-img/' + payment.image" height="15" alt="">
+                              <div>
+                                <label class="m-0"><u>{{ payment.nama }}</u></label>
+                              </div>
+                              <div>
+                                <label class="fs--1 m-0">
+                                  <span :class="payment.total_amont > 0  && 'text-warning'">
+                                    Rp {{ $root.formatPrice(payment.total_amont) }}
+                                  </span>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <!-- <div class="text-end">
-                    <button class="btn btn-primary btn-sm" data-bs-dismiss="modal">Selesai</button>
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Selesai</button>
                   </div> -->
                 </div>
               </div>
@@ -503,6 +612,9 @@ export default {
   data() {
     return {
       local_storage: this.$root.local_storage,
+      master_code: this.$root.master_code,
+      dataUserLogin: null,
+
       dataAllTransaction: [],
       displayedPagesTr: [],
       totalDisplayedPagesTr: 3,
@@ -517,6 +629,21 @@ export default {
       dateRangeValueTr: [],
       selectedTrView: null,
       allPaymentMethod: [],
+      allPaymentMethodTrSA: [],
+      selectedStoreOutlet: this.$root.selectedStoreAccess,
+
+      dateRangeValueTrSA: [],
+      dataAllTrSA: [],
+      displayedPagesTrSA: [],
+      totalDisplayedPagesTrSA: 3,
+      currentPageTrSA: 1,
+      perPageTrSA: 10,
+      totalPageTrSA: 0,
+      
+      allDataUserInStore: [],
+      filterSelectedReportSearch: '',
+      selectBAReportSearchTrSA: '',
+      totalAmountTrasactionRangeTrSA: 0,
     };
   },
 
@@ -525,6 +652,11 @@ export default {
     const startOfDay = new Date(thisDate.getFullYear(), thisDate.getMonth(), thisDate.getDate(), 0, 0, 0);
     const endOfDay = new Date(thisDate.getFullYear(), thisDate.getMonth(), thisDate.getDate(), 23, 59, 59);
     this.dateRangeValueTr = [startOfDay, endOfDay];
+    this.dateRangeValueTrSA = [startOfDay, endOfDay];
+
+    const check_uuid = localStorage.getItem(this.local_storage.is_dynamic);
+    const checkUserRegis = await this.$root.checkUserRegistered(check_uuid);
+    this.dataUserLogin = checkUserRegis;
 
     await this.loadAllData();
   },
@@ -545,6 +677,9 @@ export default {
 
         const reqData = requset.data;
         this.dataTransactionReport = reqData.dataTransactionReport;
+        this.allPaymentMethodTrSA = reqData.allPaymentMethod.map(x => {
+          return {...x, total_amont: 0}
+        });
         this.allPaymentMethod = reqData.allPaymentMethod.map(x => {
           return {...x, total_amont: 0}
         });
@@ -555,6 +690,114 @@ export default {
       }
     
       this.$root.hideLoading();
+    },
+
+    openModalShowTransactionSA: async function(){
+      this.$root.showLoading();
+      try{
+        const thisDate = new Date();
+        const startOfDay = new Date(thisDate.getFullYear(), thisDate.getMonth(), thisDate.getDate(), 0, 0, 0);
+        const endOfDay = new Date(thisDate.getFullYear(), thisDate.getMonth(), thisDate.getDate(), 23, 59, 59);
+        this.dateRangeValueTrSA = [startOfDay, endOfDay];
+
+        const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/transaksi/getAllDataUserInStore',
+          params: {
+            store_code: cacheStoreAccess.store_outlet.storeCode,
+          }
+        });
+        
+        const reqData = request.data;
+        this.allDataUserInStore = reqData;
+        $('#modalViewMoreReport').modal('show');
+      }catch(e){
+        console.log(e);
+      }
+      this.$root.hideLoading();
+    },
+
+    fatchDataSalesTransactionSA: async function(page = 1, isLoading = false, isUpdate = false){
+      if(isLoading) this.$root.showLoading();
+      const startDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTrSA[0]));
+      const endDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTrSA[1]));
+      try{
+        const getAllDataTr = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/getDataReportSalesTransaction',
+          params: {
+            page: page,
+            per_page: this.perPageTrSA,
+            date_start: startDate,
+            date_end: endDate,
+            store_code: this.selectedStoreOutlet.store_code,
+            filter_select: this.filterSelectedReportSearch.trim(),
+            ba_id: this.selectBAReportSearchTrSA.trim(),
+          },
+        });
+        
+        if(isUpdate) await this.fatchDataDetailPaymentAmountTrSA();
+
+        const response = getAllDataTr.data;
+        this.currentPageTrSA = response.current_page;
+        this.totalPageTrSA = response.last_page;
+        this.dataAllTrSA = response.data;
+
+        this.updateDisplayedPagesTrSA();
+      } catch (error) {
+        console.log(error);
+      }
+      if(isLoading) this.$root.hideLoading();
+    },
+
+    fatchDataDetailPaymentAmountTrSA: async function(){
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+      const startDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTrSA[0]));
+      const endDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTrSA[1]));
+      try{
+        const getAllDataTr = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/transaksi/getTrByUserDetailPaymentAmount/',
+          params: {
+            store_code: cacheStoreAccess.store_outlet.storeCode,
+            date_start: startDate,
+            date_end: endDate,
+            ba_id: this.selectBAReportSearchTrSA.trim(),
+          },
+        });
+
+        const reqData = getAllDataTr.data;
+        this.allPaymentMethodTrSA.map(x => {
+          let z = reqData.find(y => y.payment_type === x.slug);
+          if (z) {
+            x.total_amont = parseInt(z.total_payment);
+          }else{
+            x.total_amont = 0;
+          }
+          return x;
+        });
+        this.totalAmountTrasactionRangeTrSA = parseInt(this.allPaymentMethodTrSA.reduce((total, tr) => total + tr.total_amont, 0));
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    updateDisplayedPagesTrSA: function() {
+      try{
+        const halfDisplayedPages = Math.floor(this.totalDisplayedPagesTrSA / 2);
+
+        let startPage = Math.max(1, this.currentPageTrSA - halfDisplayedPages);
+        let endPage = Math.min(this.totalPageTrSA, startPage + this.totalDisplayedPagesTrSA - 1);
+
+        if (endPage - startPage + 1 < this.totalDisplayedPagesTrSA) {
+          startPage = Math.max(1, endPage - this.totalDisplayedPagesTrSA + 1);
+        }
+
+        this.displayedPagesTrSA = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      }catch(e){
+        console.log(e);
+      }
     },
     
     fatchDataTransaction: async function(page = 1, isLoading = false, isUpdate = false){
@@ -593,16 +836,19 @@ export default {
     },
 
     fatchDataTrUserDetailPaymentAmount: async function(){
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
       const startDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[0]));
       const endDate = this.formatToDateTimeRequest(new Date(this.dateRangeValueTr[1]));
       try{
         const check_uuid = localStorage.getItem(this.local_storage.is_dynamic);
         const getAllDataTr = await axios({
           method: 'get',
-          url: this.$root.API_ERP + '/pos/app/transaksi/getTrByUserDetailPaymentAmount/' + check_uuid,
+          url: this.$root.API_ERP + '/pos/app/transaksi/getTrByUserDetailPaymentAmount/',
           params: {
+            store_code: cacheStoreAccess.store_outlet.storeCode,
             date_start: startDate,
             date_end: endDate,
+            ba_id: check_uuid,
           },
         });
 
@@ -611,7 +857,9 @@ export default {
           let z = reqData.find(y => y.payment_type === x.slug);
           if (z) {
             x.total_amont = parseInt(z.total_payment);
-          }
+          }else{
+            x.total_amont = 0;
+          } 
           return x;
         });
       } catch (error) {

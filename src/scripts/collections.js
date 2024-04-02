@@ -70,6 +70,8 @@ export const master_code = {
     ewal: 'ewal',
     cc: 'cc',
     redeem: 'redeem',
+    wa: 'wa',
+    qris: 'qris',
   },
 
   kodeReseller: {

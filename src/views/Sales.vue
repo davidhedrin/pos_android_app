@@ -283,19 +283,40 @@
                           <label class="form-label mb-0 fs--1" for="selectMethodPayment">Metode Pembayaran:</label>
                           <select v-model="selectMethodPayment" class="form-select mb-0" :class="{'border-red' : invalidMetodePembayaran}" v-on:change="onChangeSelectedMetodeBayar" id="selectMethodPayment">
                             <option value="">Pilih Metode Bayar</option>
+                            <!-- Method Cash -->
                             <option v-if="selectSalesBy == master_code.salesBy.wi" :value="metodeBayarCash.id">{{ metodeBayarCash.nama }}</option>
+                            
+                            <!-- Method Karyawan -->
                             <option v-if="memberOverview != null && memberOverview.tipe_konsumen.slug == master_code.tipeKonsumen.karyawan" :value="metodeBayarKaryawan.id">
                               {{ metodeBayarKaryawan.nama }}
                             </option>
+
+                            <!-- Method Redeem Point -->
                             <option v-if="memberOverview != null" :value="metodeBayarRedeemPoint.id">{{ metodeBayarRedeemPoint.nama }}</option>
-                            <optgroup label="Transfer Bank">
+
+                            <!-- Method Kartu Debit -->
+                            <optgroup label="Kartu Debit">
                               <option v-for="metode in dataMetodeBayarTF" :value="metode.id">{{ metode.nama }}</option>
                             </optgroup>
-                            <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="E-Wallet">
-                              <option v-for="metode in dataMetodeBayarEWal" :value="metode.id">{{ metode.nama }}</option>
-                            </optgroup>
+                            
+                            <!-- Method Kartu kredit -->
                             <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="Kartu Kredit">
                               <option v-for="metode in dataMetodeBayarCC" :value="metode.id">{{ metode.nama }}</option>
+                            </optgroup>
+
+                            <!-- Method Ewalet Digital -->
+                            <optgroup v-if="selectSalesBy != master_code.salesBy.selly" label="Digital E-Wallet">
+                              <option v-for="metode in dataMetodeBayarEWal" :value="metode.id">{{ metode.nama }}</option>
+                            </optgroup>
+                
+                            <!-- Method Qris Digital -->
+                            <optgroup label="Digital Qris">
+                              <option v-for="metode in dataMetodeBayarQris" :value="metode.id">{{ metode.nama }}</option>
+                            </optgroup>
+                            
+                            <!-- Method Transfer WA -->
+                            <optgroup label="Transfer WA">
+                              <option v-for="metode in dataMetodeBayarWa" :value="metode.id">{{ metode.nama }}</option>
                             </optgroup>
                           </select>
                         </div>
@@ -988,22 +1009,24 @@
                         </div>
                       </div>
                     </div> -->
-                    <label class="form-label mb-0">Payment Detail:</label>
-                    <div v-if="selectedMetodeBayar != null" class="d-flex align-items-center justify-content-between rounded-3 bg-body-tertiary ps-2 py-1 px-2">
-                      <div class="w-35">
-                        <img class="img-icon-po2" :src="'assets/img/po-img/' + selectedMetodeBayar.image" />
-                      </div>
-                      <div v-if="selectedMetodeBayar.kode == master_code.metodeBayar.redeem" class="w-60 text-end">
-                        <label class="form-label fw-normal mb-0">Member Point: <strong class="text-dark">Rp {{ $root.formatPrice(memberOverview.point) }}</strong></label>
-                      </div>
-                      <div v-else class="w-60 d-flex">
-                        <div class="w-50 me-2 text-end">
-                          <input v-if="selectedMetodeBayar.kode != master_code.metodeBayar.cash && selectedMetodeBayar.kode != master_code.metodeBayar.karyawan" v-model="modelInputSelectedMetodeBayar" id="inputSelectedMetodeBayar" @input="modelInputSelectedMetodeBayar = onChangeCheckNumberVal($event)" class="form-control form-control-sm" type="text" placeholder="4 digit nomor" />
-                          <i v-if="selectedMetodeBayar.kode == master_code.metodeBayar.cash" class="fs--1">Pembayaran Cash</i>
-                          <i v-if="selectedMetodeBayar.kode == master_code.metodeBayar.karyawan" class="fs--1">Karyawan</i>
+                    <div v-if="selectedMetodeBayar != null">
+                      <label class="form-label mb-0"><span class="fw-normal">Payment Detail:</span> <u>{{ selectedMetodeBayar.nama }}</u></label>
+                      <div class="d-flex align-items-center justify-content-between rounded-3 bg-body-tertiary ps-2 py-1 px-2">
+                        <div class="w-35">
+                          <img class="img-icon-po2" :src="'assets/img/po-img/' + selectedMetodeBayar.image" />
                         </div>
-                        <div class="w-50">
-                          <input class="form-control form-control-sm text-end" id="inputSelectedNominalMetode" @input="onChangeCheckVal($event)" type="text" :value="$root.formatPrice(calculateTotalBayarPrice)" disabled />
+                        <div v-if="selectedMetodeBayar.kode == master_code.metodeBayar.redeem" class="w-60 text-end">
+                          <label class="form-label fw-normal mb-0">Member Point: <strong class="text-dark">Rp {{ $root.formatPrice(memberOverview.point) }}</strong></label>
+                        </div>
+                        <div v-else class="w-60 d-flex">
+                          <div class="w-50 me-2 text-end">
+                            <input v-if="selectedMetodeBayar.kode != master_code.metodeBayar.cash && selectedMetodeBayar.kode != master_code.metodeBayar.karyawan && selectedMetodeBayar.kode != master_code.metodeBayar.redeem" v-model="modelInputSelectedMetodeBayar" id="inputSelectedMetodeBayar" @input="modelInputSelectedMetodeBayar = onChangeCheckNumberVal($event)" class="form-control form-control-sm" type="text" placeholder="4 digit nomor" />
+                            <i v-if="selectedMetodeBayar.kode == master_code.metodeBayar.cash" class="fs--1">Pembayaran Cash</i>
+                            <i v-if="selectedMetodeBayar.kode == master_code.metodeBayar.karyawan" class="fs--1">Karyawan</i>
+                          </div>
+                          <div class="w-50">
+                            <input class="form-control form-control-sm text-end" id="inputSelectedNominalMetode" @input="onChangeCheckVal($event)" type="text" :value="$root.formatPrice(calculateTotalBayarPrice)" disabled />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -3445,6 +3468,8 @@ export default {
       dataMetodeBayarTF: [],
       dataMetodeBayarEWal: [],
       dataMetodeBayarCC: [],
+      dataMetodeBayarQris: [],
+      dataMetodeBayarWa: [],
       dataMoreMetodeBayar: [],
       selectedMetodeBayar: null,
       modelInputSelectedMetodeBayar: '',
@@ -4412,14 +4437,29 @@ export default {
             return false;
           }
 
+          // Method kartu debit
           if(metode.kode === this.master_code.metodeBayar.tf){
             this.dataMetodeBayarTF.push(metode);
           }
+
+          // Method kartu ewal digital
           if(metode.kode === this.master_code.metodeBayar.ewal){
             this.dataMetodeBayarEWal.push(metode);
           }
+
+          // Method kartu kredit
           if(metode.kode === this.master_code.metodeBayar.cc){
             this.dataMetodeBayarCC.push(metode);
+          }
+          
+          // Method Qris
+          if(metode.kode === this.master_code.metodeBayar.qris){
+            this.dataMetodeBayarQris.push(metode);
+          }
+          
+          // Method WA
+          if(metode.kode === this.master_code.metodeBayar.wa){
+            this.dataMetodeBayarWa.push(metode);
           }
         });
 
