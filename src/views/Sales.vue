@@ -7636,6 +7636,47 @@ export default {
             }
           }
         ]);
+
+        if(this.selectedActivePromo.percent_after_dic != null && this.selectedActivePromo.percent_after_dic > 0){
+          dataBillindDetail.push([
+            {
+              content: `After Diskon (${this.selectedActivePromo.percent_after_dic}%)`,
+              styles: {
+                halign: 'left',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            },
+            {
+              content: `-Rp ${this.$root.formatPrice(this.afterDiscountPromo)}`,
+              styles: {
+                halign: 'right',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            }
+          ]);
+        }
+        if(this.selectedActivePromo.percent_additional != null && this.selectedActivePromo.percent_additional > 0){
+          dataBillindDetail.push([
+            {
+              content: `Diskon Additional (${this.selectedActivePromo.percent_additional}%)`,
+              styles: {
+                halign: 'left',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            },
+            {
+              content: `-Rp ${this.$root.formatPrice(this.discountPromoAdditional)}`,
+              styles: {
+                halign: 'right',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            }
+          ]);
+        }
       }
 
       // Total Bayar Billing
@@ -8345,6 +8386,47 @@ export default {
               }
             },
         ]);
+        
+        if(this.selectedActivePromo.percent_after_dic != null && this.selectedActivePromo.percent_after_dic > 0){
+          bodyBillingDetail.push([
+            {
+              content: `After Diskon (${this.selectedActivePromo.percent_after_dic}%)`,
+              styles: {
+                halign: 'left',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            },
+            {
+              content: `-Rp ${this.$root.formatPrice(this.afterDiscountPromo)}`,
+              styles: {
+                halign: 'right',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            }
+          ]);
+        }
+        if(this.selectedActivePromo.percent_additional != null && this.selectedActivePromo.percent_additional > 0){
+          bodyBillingDetail.push([
+            {
+              content: `Diskon Additional (${this.selectedActivePromo.percent_additional}%)`,
+              styles: {
+                halign: 'left',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            },
+            {
+              content: `-Rp ${this.$root.formatPrice(this.discountPromoAdditional)}`,
+              styles: {
+                halign: 'right',
+                fontSize: sizeFont,
+                cellPadding: callPadding,
+              }
+            }
+          ]);
+        }
       }
 
       bodyBillingDetail = bodyBillingDetail.concat([
