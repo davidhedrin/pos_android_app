@@ -6604,13 +6604,6 @@ export default {
       }
       this.dataProductListForStruk = dataProductList;
 
-      this.dataProductListForStruk.forEach((product) => {
-        var getProduct = product.product;
-        if(product.is_free_product || product.is_free_bundling){
-          this.totalHematProduct += parseInt(getProduct.all_product_price[0].price) * parseInt(product.qty);
-        }
-      });
-
       const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
       try{
         const checkPromo = await axios({
@@ -6727,6 +6720,13 @@ export default {
     },
 
     confirmationPayment: function(){
+      this.dataProductListForStruk.forEach((product) => {
+        var getProduct = product.product;
+        if(product.is_free_product || product.is_free_bundling){
+          this.totalHematProduct += parseInt(getProduct.all_product_price[0].price) * parseInt(product.qty);
+        }
+      });
+      
       this.calculateAmoutPrice();
       this.currentTime = new Date();
       
