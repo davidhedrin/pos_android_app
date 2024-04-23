@@ -114,6 +114,15 @@ export const master_code = {
   }
 }
 
+export const firebase_conf = {
+  collection: {
+    device_sales: 'device_sales',
+  },
+  doc_id: {
+    update_status: 'update_status',
+  }
+}
+
 export const master_coll = {
   tipePromo: {
     bundle: '1',
