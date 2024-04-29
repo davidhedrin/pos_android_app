@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.tps_mtg.ipos_mtg"
+    namespace "com.tps_mtg.ipos_tpsmtg"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.tps_mtg.ipos_mtg"
+        applicationId "com.tps_mtg.ipos_tpsmtg"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

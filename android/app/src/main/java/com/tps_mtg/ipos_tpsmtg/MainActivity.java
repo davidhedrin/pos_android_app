@@ -1,4 +1,4 @@
-package com.tps_mtg.ipos_mtg;
+package com.tps_mtg.ipos_tpsmtg;
 
 import com.getcapacitor.BridgeActivity;
 

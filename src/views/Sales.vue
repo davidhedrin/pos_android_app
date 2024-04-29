@@ -247,10 +247,10 @@
                       </div>
                       
                       <h5 class="card-title text-center mb-1 fs-0">Billing Detail</h5>
-                      <div class="input-group mb-3">
-                        <input class="form-control" type="text" placeholder="Voucher code">
-                        <button class="btn btn-primary card-link">Rp</button>
-                      </div>
+                      <form @submit.prevent="findDiscountVoucher()" class="input-group mb-3">
+                        <input v-model="inputDiscountVoucher" class="form-control" type="text" placeholder="Voucher code" required>
+                        <button class="btn btn-primary card-link" type="submit">Rp</button>
+                      </form>
                       <hr class="m-0">
                       <table class="table fs-0 mb-1">
                         <tbody>
@@ -259,9 +259,20 @@
                             <th class="pe-0 py-1 text-end text-dark">Rp {{ $root.formatPrice(subTotalPrice) }}</th>
                           </tr>
                           <tr class="border-bottom">
-                            <th class="ps-0 py-1" style="font-weight: normal;">Diskon Voucher </th>
+                            <th class="ps-0 py-1" style="font-weight: normal;">
+                              Diskon Voucher
+                            </th>
                             <th class="pe-0 py-1 text-end text-dark">
-                              <span v-if="diskonPrice > 0">-Rp {{ $root.formatPrice(diskonPrice) }}</span>
+                              <div v-if="discountVoucherFinded != null">
+                                <label class="m-0">{{ discountVoucherFinded.nama_voucher }}</label>
+                                <a href="javascript:void(0)" @click="clearSelectedDiscountVoucher()">
+                                  <span class="far fa-window-close ms-1 text-danger"></span>
+                                </a>
+                              </div>
+                              <div v-if="discountVoucherFinded != null">
+                                <span v-if="discountVoucherFinded.dics_type == master_code.tipe_pot_voucher.value">-Rp {{ $root.formatPrice(discountVoucherFinded.dics_value) }}</span>
+                                <span v-else-if="discountVoucherFinded.dics_type == master_code.tipe_pot_voucher.percent">Disc {{ discountVoucherFinded.dics_value }}%</span>
+                              </div>
                               <span v-else>-</span>
                             </th>
                           </tr>
@@ -916,7 +927,7 @@
                       </div>
                       <hr class="mb-1 mt-0">
                       <div class="d-flex justify-content-between fs--1 mb-0">
-                        <p class="mb-0 text-dark"><strong>Total</strong></p>
+                        <p class="mb-0 text-dark"><strong>Total Product</strong></p>
                         <span class="text-dark"><strong>Rp {{ $root.formatPrice(totalPriceRingkasanProduct) }}</strong></span>
                       </div>
                       <hr class="m-0 mt-1">
@@ -941,6 +952,10 @@
                           <th class="ps-0 py-1" style="font-weight: normal;">Hemat Product </th>
                           <th class="pe-0 py-1 text-end text-dark">-Rp {{ $root.formatPrice(totalHematProduct) }}</th>
                         </tr>
+                        <tr v-if="totalDiscVoucherValue > 0 && discountVoucherFinded != null" class="border-bottom">
+                          <th class="ps-0 py-1" style="font-weight: normal;">Voucher <label class="m-0">"{{ discountVoucherFinded.nama_voucher }}"</label></th>
+                          <th class="pe-0 py-1 text-end text-dark">-Rp {{ $root.formatPrice(totalDiscVoucherValue) }}</th>
+                        </tr>
                         <tr class="border-bottom">
                           <th class="ps-0 py-1" style="font-weight: normal;">Total Belanja </th>
                           <th class="pe-0 py-1 text-end text-dark">Rp {{ $root.formatPrice(totalBayarPrice) }}</th>
@@ -962,14 +977,10 @@
                             </span>
                           </th>
                         </tr>
-                        <!-- <tr class="border-bottom">
-                          <th class="ps-0 py-1" style="font-weight: normal;">Diskon Voucher </th>
-                          <th class="pe-0 py-1 text-end text-dark">-Rp 5.000</th>
-                        </tr> -->
                         <tr v-if="selectedActivePromo != null" class="border-bottom">
                           <th class="ps-0 py-1" style="font-weight: normal;">
                             {{ selectedActivePromo.nama_promo.toUpperCase() }}
-                            ({{ selectedActivePromo.percent }}%)
+                            {{ selectedActivePromo.percent > 0 ? `(${selectedActivePromo.percent}%)` : '' }}
                           </th>
                           <th class="pe-0 py-1 text-end text-dark">-Rp {{ $root.formatPrice(totalDiscountPromo) }}</th>
                         </tr>
@@ -3480,6 +3491,7 @@ export default {
       memberOverview: null,
 
       subTotalPrice: 0,
+      discountVoucherAmount: 0,
       diskonPrice: 0,
       totalBayarPrice: 0,
       totalDiscountPromo: 0,
@@ -3642,6 +3654,11 @@ export default {
       productSelectBatchPromoBundleBrand: null,
       selectedProductPromoBundleBrand: null,
       reduceMaxAmountValueBundleBrand: 0,
+
+      inputDiscountVoucher: '',
+      discountVoucherFinded: null,
+      dicsVoucherValue: 0,
+      totalDiscVoucherValue: 0,
     };
   },
 
@@ -3774,6 +3791,51 @@ export default {
       event.target.complete();
     },
     // End Logic Mobile
+    
+    // Start logic diskon voucher SGLVCHFOGHS
+    findDiscountVoucher: async function(){
+      this.discountVoucherFinded = null;
+      this.dicsVoucherValue = 0;
+      this.totalDiscVoucherValue = 0;
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
+
+      this.$root.showLoading();
+      try{
+        const request = await axios({
+          method: 'get',
+          url: this.$root.API_ERP + '/pos/app/sales/getDataDiscountVoucher',
+          params: {
+            voucher: this.inputDiscountVoucher.trim(),
+            store_code: cacheStoreAccess.store_outlet.storeCode,
+          }
+        });
+        
+        const reqData = request.data;
+        this.discountVoucherFinded = reqData;
+        this.dicsVoucherValue = parseInt(reqData.dics_value);
+        this.$root.showAlertFunction('success', 'Voucher berhasil!', 'Voucher sukses digunakan');
+        this.inputDiscountVoucher = '';
+
+        console.log(reqData);
+        this.calculateAmoutPrice();
+      }catch(e){
+        if(e.response && e.response.data.status == 101){
+          this.$root.showAlertFunction('warning', 'Voucher gagal!', `${e.response.data.message}.`);
+        }else{
+          this.$root.showAlertFunction('warning', 'Terjadi kesalahan!', 'Coba beberapa saat lagi atau hubungi Administrator.');
+        }
+        console.log(e);
+      }
+      this.$root.hideLoading();
+    },
+
+    clearSelectedDiscountVoucher: function(){
+      this.discountVoucherFinded = null;
+      this.totalDiscVoucherValue = 0;
+      this.dicsVoucherValue = 0;
+      this.calculateAmoutPrice();
+    },
+    // End logic
 
     // Start logic promo bundling
     openModalListPromoBundling: async function(){
@@ -4843,11 +4905,21 @@ export default {
         }
       });
       
-      var tatalUntukBayar = this.subTotalPrice;
+      if(this.discountVoucherFinded != null && this.discountVoucherFinded.dics_type == this.master_code.tipe_pot_voucher.value){
+        if(this.dicsVoucherValue >= this.subTotalPrice){
+          this.totalDiscVoucherValue = this.subTotalPrice;
+        }else{
+          this.totalDiscVoucherValue = parseInt(this.dicsVoucherValue);
+        }
+      }else if(this.discountVoucherFinded != null && this.discountVoucherFinded.dics_type == this.master_code.tipe_pot_voucher.percent){
+        this.totalDiscVoucherValue = this.subTotalPrice * (parseInt(this.dicsVoucherValue) / 100);
+      }
+      
+      var tatalUntukBayar = this.subTotalPrice - this.totalDiscVoucherValue;
       this.totalBayarPrice = tatalUntukBayar;
       this.calculateTotalBayarPrice = tatalUntukBayar;
 
-      this.totalHematDiskon = this.totalPriceRingkasanProduct - this.totalBayarPrice;
+      this.totalHematDiskon = this.totalPriceRingkasanProduct - this.subTotalPrice;
     },
 
     calculatePcsItemOrderList: function(){
@@ -6087,6 +6159,9 @@ export default {
       this.productSingleGWP = null;
 
       this.dataAllIsFreeProduct = [];
+      // this.discountVoucherFinded = null;
+      // this.dicsVoucherValue = 0;
+      // this.totalDiscVoucherValue = 0;
 
       this.calculateAmoutPrice();
       $('#modalBatalConfirm').modal('hide');
@@ -6667,18 +6742,21 @@ export default {
 
       if(promo.isForRegulerOrPromoProduct === false){
         var totalPriceNonPromo = this.checkTotalPriceNonPromo();
-
+  
         if(totalPriceNonPromo > 0){
-          const calculateDiscount = totalPriceNonPromo * (promo.percent/100);
+          const calculateDiscount = this.calculateTotalBayarPrice * (promo.percent/100);
+          // const calculateDiscount = totalPriceNonPromo * (promo.percent/100);
           this.totalDiscountPromo = calculateDiscount;
-
+  
           if(promo.percent_after_dic != null && promo.percent_after_dic > 0){
-            const afterDiscValue = totalPriceNonPromo - calculateDiscount;
+            const afterDiscValue = this.calculateTotalBayarPrice - calculateDiscount;
+            // const afterDiscValue = totalPriceNonPromo - calculateDiscount;
             const calculateAfterDiscValue = afterDiscValue * (promo.percent_after_dic/100);
             this.afterDiscountPromo = calculateAfterDiscValue;
           }
           if(promo.percent_additional != null && promo.percent_additional > 0){
-            const totalMinimal = totalPriceNonPromo - calculateDiscount;
+            const totalMinimal = this.calculateTotalBayarPrice - calculateDiscount;
+            // const totalMinimal = totalPriceNonPromo - calculateDiscount;
             if(totalMinimal > parseInt(promo.min_value)){
               const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
               const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
@@ -6910,6 +6988,14 @@ export default {
           discountPromo: this.selectedActivePromo != null ? this.selectedActivePromo : null,
           discountPromoValue : this.selectedActivePromo != null ? parseInt(this.totalDiscountPromo) : null,
 
+          discountVoucher: this.discountVoucherFinded != null ? {
+            id: this.discountVoucherFinded.id,
+            discVoucher: this.discountVoucherFinded.nama_voucher,
+            discVoucherKode: this.discountVoucherFinded.voucher_code,
+            discVoucherPercent: this.discountVoucherFinded.dics_type == this.master_code.tipe_pot_voucher.percent ? this.dicsVoucherValue : null,
+            discVoucherValue: this.totalDiscVoucherValue,
+          } : null,
+
           products: this.dataProductListForStruk,
           activeStore: activeStore.store_outlet,
           isTicket: this.allTicketInOrder.length > 0 ? this.allTicketInOrder : null,
@@ -6999,6 +7085,10 @@ export default {
       this.listDataProductDetailSelectTicket = [];
 
       this.dataAllIsFreeProduct = [];
+      this.inputDiscountVoucher = '';
+      this.discountVoucherFinded = null;
+      this.dicsVoucherValue = 0;
+      this.totalDiscVoucherValue = 0;
 
       this.calculatePcsItemOrderList();
       this.calculateAmoutPrice();
@@ -7605,6 +7695,29 @@ export default {
           },
           {
             content: `-Rp ${this.$root.formatPrice(totalValuePromoProduct)}`,
+            styles: {
+              halign: 'right',
+              fontSize: sizeFont,
+              cellPadding: callPadding,
+            }
+          }
+        ]);
+      }
+
+      // Discount Voucher
+      if(this.totalDiscVoucherValue > 0 && this.discountVoucherFinded != null){
+        const voucherName = this.discountVoucherFinded.nama_voucher + (this.discountVoucherFinded.dics_type == this.master_code.tipe_pot_voucher.percent ? ` ${this.discountVoucherFinded.dics_value}%` : '');
+        dataBillindDetail.push([
+          {
+            content: voucherName,
+            styles: {
+              halign: 'left',
+              fontSize: sizeFont,
+              cellPadding: callPadding,
+            }
+          },
+          {
+            content: `-Rp ${this.$root.formatPrice(this.totalDiscVoucherValue)}`,
             styles: {
               halign: 'right',
               fontSize: sizeFont,
@@ -8427,6 +8540,29 @@ export default {
             }
           ]);
         }
+      }
+
+      // Discount Voucher
+      if(this.totalDiscVoucherValue > 0 && this.discountVoucherFinded != null){
+        const voucherName = this.discountVoucherFinded.nama_voucher + (this.discountVoucherFinded.dics_type == this.master_code.tipe_pot_voucher.percent ? ` ${this.discountVoucherFinded.dics_value}%` : '');
+        dataBillindDetail.push([
+          {
+            content: voucherName,
+            styles: {
+              halign: 'left',
+              fontSize: sizeFont,
+              cellPadding: callPadding,
+            }
+          },
+          {
+            content: `-Rp ${this.$root.formatPrice(this.totalDiscVoucherValue)}`,
+            styles: {
+              halign: 'right',
+              fontSize: sizeFont,
+              cellPadding: callPadding,
+            }
+          }
+        ]);
       }
 
       bodyBillingDetail = bodyBillingDetail.concat([

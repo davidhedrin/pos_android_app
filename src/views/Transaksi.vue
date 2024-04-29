@@ -117,6 +117,7 @@
                     </div>
                     <div>
                       <div class="text-end">
+                        {{ trans.payment_type.nama }}
                         <img :src="'assets/img/po-img/' + trans.payment_type.image" style="width: 80px; height: 20px; object-fit: contain;" alt="">
                       </div>
                       <div class="text-warning text-end">
@@ -152,7 +153,7 @@
                   <td>{{ trans.ducNum }}</td>
                   <td>{{ trans.bonStruk }}</td>
                   <td>{{ trans.sales_type.nama_sales }}</td>
-                  <td><img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
+                  <td>{{ trans.payment_type.nama }} <img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
                   <td class="text-warning">Rp {{ $root.formatPrice(trans.paymentAmount) }}</td>
                   <td>{{ formatDateTime(trans.docDate) }}</td>
                   <td>
@@ -310,6 +311,9 @@
                               <tr>
                                 <th class="text-end">Metode Bayar:</th>
                                 <td class="p-0 text-sm-end">
+                                  <div>
+                                    {{ selectedTrView.payment_type.nama }}
+                                  </div>
                                   <img :src="'assets/img/po-img/' + selectedTrView.payment_type.image" height="18" alt="">
                                 </td>
                               </tr>
@@ -340,6 +344,7 @@
                             <th class="text-white bg-primary py-1 border-0">Products</th>
                             <th class="text-white bg-primary py-1 border-0 text-center">Quantity</th>
                             <th class="text-white bg-primary py-1 border-0 text-center">Harga</th>
+                            <th class="text-white bg-primary py-1 border-0 text-center">Info</th>
                             <th class="text-white bg-primary py-1 border-0 text-end">Jumlah</th>
                           </tr>
                         </thead>
@@ -356,6 +361,28 @@
                             </td>
                             <td class="align-middle text-center">x{{ data.qty }}</td>
                             <td class="align-middle text-center">Rp {{ $root.formatPrice(data.price) }}</td>
+                            <td class="align-middle text-center">
+                              <div v-if="data.isPromo">
+                                <!-- 1 -->
+                                <div v-if="data.dataPromoD3.tipe_promo == master_code.tipe_promo.product">
+                                  <span class="badge rounded-pill bg-danger">
+                                    FREE
+                                  </span>
+                                </div>
+                                <!-- 2 -->
+                                <div v-else-if="data.dataPromoD3.tipe_promo == master_code.tipe_promo.diskon">
+                                  <span v-if="data.dataPromoD3.tipe_potongan == master_code.tipe_potongan.percent" class="badge rounded-pill bg-danger">
+                                    Disc {{ data.dataPromoD3.percent }} % 
+                                  </span>
+                                </div>
+                                <!-- 3 -->
+                                <div v-else-if="data.dataPromoD3.tipe_promo == master_code.tipe_promo.bundling">
+                                  <span class="badge rounded-pill bg-danger">
+                                    FREE
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
                             <td class="align-middle text-end">
                               Rp
                               {{ $root.formatPrice(data.qty * data.price) }}
@@ -491,7 +518,7 @@
                             <td>{{ formatDateTime(trans.docDate) }}</td>
                             <td>{{ trans.bonStruk }}</td>
                             <td>{{ trans.sales_type.nama_sales }}</td>
-                            <td><img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
+                            <td>{{ trans.payment_type.nama }} <img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
                             <td class="text-warning">Rp {{ $root.formatPrice(trans.paymentAmount) }}</td>
                           </tr>
                           <tr align="center" v-if="dataAllTrSA.length == 0">
@@ -881,6 +908,7 @@ export default {
     },
     
     getDataItemTransaction: async function(trans){
+      this.selectedTrView = null;
       this.$root.showLoading();
       try{
         const reqData = await axios({
@@ -899,6 +927,13 @@ export default {
     },
 
     showDetailTransaction: function(trans){
+      trans.all_data_tr_d1 = trans.all_data_tr_d1.map(x => {
+        if(x.isPromo){
+          x.dataPromoD3 = trans.all_data_tr_d3.find(y => y.id_tr_d1 == x.id);
+        }
+
+        return x;
+      });
       this.selectedTrView = null;
       this.selectedTrView = trans;
       $('#modalViewProduct').modal('show');

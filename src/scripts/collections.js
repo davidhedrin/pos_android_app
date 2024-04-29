@@ -102,6 +102,12 @@ export const master_code = {
     silver: '2',
     gold: '3',
   },
+  
+  tipe_promo: {
+    product: '1',
+    diskon: '2',
+    bundling: '3',
+  },
 
   tipe_potongan: {
     percent: '1',
@@ -111,6 +117,16 @@ export const master_code = {
   buyGet: {
     buy: 'buy',
     get: 'get',
+  },
+  
+  tipe_voucher: {
+    normal: '1',
+    free: '2',
+  },
+
+  tipe_pot_voucher: {
+    value: '1',
+    percent: '2'
   }
 }
 
