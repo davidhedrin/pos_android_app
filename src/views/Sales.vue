@@ -1024,7 +1024,7 @@
                       <label class="form-label mb-0"><span class="fw-normal">Payment Detail:</span> <u>{{ selectedMetodeBayar.nama }}</u></label>
                       <div class="d-flex align-items-center justify-content-between rounded-3 bg-body-tertiary ps-2 py-1 px-2">
                         <div class="w-35">
-                          <img class="img-icon-po2" :src="'assets/img/po-img/' + selectedMetodeBayar.image" />
+                          <img class="img-icon-po2" :src="`${$root.API_ERP}/assets/po-img/${selectedMetodeBayar.image}`" />
                         </div>
                         <div v-if="selectedMetodeBayar.kode == master_code.metodeBayar.redeem" class="w-60 text-end">
                           <label class="form-label fw-normal mb-0">Member Point: <strong class="text-dark">Rp {{ $root.formatPrice(memberOverview.point) }}</strong></label>
@@ -1048,7 +1048,7 @@
                         <a href="javascript:void(0)" class="text-secondary me-1" v-on:click="removeMoreMetodeBayar(metode, index)">
                           <span class="fas fa-window-close fs--1"></span>
                         </a>
-                        <img class="img-icon-po1" :src="'assets/img/po-img/' + metode.image" />
+                        <img class="img-icon-po1" :src="`${$root.API_ERP}/assets/po-img/${metode.image}`" />
                       </div>
                       <div class="w-40 me-2 text-end">
                         <input v-if="metode.kode != 'cash' && metode.kode != 'karyawan'" v-model="modelInputMoreMetodeBayar[index]" class="form-control form-control-sm" :id="'inputMoreMetodeBayar_' + index" @input="modelInputMoreMetodeBayar[index] = onChangeCheckNumberVal($event)" type="text" :placeholder="metode.kode == 'ewal' ? 'Nomor telepon' : '4 digit nomor' " />
@@ -1063,7 +1063,7 @@
                     <!-- <div class="d-flex align-items-center justify-content-between mb-2">
                       <label class="form-label mb-0">Metode Pembayaran: </label>
                       <div>
-                        <img class="img-icon-po1" :src="'/img/po-img/' + selectedMetodeBayar.image" />
+                        <img class="img-icon-po1" :src="`${$root.API_ERP}/assets/po-img/${selectedMetodeBayar.image}`" />
                       </div>
                     </div> -->
                     

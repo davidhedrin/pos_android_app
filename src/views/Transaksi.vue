@@ -153,7 +153,7 @@
                   <td>{{ trans.ducNum }}</td>
                   <td>{{ trans.bonStruk }}</td>
                   <td>{{ trans.sales_type.nama_sales }}</td>
-                  <td>{{ trans.payment_type.nama }} <img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
+                  <td>{{ trans.payment_type.nama }} <img :src="`${$root.API_ERP}/assets/po-img/${trans.payment_type.image}`" height="20" alt=""></td>
                   <td class="text-warning">Rp {{ $root.formatPrice(trans.paymentAmount) }}</td>
                   <td>{{ formatDateTime(trans.docDate) }}</td>
                   <td>
@@ -220,7 +220,7 @@
               <div v-for="payment in allPaymentMethod" class="col-md-2 col-md-4 mb-2 text-center">
                 <div class="card">
                   <div class="card-header">
-                    <img :src="'assets/img/po-img/' + payment.image" height="17" alt="">
+                    <img :src="`${$root.API_ERP}/assets/po-img/${payment.image}`" height="17" alt="">
                     <div>
                       <label class="m-0"><u>{{ payment.nama }}</u></label>
                     </div>
@@ -314,7 +314,7 @@
                                   <div>
                                     {{ selectedTrView.payment_type.nama }}
                                   </div>
-                                  <img :src="'assets/img/po-img/' + selectedTrView.payment_type.image" height="18" alt="">
+                                  <img :src="`${$root.API_ERP}/assets/po-img/${selectedTrView.payment_type.image}`" height="18" alt="">
                                 </td>
                               </tr>
                               <tr v-if="selectedTrView.uniquePayment" class="align-middle">
@@ -518,7 +518,7 @@
                             <td>{{ formatDateTime(trans.docDate) }}</td>
                             <td>{{ trans.bonStruk }}</td>
                             <td>{{ trans.sales_type.nama_sales }}</td>
-                            <td>{{ trans.payment_type.nama }} <img :src="'assets/img/po-img/' + trans.payment_type.image" height="20" alt=""></td>
+                            <td>{{ trans.payment_type.nama }} <img :src="`${$root.API_ERP}/assets/po-img/${payment_type.image}`" height="20" alt=""></td>
                             <td class="text-warning">Rp {{ $root.formatPrice(trans.paymentAmount) }}</td>
                           </tr>
                           <tr align="center" v-if="dataAllTrSA.length == 0">
@@ -576,7 +576,7 @@
                         <div v-for="payment in allPaymentMethodTrSA" class="col-lg-3 col-md-6 mb-1 text-center">
                           <div class="card">
                             <div class="card-header">
-                              <img :src="'assets/img/po-img/' + payment.image" height="15" alt="">
+                              <img :src="`${$root.API_ERP}/assets/po-img/${payment.image}`" height="15" alt="">
                               <div>
                                 <label class="m-0"><u>{{ payment.nama }}</u></label>
                               </div>
