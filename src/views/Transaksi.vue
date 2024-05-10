@@ -518,7 +518,7 @@
                             <td>{{ formatDateTime(trans.docDate) }}</td>
                             <td>{{ trans.bonStruk }}</td>
                             <td>{{ trans.sales_type.nama_sales }}</td>
-                            <td>{{ trans.payment_type.nama }} <img :src="`${$root.API_ERP}/assets/po-img/${payment_type.image}`" height="20" alt=""></td>
+                            <td>{{ trans.payment_type.nama }} <img :src="`${$root.API_ERP}/assets/po-img/${trans.payment_type.image}`" height="20" alt=""></td>
                             <td class="text-warning">Rp {{ $root.formatPrice(trans.paymentAmount) }}</td>
                           </tr>
                           <tr align="center" v-if="dataAllTrSA.length == 0">
