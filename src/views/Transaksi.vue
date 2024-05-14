@@ -42,13 +42,15 @@
           <ion-col size="6" size-md="3" size-lg="3">
             <div class="card overflow-hidden">
               <div class="card-header p-3">
-                <h6 class="mb-1">Your Amount</h6>
+                <h6 class="mb-1">
+                  {{ dataTransactionReport ? dataTransactionReport.amount_tr_month_now : '-' }}
+                </h6>
                 <div class="display-4 fs-2 mb-1 fw-normal font-sans-serif">
                   <span class="fs-1">Rp</span> 
                   {{ dataTransactionReport ? dataTransactionReport.total_value ? $root.formatPrice(dataTransactionReport.total_value) : '0' : '0' }}
                 </div>
                 <span class="fw-semi-bold fs--1 text-nowrap">
-                  {{ dataTransactionReport ? dataTransactionReport.amount_tr_month_now : '-' }}
+                  Total HET: Rp {{ dataTransactionReport ? dataTransactionReport.total_value ? $root.formatPrice(dataTransactionReport.total_value_het) : '0' : '0' }}
                 </span>
               </div>
             </div>
