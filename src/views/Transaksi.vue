@@ -241,7 +241,7 @@
                 </div>
               </div>
             </div>
-          </div>C
+          </div>
         </div>
       </div>
 

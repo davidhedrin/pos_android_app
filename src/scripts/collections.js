@@ -167,15 +167,20 @@ export const local_storage = {
   token_sso: 'token_sso',
 
   current_page: 'current_page',
-  is_dynamic: 'is_dynamic',
-  access_store: 'selected_access_store'
+  data_user: 'data_user',
+  access_store: 'selected_access_store',
+
+  device_info: 'device_info',
+  device_info_access: 'device_info_access',
 }
 
 export const pages = {
-  dashboard: 'Dashboard',
+  splash: 'Splash',
+  home: 'Home',
   login: 'Login',
   profile: 'Profile',
   sales:  'Sales',
+  about:  'About',
   transaksi: 'Transaksi',
   receiptitem: 'ReceiptItem',
   receiptitemv2: 'ReceiptItemV2',
@@ -184,17 +189,10 @@ export const pages = {
   transout: 'TransOut',
   kartustok: 'KartuStok',
   mutasistok: 'MutasiStok',
-  tickettotin: 'TicketToTin',
 
   // Master
   productlist: 'ProductList',
   promolist: 'PromoList',
   promoproduct: 'PromoProduct',
   userlist: 'UserList',
-  
-  // Cycle Count
-  ccdocument: 'CCDocument',
-  entrycc: 'EntryCC',
-  sodocument: 'SODocument',
-  entryso: 'EntrySO',
 }
