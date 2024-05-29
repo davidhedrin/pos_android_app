@@ -1340,15 +1340,17 @@
                           <div class="col-md-6">
                             <div class="fs--2">
                               <span class="far fa-check-circle" :class="promo.min_buy && 'text-success'"></span>
-                              Minimal Pcs 
+                              Min Pcs 
                               <strong>{{ promo.min_buy ?? '-' }}</strong>
                             </div>
                           </div>
                           <div class="col-md-12">
                             <div class="fs--2">
                               <span class="far fa-check-circle" :class="promo.min_value && 'text-success'"></span>
-                              Minimal Value 
+                              Min Val 
                               <strong>Rp {{ promo.min_value ? $root.formatPrice(promo.min_value) : '-' }}</strong>
+                              from 
+                              <strong>{{ promo.isForRegulerOrPromoProduct ? 'All' : ' Regular' }} Product</strong>
                             </div>
                           </div>
                         </div>
@@ -2329,7 +2331,7 @@
                     <h5 class="m-0">Daftar List Tiket</h5>
                     <p class="m-0 fs--1">Daftar ticket order <strong>{{ $root.formatDateIdn(currentTime) }}</strong></p>
                   </div>
-                  <div class="px-2">
+                  <div class="px-2 pb-3">
                     <div class="d-block d-md-none mb-3">
                       <div v-if="showLoadingTicket" class="text-center my-1">
                         <component :is="loadingBlack"></component>
@@ -2348,8 +2350,8 @@
                               </div>
                             </div>
                             <h5 class="fs-0 m-0">
-                              {{ ticket.member ? ticket.member.nama : 'Unknown' }}
-                              ({{ ticket.member && ticket.member.no_hp }})
+                              {{ ticket.member ? ticket.member.nama : 'Guest' }}
+                              {{ ticket.member ? `(${ticket.member.no_hp})` : '-' }}
                             </h5>
                             
                             <div>
@@ -2391,12 +2393,12 @@
                             <td>{{ ticket.user.nama_lengkap }}</td>
                             <td>
                               <span :class="ticket.member == null && 'fst-italic'">
-                                {{ ticket.member ? ticket.member.nama : 'Unknown' }}
+                                {{ ticket.member ? ticket.member.nama : 'Guest' }}
                               </span>
                             </td>
                             <td>
                               <span :class="ticket.member == null && 'fst-italic'">
-                                {{ ticket.member ? ticket.member.no_hp : 'Unknown' }}
+                                {{ ticket.member ? `(${ticket.member.no_hp})` : '-' }}
                               </span>
                             </td>
                             <td>
@@ -2537,7 +2539,7 @@
                                   <td>{{ dataBatch.batch.batchNo }}</td>
                                   <td>{{ dataBatch.batch.expiredDate }}</td>
                                   <td>
-                                    <input v-model="dataBatch.qty" class="form-control p-0 ps-2 fs--1 set-text-bold" type="number" min="1" style="width: 60px;">
+                                    <input v-model="dataBatch.qty" class="form-control p-0 ps-2 fs--1 set-text-bold" type="number" min="1" disabled style="width: 60px;">
                                   </td>
                                   <td class="text-end">
                                     <a href="javascript:void(0)" @click="deleteSelecteBatchProductOrderList(data, dataBatch, index)" class="p-0 ms-2 text-danger">
@@ -2567,8 +2569,9 @@
       <div class="modal fade" id="modalShowBatchProductOrderListTicket" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px">
           <div class="modal-content position-relative">
-            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
-              <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
+              <!-- <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button> -->
+              <button class="btn btn-success btn-sm d-flex flex-center transition-base" type="button" data-bs-dismiss="modal" aria-label="Close">Selesai</button>
             </div>
             <div class="modal-body p-0">
               <div class="rounded-top-3 py-3 ps-4 pe-6 bg-body-tertiary">
@@ -2578,21 +2581,31 @@
                 <div class="scrollable-customize mb-2" style="min-height: 1vh; max-height: 70vh;">
                   <!-- For Promo Product -->
                   <div v-if="dataShowBatchProductOrdetTicketToSelect.is_promo_product">
-                    <div v-if="dataShowBatchProductOrdetTicketToSelect.batch.length > 0" class="card cursor-pointer mt-3" v-for="batch in dataShowBatchProductOrdetTicketToSelect.batch" @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch)">
+                    <!-- @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch)" -->
+                    <div v-if="dataShowBatchProductOrdetTicketToSelect.batch.length > 0" class="card mt-3" v-for="batch in dataShowBatchProductOrdetTicketToSelect.batch">
                       <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: auto;"></div>
                       <div class="card-header position-relative py-2 px-3">
                         <div class="row align-items-center">
-                          <div class="col-md-4">
+                          <div class="col-4">
                             <span class="fs--2"><u>Batch Number:</u></span>
                             <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
-                            <span v-if="batch.isSelected" class="badge rounded-pill fw-medium badge-subtle-success py-1 fs--2 me-1">
+                            <!-- <span v-if="batch.isSelected" class="badge rounded-pill fw-medium badge-subtle-success py-1 fs--2 me-1">
                               <span class="fas fa-check"></span> Dipilih
-                              <!-- <a href="javascript:void(0)" class="text-danger" @click="deleteProductFromListOrderTicket(product)">
+                              <a href="javascript:void(0)" class="text-danger" @click="deleteProductFromListOrderTicket(product)">
                                 <span class="fas fa-window-close"></span>
-                              </a> -->
-                            </span>
+                              </a>
+                            </span> -->
+                            <div class="input-group">
+                              <input v-model="batch.inputVal" class="form-control form-control-sm hide-input-btn px-1" type="number" min="0" readonly>
+                              <button class="btn btn-primary btn-sm input-group-text px-2" type="button" @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch, true)">
+                                <span class="fas fa-plus"></span>
+                              </button>
+                              <button class="btn btn-secondary btn-sm input-group-text px-2" type="button" @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch, false)">
+                                <span class="fas fa-minus"></span>
+                              </button>
+                            </div>
                           </div>
-                          <div class="col-md-8 text-end fs--1">
+                          <div class="col-8 text-end fs--1">
                             <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                             <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
                             <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
@@ -2607,21 +2620,31 @@
       
                   <!-- For Regular Product -->
                   <div v-else>
-                    <div v-if="dataShowBatchProductOrdetTicketToSelect.batch.length > 0" class="card cursor-pointer mt-3" v-for="batch in dataShowBatchProductOrdetTicketToSelect.batch" @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch)">
+                    <!-- @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch)" -->
+                    <div v-if="dataShowBatchProductOrdetTicketToSelect.batch.length > 0" class="card mt-3" v-for="batch in dataShowBatchProductOrdetTicketToSelect.batch">
                       <div class="bg-holder bg-card" style="background-image:url('assets/img/illustration/corner-4.png'); background-size: auto;"></div>
                       <div class="card-header position-relative py-2 px-3">
                         <div class="row align-items-center">
-                          <div class="col-md-4">
+                          <div class="col-4">
                             <span class="fs--2"><u>Batch Number:</u></span>
                             <h4 class="mb-0">{{ batch.batchNo ?? '-' }}</h4>
-                            <span v-if="batch.isSelected" class="badge rounded-pill fw-medium badge-subtle-success py-1 fs--2 me-1">
+                            <!-- <span v-if="batch.isSelected" class="badge rounded-pill fw-medium badge-subtle-success py-1 fs--2 me-1">
                               <span class="fas fa-check"></span> Dipilih
-                              <!-- <a href="javascript:void(0)" class="text-danger" @click="deleteProductFromListOrderTicket(product)">
+                              <a href="javascript:void(0)" class="text-danger" @click="deleteProductFromListOrderTicket(product)">
                                 <span class="fas fa-window-close"></span>
-                              </a> -->
-                            </span>
+                              </a>
+                            </span> -->
+                            <div class="input-group">
+                              <input v-model="batch.inputVal" class="form-control form-control-sm hide-input-btn px-1" type="number" min="0" readonly>
+                              <button class="btn btn-primary btn-sm input-group-text px-2" type="button" @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch, true)">
+                                <span class="fas fa-plus"></span>
+                              </button>
+                              <button class="btn btn-secondary btn-sm input-group-text px-2" type="button" @click="addSelectBatchProductListOrderTicket(dataShowBatchProductOrdetTicketToSelect, batch, false)">
+                                <span class="fas fa-minus"></span>
+                              </button>
+                            </div>
                           </div>
-                          <div class="col-md-8 text-end fs--1">
+                          <div class="col-8 text-end fs--1">
                             <p class="m-0">On Hand: <strong>{{ batch.onHand ?? '-' }}</strong> Pcs</p>
                             <p class="m-0">Exp Date: {{ batch.expiredDate ? $root.formatDate(batch.expiredDate) : '-' }}</p>
                             <p class="m-0">Whs: <b>{{ batch.master_warehouse ? `${batch.master_warehouse.whsName} (${batch.master_warehouse.whsCode})` : '-' }}</b></p>
@@ -6006,50 +6029,90 @@ export default {
     },
 
     searchFindBatchProductListOrderTicket: async function(data){
-      if(data.batch.length == 0){
-        this.$root.showLoading();
-        const product = data.is_promo_product ?? data.product;
-        const getBatch = await this.checkInventoryBatchProduct(product);
+      // if(data.batch.length == 0){
+      // }
+      this.$root.showLoading();
+      const product = data.is_promo_product ?? data.product;
+      const getBatch = await this.checkInventoryBatchProduct(product);
 
-        if(data.is_promo_product){
-          data.product.all_inventory_stok = getBatch.for_product.all_inventory_stok;
-          data.product.all_inventory_batch = getBatch.for_product.all_inventory_batch;
+      if(data.is_promo_product){
+        data.product.all_inventory_stok = getBatch.for_product.all_inventory_stok;
+        data.product.all_inventory_batch = getBatch.for_product.all_inventory_batch;
 
-          data.is_promo_product.for_product.all_inventory_stok = getBatch.for_product.all_inventory_stok;
-          data.is_promo_product.for_product.all_inventory_batch = getBatch.for_product.all_inventory_batch;
-          if(data.is_promo_product.get_product){
-            data.is_promo_product.get_product.all_inventory_stok = getBatch.get_product.all_inventory_stok;
-            data.is_promo_product.get_product.all_inventory_batch = getBatch.get_product.all_inventory_batch;
-          }
-          
-          data.batch = getBatch.for_product.all_inventory_batch;
+        data.is_promo_product.for_product.all_inventory_stok = getBatch.for_product.all_inventory_stok;
+        data.is_promo_product.for_product.all_inventory_batch = getBatch.for_product.all_inventory_batch;
+        if(data.is_promo_product.get_product){
+          data.is_promo_product.get_product.all_inventory_stok = getBatch.get_product.all_inventory_stok;
+          data.is_promo_product.get_product.all_inventory_batch = getBatch.get_product.all_inventory_batch;
+        }
+        
+        data.batch = getBatch.for_product.all_inventory_batch;
+      }else{
+        data.product.all_inventory_stok = getBatch.all_inventory_stok;
+        data.product.all_inventory_batch = getBatch.all_inventory_batch;
+        
+        data.batch = getBatch.all_inventory_batch;
+      }
+
+      // const allBatchInSelected = data.selectBatch.map(x => x.batch.id);
+      data.batch.map(x => {
+        const findInSelected = data.selectBatch.find(y => y.batch.id == x.id);
+        if(findInSelected){
+          x.inputVal = findInSelected.batch.inputVal;
         }else{
-          data.product.all_inventory_stok = getBatch.all_inventory_stok;
-          data.product.all_inventory_batch = getBatch.all_inventory_batch;
-          
-          data.batch = getBatch.all_inventory_batch;
+          x.inputVal = 0;
         }
 
-        this.$root.hideLoading();
-      }
+        return x;
+      });
+      this.$root.hideLoading();
 
       this.dataShowBatchProductOrdetTicketToSelect = data;
       $('#modalShowBatchProductOrderListTicket').modal('show');
     },
 
-    addSelectBatchProductListOrderTicket: function(data, batch, qty = 1){
+    addSelectBatchProductListOrderTicket: function(data, batch, incsDecs, qty = 1){
       const findIndexData = this.listDataProductDetailSelectTicket.findIndex((x) => x == data);
-      const findIfExist = data.selectBatch.find((x) => x.batch == batch);
-      if(findIfExist){
-        findIfExist.qty += 1;
-      }else{
-        batch.isSelected = true;
-        const batchNew = {
-          batch: batch,
-          qty: qty
+      const findIfExist = data.selectBatch.find((x) => x.batch.id == batch.id);
+
+      if(incsDecs == true){
+        if(parseInt(batch.onHand) < 1){
+          this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
+          return;
+        };
+        
+        // if(parseInt(batch.onHand) < 1){
+        //   await this.waitForConfirmationNoQtyBatch();
+        // }
+        
+        batch.inputVal += qty;
+        if(findIfExist){
+          if(parseInt(batch.onHand) <= findIfExist.qty){
+            this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Gagal menambahkan stok tidak cukup.');
+            return;
+          };
+  
+          findIfExist.qty += qty;
+        }else{
+          // batch.isSelected = true;
+          const batchNew = {
+            batch: batch,
+            qty: qty
+          }
+          data.selectBatch.push(batchNew);
+          $('#modalListProductTicketSelected').find(`#cardProductOrderTicket_${findIndexData}`).removeClass('border-red');
         }
-        data.selectBatch.push(batchNew);
-        $('#modalListProductTicketSelected').find(`#cardProductOrderTicket_${findIndexData}`).removeClass('border-red');
+      }else{
+        if(findIfExist){
+          const indexIfExist = data.selectBatch.findIndex((x) => x.batch.id == batch.id);
+          if(findIfExist.qty > 1){
+            findIfExist.qty -= qty;
+            batch.inputVal -= qty;
+          }else{
+            data.selectBatch.splice(indexIfExist, 1);
+            batch.inputVal = 0;
+          }
+        }
       }
     },
 
@@ -6714,6 +6777,13 @@ export default {
     },
 
     clickPromoConfirmationPromo: async function(promo){
+      var totalBayarPriceForMinValue = 0;
+      if(promo.isForRegulerOrPromoProduct === false){
+        totalBayarPriceForMinValue = this.checkTotalPriceNonPromo();
+      }else{
+        totalBayarPriceForMinValue = this.totalBayarPrice;
+      }
+
       if(promo.min_buy != null){
         if(this.totalPcsItemOrder < promo.min_buy){
           this.$root.showAlertFunction('warning', 'Promo Gagal!', 'Syarat dan ketentuan tidak terpenuhi.');
@@ -6722,7 +6792,7 @@ export default {
         }
       }
       if(promo.min_value != null){
-        if(this.totalBayarPrice < parseInt(promo.min_value)){
+        if(totalBayarPriceForMinValue < parseInt(promo.min_value)){
           this.$root.showAlertFunction('warning', 'Promo Gagal!', 'Syarat dan ketentuan tidak terpenuhi.');
           this.$root.hideLoading();
           return false;
@@ -6742,35 +6812,35 @@ export default {
         }
       }
 
-      if(promo.isForRegulerOrPromoProduct === false){
-        var totalPriceNonPromo = this.checkTotalPriceNonPromo();
-  
-        if(totalPriceNonPromo > 0){
-          const calculateDiscount = this.calculateTotalBayarPrice * (promo.percent/100);
-          // const calculateDiscount = totalPriceNonPromo * (promo.percent/100);
-          this.totalDiscountPromo = calculateDiscount;
-  
-          if(promo.percent_after_dic != null && promo.percent_after_dic > 0){
-            const afterDiscValue = this.calculateTotalBayarPrice - calculateDiscount;
-            // const afterDiscValue = totalPriceNonPromo - calculateDiscount;
-            const calculateAfterDiscValue = afterDiscValue * (promo.percent_after_dic/100);
-            this.afterDiscountPromo = calculateAfterDiscValue;
-          }
-          if(promo.percent_additional != null && promo.percent_additional > 0){
-            const totalMinimal = this.calculateTotalBayarPrice - calculateDiscount;
-            // const totalMinimal = totalPriceNonPromo - calculateDiscount;
-            if(totalMinimal > parseInt(promo.min_value)){
-              const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
-              const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
-              this.discountPromoAdditional = calculateAfterMinimal;
-            }
-          }
-          // this.totalBayarPrice = this.totalBayarPrice - calculateDiscount;
-        }else{
-            this.$root.showAlertFunction('warning', 'Promo Gagal!', 'Promo berlaku untuk product reguler');
-            this.$root.hideLoading();
-            return false;
+      // if(promo.isForRegulerOrPromoProduct === false){
+      //   totalPriceNonPromo = this.checkTotalPriceNonPromo();
+      // }else{
+      //     this.$root.showAlertFunction('warning', 'Promo Gagal!', 'Promo berlaku untuk product reguler');
+      //     this.$root.hideLoading();
+      //     return false;
+      // }
+
+      if(totalBayarPriceForMinValue > 0){
+        const calculateDiscount = this.calculateTotalBayarPrice * (promo.percent/100);
+        // const calculateDiscount = totalPriceNonPromo * (promo.percent/100);
+        this.totalDiscountPromo = calculateDiscount;
+
+        if(promo.percent_after_dic != null && promo.percent_after_dic > 0){
+          const afterDiscValue = this.calculateTotalBayarPrice - calculateDiscount;
+          // const afterDiscValue = totalPriceNonPromo - calculateDiscount;
+          const calculateAfterDiscValue = afterDiscValue * (promo.percent_after_dic/100);
+          this.afterDiscountPromo = calculateAfterDiscValue;
         }
+        if(promo.percent_additional != null && promo.percent_additional > 0){
+          const totalMinimal = this.calculateTotalBayarPrice - calculateDiscount;
+          // const totalMinimal = totalPriceNonPromo - calculateDiscount;
+          if(totalMinimal > parseInt(promo.min_value)){
+            const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
+            const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
+            this.discountPromoAdditional = calculateAfterMinimal;
+          }
+        }
+        // this.totalBayarPrice = this.totalBayarPrice - calculateDiscount;
       }
 
       
