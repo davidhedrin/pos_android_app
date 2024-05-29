@@ -2248,6 +2248,36 @@
       
                   </ul>
                 </nav>
+                
+                <nav v-if="tabActivePillTicketOrder == listPillTicketOrder.promo && totalPagePromoProductOrderTicket > 1" aria-label="Page navigation example">
+                  <ul class="pagination pagination-sm m-0">
+      
+                    <li v-if="displayedPagesPromoProductOrderTicket[0] > 1">
+                      <a class="page-link" href="javascript:void(0)" @click="openModalTabPromoOrderTicket(1, true)">First</a>
+                    </li>
+      
+                    <li class="page-item" :class="{ 'disabled': currentPagePromoProductOrderTicket === 1 }">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="openModalTabPromoOrderTicket(currentPagePromoProductOrderTicket - 1, true)">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+      
+                    <li v-for="pageNumber in displayedPagesPromoProductOrderTicket" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPagePromoProductOrderTicket }">
+                      <a class="page-link" href="javascript:void(0)" @click="openModalTabPromoOrderTicket(pageNumber, true)">{{ pageNumber }}</a>
+                    </li>
+      
+                    <li class="page-item" :class="{ 'disabled': currentPagePromoProductOrderTicket === totalPagePromoProductOrderTicket }">
+                      <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="openModalTabPromoOrderTicket(currentPagePromoProductOrderTicket + 1, true)">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+      
+                    <li v-if="displayedPagesPromoProductOrderTicket[displayedPagesPromoProductOrderTicket.length - 1] < totalPagePromoProductOrderTicket">
+                      <a class="page-link" href="javascript:void(0)" @click="openModalTabPromoOrderTicket(totalPagePromoProductOrderTicket, true)">Last</a>
+                    </li>
+      
+                  </ul>
+                </nav>
               </div>
 
               <div v-if="tabActivePillTicketOrder == listPillTicketOrder.listadd">
@@ -3591,7 +3621,14 @@ export default {
       listDataProductForCreateTicket: [],
       inputSearchProductOrderTicket: '',
       inputSearchProductPromoOrderTicket: '',
+
       dataAllPromoProductOrderTicket: [],
+      displayedPagesPromoProductOrderTicket: [],
+      totalDisplayedPagesPromoProductOrderTicket: 3,
+      currentPagePromoProductOrderTicket: 1,
+      perPagePromoProductOrderTicket: 10,
+      totalPagePromoProductOrderTicket: 0,
+
       dataAllProductOrderTicket: [],
       displayedPageProductOrderTicket: [],
       totalDisplayedPageProductOrderTicket: 3,
@@ -5500,15 +5537,15 @@ export default {
     },
 
     openModalTabPromoOrderTicket: async function(page = 1, isPaging = false){
-      this.$root.showLoading();
+      if(isPaging || this.dataAllPromoProductOrderTicket.length == 0) this.$root.showLoading();
       try{
         const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
 
         if(isPaging || this.dataAllPromoProductOrderTicket.length == 0){
           var responseAllDataPromoDetail = [];
-          const getAllProductPromo = await axios({
+          const request = await axios({
             method: 'get',
-            url: this.$root.API_ERP + '/pos/app/sales/getAllMasterPromoProductDetail',
+            url: this.$root.API_ERP + '/pos/app/sales/getAllMasterPromoProductDetailV2',
             params: {
               page: page,
               per_page: this.perPagePromoProduct,
@@ -5516,50 +5553,59 @@ export default {
               search: this.inputSearchProductPromoOrderTicket.trim(),
             },
           });
-  
-          if(getAllProductPromo.status == 200){
-            const resDataAllProductPromo = getAllProductPromo.data;
-            resDataAllProductPromo.forEach(resDataProductPromo => {
-              const masterPromoProduct = resDataProductPromo.master_promo_product;
-              const masterPromo = resDataProductPromo.master_promo_product.master_promo;
-  
-              const setObj = {
-                id: resDataProductPromo.id,
-                promo_product_id: resDataProductPromo.promo_product_id,
-                for_product_code: resDataProductPromo.for_product_code,
-                get_product_code: resDataProductPromo.get_product_code,
-                for_product_whs: resDataProductPromo.for_product_whs,
-                get_product_whs: resDataProductPromo.get_product_whs,
-                // for_product_price: resDataProductPromo.for_product_price,
-                // get_product_price: resDataProductPromo.get_product_price,
-                isActive: resDataProductPromo.isActive,
-                master_promo_product: resDataProductPromo.master_promo_product,
-                for_product: resDataProductPromo.for_product,
-                get_product: resDataProductPromo.get_product ?? null,
-              };
-              setObj.for_product.all_product_price = resDataProductPromo.for_product_price;
-              setObj.for_product.all_inventory_stok = resDataProductPromo.for_inventory_stok;
-              // setObj.for_product.all_inventory_batch = resDataProductPromo.for_inventory_batch;
-              setObj.for_product.all_product_diskon = resDataProductPromo.for_product_diskon;
-              setObj.for_product.all_product_detail = resDataProductPromo.for_product_detail;
-              
-              if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
-                setObj.get_product.all_product_price = resDataProductPromo.get_product_price;
-                setObj.get_product.all_inventory_stok = resDataProductPromo.get_inventory_stok;
-                // setObj.get_product.all_inventory_batch = resDataProductPromo.get_inventory_batch;
-                setObj.get_product.all_product_diskon = resDataProductPromo.get_product_diskon;
-                // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
-              }
-  
-              responseAllDataPromoDetail.push(setObj);
-              // const startDate = new Date(masterPromo.start_date);
-              // const endDate = new Date(masterPromo.end_date);
-              // if(today >= startDate && today <= endDate){
-              // }
-            });
-          }
+
+          const reqData = request.data;
+          this.currentPagePromoProductOrderTicket = reqData.current_page;
+          this.totalPagePromoProductOrderTicket = reqData.last_page;
+          this.updateDisplayedPagesPromoProductOrderTicket();
+
+          const resDataAllProductPromo = reqData.data;
+          resDataAllProductPromo.forEach(resDataProductPromo => {
+            const masterPromoProduct = resDataProductPromo.master_promo_product;
+            const masterPromo = resDataProductPromo.master_promo_product.master_promo;
+
+            const setObj = {
+              id: resDataProductPromo.id,
+              promo_product_id: resDataProductPromo.promo_product_id,
+              for_product_code: resDataProductPromo.for_product_code,
+              get_product_code: resDataProductPromo.get_product_code,
+              for_product_whs: resDataProductPromo.for_product_whs,
+              get_product_whs: resDataProductPromo.get_product_whs,
+              // for_product_price: resDataProductPromo.for_product_price,
+              // get_product_price: resDataProductPromo.get_product_price,
+              isActive: resDataProductPromo.isActive,
+              master_promo_product: resDataProductPromo.master_promo_product,
+              for_product: resDataProductPromo.for_product,
+              get_product: resDataProductPromo.get_product ?? null,
+            };
+            setObj.for_product.all_product_price = resDataProductPromo.for_product_price;
+            setObj.for_product.all_inventory_stok = resDataProductPromo.for_inventory_stok;
+            // setObj.for_product.all_inventory_batch = resDataProductPromo.for_inventory_batch;
+            setObj.for_product.all_product_diskon = resDataProductPromo.for_product_diskon;
+            setObj.for_product.all_product_detail = resDataProductPromo.for_product_detail;
+            
+            if(masterPromoProduct.tipe_promo == this.master_coll.tipePromo.bundle){
+              setObj.get_product.all_product_price = resDataProductPromo.get_product_price;
+              setObj.get_product.all_inventory_stok = resDataProductPromo.get_inventory_stok;
+              // setObj.get_product.all_inventory_batch = resDataProductPromo.get_inventory_batch;
+              setObj.get_product.all_product_diskon = resDataProductPromo.get_product_diskon;
+              // setObj.get_product.all_product_detail = resDataProductPromo.get_product_diskon;
+            }
+
+            responseAllDataPromoDetail.push(setObj);
+            // const startDate = new Date(masterPromo.start_date);
+            // const endDate = new Date(masterPromo.end_date);
+            // if(today >= startDate && today <= endDate){
+            // }
+          });
           
-          this.dataAllPromoProductOrderTicket = responseAllDataPromoDetail;
+          this.dataAllPromoProductOrderTicket = responseAllDataPromoDetail.map(x => {
+            const findExisting = this.listDataProductForCreateTicket.find(y => y.product.id == x.id);
+            if(findExisting){
+              x.isSelectedProductTicket = true;
+            }
+            return x;
+          });
         }
 
         this.tabActivePillTicketOrder = this.listPillTicketOrder.promo;
@@ -5568,6 +5614,19 @@ export default {
         console.log(error);
       }
       this.$root.hideLoading();
+    },
+    
+    updateDisplayedPagesPromoProductOrderTicket() {
+      const halfDisplayedPages = Math.floor(this.totalDisplayedPagesPromoProductOrderTicket / 2);
+
+      let startPage = Math.max(1, this.currentPagePromoProductOrderTicket - halfDisplayedPages);
+      let endPage = Math.min(this.totalPagePromoProductOrderTicket, startPage + this.totalDisplayedPagesPromoProductOrderTicket - 1);
+
+      if (endPage - startPage + 1 < this.totalDisplayedPagesPromoProductOrderTicket) {
+        startPage = Math.max(1, endPage - this.totalDisplayedPagesPromoProductOrderTicket + 1);
+      }
+
+      this.displayedPagesPromoProductOrderTicket = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     },
     
     clickAddProductOrderTicket: async function(product){
