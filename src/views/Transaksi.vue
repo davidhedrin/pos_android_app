@@ -402,6 +402,11 @@
                         <table class="table table-sm table-borderless fs--1">
                           <tbody>
                             <tr>
+                              <th>
+                                <span class="text-1000 fs-0">Keterangan:</span> {{ selectedTrView.description ? selectedTrView.description : '-' }}
+                              </th>
+                            </tr>
+                            <tr>
                               <th class="text-1000 fs-0">Billing Detail:</th>
                             </tr>
                             <tr>
