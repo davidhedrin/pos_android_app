@@ -707,6 +707,7 @@ export default {
     loadAllData: async function(){
       this.$root.showLoading();
 
+      const cacheStoreAccess = JSON.parse(localStorage.getItem(this.local_storage.access_store));
       const userLogin = JSON.parse(localStorage.getItem(this.local_storage.data_user));
       try{
         const requset = await axios({
@@ -714,6 +715,7 @@ export default {
           url: this.$root.API_ERP + '/pos/app/transaksi/',
           params: {
             user_uuid: userLogin.user_uuid,
+            store_code: cacheStoreAccess.store_outlet.storeCode
           }
         });
 
