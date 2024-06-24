@@ -6954,11 +6954,11 @@ export default {
         if(promo.percent_additional != null && promo.percent_additional > 0){
           const totalMinimal = this.calculateTotalBayarPrice - calculateDiscount;
           // const totalMinimal = totalPriceNonPromo - calculateDiscount;
-          if(totalMinimal > parseInt(promo.min_value)){
-            const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
-            const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
-            this.discountPromoAdditional = calculateAfterMinimal;
-          }
+          // if(totalMinimal > parseInt(promo.min_value)){
+          // }
+          const totalAfterMinimal = totalMinimal - this.afterDiscountPromo;
+          const calculateAfterMinimal = totalAfterMinimal * (promo.percent_additional/100);
+          this.discountPromoAdditional = calculateAfterMinimal;
         }
         // this.totalBayarPrice = this.totalBayarPrice - calculateDiscount;
       }
@@ -7179,6 +7179,8 @@ export default {
 
           discountPromo: this.selectedActivePromo != null ? this.selectedActivePromo : null,
           discountPromoValue : this.selectedActivePromo != null ? parseInt(this.totalDiscountPromo) : null,
+          afterDiscountPromoValue : this.selectedActivePromo != null && this.afterDiscountPromo > 0 ? parseInt(this.afterDiscountPromo) : null,
+          discountPromoAdditionalValue : this.selectedActivePromo != null && this.discountPromoAdditional > 0 ? parseInt(this.discountPromoAdditional) : null,
 
           discountVoucher: this.discountVoucherFinded != null ? {
             id: this.discountVoucherFinded.id,
