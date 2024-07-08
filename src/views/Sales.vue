@@ -2794,6 +2794,36 @@
                       <div v-if="totalPageMember > 1" class="d-flex justify-content-end mt-2">
                         <nav aria-label="Page navigation example">
                           <ul class="pagination pagination-sm">
+
+                            <li v-if="displayedPagesMember[0] > 1">
+                              <a class="page-link" href="javascript:void(0)" @click="fatchDataMember()">First</a>
+                            </li>
+
+                            <li class="page-item" :class="{ 'disabled': currentPageMember === 1 }">
+                              <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataMember(currentPageMember - 1)">
+                                <span aria-hidden="true">&laquo;</span>
+                              </a>
+                            </li>
+
+                            <li v-for="pageNumber in displayedPagesMember" :key="pageNumber" class="page-item" :class="{ 'active': pageNumber === currentPageMember }">
+                              <a class="page-link" href="javascript:void(0)" @click="fatchDataMember(pageNumber)">{{ pageNumber }}</a>
+                            </li>
+
+                            <li class="page-item" :class="{ 'disabled': currentPageMember === totalPageMember }">
+                              <a class="page-link" href="javascript:void(0)" aria-label="Next" @click="fatchDataMember(currentPageMember + 1)">
+                                <span aria-hidden="true">&raquo;</span>
+                              </a>
+                            </li>
+
+                            <li v-if="displayedPagesMember[displayedPagesMember.length - 1] < totalPageMember">
+                              <a class="page-link" href="javascript:void(0)" @click="fatchDataMember(totalPageMember)">Last</a>
+                            </li>
+
+                          </ul>
+                        </nav>
+
+                        <!-- <nav aria-label="Page navigation example">
+                          <ul class="pagination pagination-sm">
                             <li class="page-item" :class="{ 'disabled': currentPageMember === 1 }">
                               <a class="page-link" href="javascript:void(0)" aria-label="Previous" @click="fatchDataMember(currentPageMember - 1)">
                                 <span aria-hidden="true">&laquo;</span>
@@ -2810,7 +2840,7 @@
                               </a>
                             </li>
                           </ul>
-                        </nav>
+                        </nav> -->
                       </div>
                     </div>
                     <div v-else>
@@ -3517,6 +3547,8 @@ export default {
       dataAllMasterSalesBy: [],
 
       dataAllMembers: [],
+      displayedPagesMember: [],
+      totalDisplayedPagesMember: 3,
       currentPageMember: 1,
       perPageMember: 15,
       totalPageMember: 0,
@@ -4849,10 +4881,25 @@ export default {
         this.currentPageMember = response.current_page;
         this.totalPageMember = response.last_page;
         this.dataAllMembers = response.data;
+
+        this.updateDisplayedPagesMember();
       }catch(e){
         console.log(e);
       }
       this.$root.hideLoading();
+    },
+
+    updateDisplayedPagesMember() {
+      const halfDisplayedPages = Math.floor(this.totalDisplayedPagesMember / 2);
+
+      let startPage = Math.max(1, this.currentPageMember - halfDisplayedPages);
+      let endPage = Math.min(this.totalPageMember, startPage + this.totalDisplayedPagesMember - 1);
+
+      if (endPage - startPage + 1 < this.totalDisplayedPagesMember) {
+        startPage = Math.max(1, endPage - this.totalDisplayedPagesMember + 1);
+      }
+
+      this.displayedPagesMember = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     },
 
     fatchDataPromoDiskon: async function(page = 1){
