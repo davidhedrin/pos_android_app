@@ -63,12 +63,14 @@
               </div>
               <div class="d-flex py-1">
                 <div class="pe-3">
-                  <p class="text-600 fs--1 fw-medium">Transaction </p>
-                  <h4 class="text-800 mb-0">149</h4>
+                  <p class="text-600 fs--1 fw-medium">Transaction</p>
+                  <h4 class="text-800 mb-0">{{ dataUserLogin && dataUserLogin.trans_targets ? dataUserLogin.trans_targets : '-' }}</h4>
                 </div>
                 <div class="ps-3">
-                  <p class="text-600 fs--1">Month Incentive </p>
-                  <h4 class="text-800 mb-0">Rp 10.000 </h4>
+                  <p class="text-600 fs--1">Month Incentive</p>
+                  <h4 class="text-800 mb-0">
+                    Rp {{ dataUserLogin && dataUserLogin.incentive_targets ? $root.formatPrice(parseInt(dataUserLogin.incentive_targets)) : '-' }}
+                  </h4>
                 </div>
               </div>
             </div>
