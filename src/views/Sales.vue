@@ -2847,7 +2847,7 @@
                       <form @submit.prevent="storeNewMember">
                         <div class="mb-1">
                           <label class="form-label mb-0" for="nama_member">Name<span class="text-danger">*</span></label>
-                          <input v-model="dataInputMember.nama" class="form-control bg-transparent" id="nama_member" type="text" placeholder="Masukkan nama lengkap" required>
+                          <input v-model="dataInputMember.nama" @input="dataInputMember.nama = $event.target.value.toUpperCase()" class="form-control bg-transparent" id="nama_member" type="text" placeholder="Masukkan nama lengkap" required>
                         </div>
                         <div class="mb-1">
                           <label class="form-label mb-0" for="no_hp_member">No Hp<span class="text-danger">*</span></label>
@@ -2866,11 +2866,15 @@
                             <option value="other">Lainnya</option>
                           </select>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-1">
                           <label class="form-label mb-0" for="tanggal_lahir">Tanggal Lahir</label>
                           <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="tanggal_lahir" type="date">
                         </div>
-                        <div class="mb-3 text-end">
+                        <div class="mb-1">
+                          <label class="form-label mb-0" for="point_member">Point member</label>
+                          <input v-model="dataInputMember.point" @input="dataInputMember.point = $root.inputTextFormatPrice($event);" class="form-control bg-transparent" id="point_member" type="text" placeholder="Masukkan point member">
+                        </div>
+                        <div class="pt-2 mb-3 text-end">
                           <button class="btn btn-primary btn-sm" type="submit">Submit</button>
                         </div>
                       </form>
@@ -2903,7 +2907,7 @@
                     <form @submit.prevent="updateEditDataMember">
                       <div class="mb-1">
                         <label class="form-label mb-0" for="edit_nama_member">Name <span class="text-danger">*</span></label>
-                        <input v-model="dataInputMember.nama" class="form-control bg-transparent" id="edit_nama_member" type="text" placeholder="Masukkan nama lengkap">
+                        <input v-model="dataInputMember.nama" @input="dataInputMember.nama = $event.target.value.toUpperCase()" class="form-control bg-transparent" id="edit_nama_member" type="text" placeholder="Masukkan nama lengkap">
                       </div>
                       <div class="mb-1">
                         <label class="form-label mb-0" for="edit_no_hp_member">No Hp <span class="text-danger">*</span></label>
@@ -2922,11 +2926,15 @@
                           <option value="other">Lainnya</option>
                         </select>
                       </div>
-                      <div class="mb-3">
+                      <div class="mb-1">
                         <label class="form-label mb-0" for="edit_tanggal_lahir">Tanggal Lahir</label>
                         <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="edit_tanggal_lahir" type="date">
                       </div>
-                      <div class="text-end">
+                      <div class="mb-1">
+                        <label class="form-label mb-0" for="edit_point_member">Point member</label>
+                        <input v-model="dataInputMember.point" :disabled="dataInputMember.jenis_member != master_code.tipeKonsumen.member" @input="dataInputMember.point = $root.inputTextFormatPrice($event);" class="form-control bg-transparent" id="edit_point_member" type="text" placeholder="Masukkan point member">
+                      </div>
+                      <div class="pt-2 text-end">
                         <button class="btn btn-primary btn-sm" type="submit">Simpan</button>
                       </div>
                     </form>
@@ -3604,6 +3612,7 @@ export default {
         jenis_kelamin: '',
         tanggal_lahir: '',
         jenis_member: 'member',
+        point: null,
       },
 
       inputSearchProduct: '',
@@ -5422,6 +5431,7 @@ export default {
       try{
         this.dataInputMember.user_login = this.$root.dataAuthToken;
         this.dataInputMember.jenis_member = 'member';
+        this.dataInputMember.point = this.dataInputMember.point != null ? this.dataInputMember.point.trim() != '' ? parseInt(this.$root.formatCurrencyRemoveSeparator(this.dataInputMember.point)) : null : null;
         const store = await axios({
           method: 'post',
           url: this.$root.API_ERP + '/pos/app/sales/storeNewMember',
@@ -5461,10 +5471,11 @@ export default {
       try{
         $('#modalEditMember').modal('hide');
         this.$root.showLoading();
+        this.dataInputMember.point = this.dataInputMember.point != null ? this.dataInputMember.point.trim() != '' ? parseInt(this.$root.formatCurrencyRemoveSeparator(this.dataInputMember.point)) : null : null;
         const store = await axios({
           method: 'put',
           url: this.$root.API_ERP + '/pos/app/sales/updateDataMember',
-          data: this.dataInputMember,
+          data: ({...this.dataInputMember, user_login: this.$root.dataAuthToken }),
         });
         
         if(store.status == 201 || store.status == 200){
@@ -5509,6 +5520,8 @@ export default {
       for (let prop in this.dataInputMember) {
         this.dataInputMember[prop] = member[prop];
       }
+      this.dataInputMember.point = member.point ? this.$root.formatPrice(parseInt(member.point)) : null;
+      this.dataInputMember.jenis_member = member.tipe_konsumen.slug || null;
 
       $('#modalFindMember').modal('hide');
       $('#modalEditMember').modal('show');
