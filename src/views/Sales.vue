@@ -2870,10 +2870,10 @@
                           <label class="form-label mb-0" for="tanggal_lahir">Tanggal Lahir</label>
                           <input v-model="dataInputMember.tanggal_lahir" class="form-control bg-transparent" id="tanggal_lahir" type="date">
                         </div>
-                        <!-- <div class="mb-1">
+                        <div class="mb-1">
                           <label class="form-label mb-0" for="point_member">Point member</label>
                           <input v-model="dataInputMember.point" @input="dataInputMember.point = $root.inputTextFormatPrice($event);" class="form-control bg-transparent" id="point_member" type="text" placeholder="Masukkan point member">
-                        </div> -->
+                        </div>
                         <div class="pt-2 mb-3 text-end">
                           <button class="btn btn-primary btn-sm" type="submit">Submit</button>
                         </div>
