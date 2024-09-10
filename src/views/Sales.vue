@@ -3789,7 +3789,7 @@ export default {
         //   filterExpression = filterExpression && brandProduct.optDtlCode.toLowerCase().includes(valueSeletedBrand);
         // }
         
-        let filterExpression = brandProduct.optDtlCode.toLowerCase().includes(valueSeletedBrand);
+        let filterExpression = brandProduct ? brandProduct.optDtlCode.toLowerCase().includes(valueSeletedBrand) : false;
 
         if(hasTruecheckboxProducts){ // Filter jika ada checkbox promo yang true
           if(product.promo_product_id){
