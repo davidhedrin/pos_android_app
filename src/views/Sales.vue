@@ -4197,6 +4197,11 @@ export default {
 
     selectBatchProductBuyBundle: async function(detailProduct, batch){
       try{
+        if(batch.onHand && parseInt(batch.onHand) <= 0){
+          this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Tidak ada Stok item yang tersedia.');
+          return;
+        };
+
         detailProduct.selectBatch = batch;
         $('#modalShowBatchProductPromoBundle').modal('hide');
       }catch(e){}
@@ -4246,6 +4251,11 @@ export default {
     
     selectBatchProductBuyBundleBrand: async function(detailProduct, batch){
       try{
+        if(parseInt(batch.onHand) <= 0){
+          this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Tidak ada Stok item yang tersedia.');
+          return;
+        }
+
         if(parseInt(batch.batchQty) > parseInt(batch.onHand)){
           this.$root.showAlertFunction('warning', 'Batch QTY Invalid!', 'Batch qty tidak boleh melebihi On Hand.');
           return false;
@@ -5191,6 +5201,12 @@ export default {
     },
 
     validateModalBatchProduct: async function(product, qty = 1){
+      const qtyOnHand = product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : this.$root.filterStokProduct(product).onHand;
+      if(qtyOnHand && parseInt(qtyOnHand) <= 0){
+        this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Tidak ada Stok item yang tersedia.');
+        return;
+      }
+
       if(product.master_promo_product){
         const checkIsPromoDate = await this.checkProductPromoActiveDate(product);
         if(checkIsPromoDate == false) return false;
@@ -5690,6 +5706,12 @@ export default {
     },
     
     clickAddProductOrderTicket: async function(product){
+      const qtyOnHand = product.promo_product_id ? product.for_product.all_inventory_stok[0].onHand : this.$root.filterStokProduct(product).onHand;
+      if(parseInt(qtyOnHand) <= 0){
+        this.$root.showAlertFunction('warning', 'Stok Invalid!', 'Tidak ada Stok item yang tersedia.');
+        return;
+      }
+
       if(product.master_promo_product){
         const checkIsPromoDate = await this.checkProductPromoActiveDate(product);
         if(checkIsPromoDate == false) return false;
